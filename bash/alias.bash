@@ -12,6 +12,7 @@ alias m="mate ."
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
 
+alias ll='ls -l'
 alias la='ls -la'
 alias ..='cd ..'
 
@@ -19,3 +20,5 @@ alias ..='cd ..'
 alias ga='git add'
 alias gs='git status'
 alias g='git'
+alias gc='git commit'
+alias gp='git pull'

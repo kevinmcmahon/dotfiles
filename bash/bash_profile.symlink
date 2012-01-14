@@ -6,7 +6,7 @@ source ~/dotfiles/bash/exports.bash
 source ~/dotfiles/bash/alias.bash
 
 # Android logcat alias
-alias clogcat='$ANDROID_HOME/platform-tools/adb logcat | ~/coloredlogcat.py'
+alias clogcat='$ANDROID_HOME/platform-tools/adb logcat | ~/Tools/coloredlogcat.py'
 
 [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
 export PATH=$rvm_path/bin:/usr/local/Cellar/python/2.7.1/bin/:$PATH:.

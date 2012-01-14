@@ -1,0 +1,23 @@
+# Case-insensitive globbing (used in pathname expansion)
+shopt -s nocaseglob
+
+# includes PATH setup
+source ~/dotfiles/bash/exports.bash
+source ~/dotfiles/bash/alias.bash
+
+# Android logcat alias
+alias clogcat='$ANDROID_HOME/platform-tools/adb logcat | ~/coloredlogcat.py'
+
+[[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
+export PATH=$rvm_path/bin:/usr/local/Cellar/python/2.7.1/bin/:$PATH:.
+[[ -s "/Users/kevin/.rvm/scripts/rvm" ]] && source "/Users/kevin/.rvm/scripts/rvm"
+
+source ~/.git_completion.sh
+
+function parse_git_dirty {
+  [[ $(git status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo "*"
+}
+
+function parse_git_branch {
+  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/[\1$(parse_git_dirty)]/"
+}

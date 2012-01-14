@@ -5,6 +5,10 @@ shopt -s nocaseglob
 source ~/dotfiles/bash/exports.bash
 source ~/dotfiles/bash/alias.bash
 
+if [ -f `brew --prefix`/etc/bash-completion ]; then
+ . `brew --prefix`/etc/bash-completion
+fi
+
 # Android logcat alias
 alias clogcat='$ANDROID_HOME/platform-tools/adb logcat | ~/Tools/coloredlogcat.py'
 

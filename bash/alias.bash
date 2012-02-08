@@ -7,6 +7,7 @@ alias p="cd ~/Projects"
 alias g="git"
 alias v="vim"
 alias m="mate ."
+alias work="cd ~/work"
 
 # Hide/show all desktop icons (useful when presenting)
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"

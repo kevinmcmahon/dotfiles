@@ -4,6 +4,7 @@ alias cleanup="find . -name '*.DS_Store' -type f -ls -delete"
 # Shortcuts
 alias d="cd ~/Dropbox"
 alias p="cd ~/Projects"
+alias a="cd ~/Projects/android"
 alias g="git"
 alias v="vim"
 alias m="mate ."

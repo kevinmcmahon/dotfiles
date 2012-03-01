@@ -1,4 +1,4 @@
-export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:/Library/Frameworks/GDAL.framework/Programs:/opt/android/sdk/platform-tools:$PATH"
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:/Library/Frameworks/GDAL.framework/Programs:$PATH"
 # Make vim the default editor
 export EDITOR="vim"
 export GIT_EDITOR="mate -wl1"
@@ -19,7 +19,7 @@ export LC_ALL="en_US.UTF-8"
 export LANG="en_US"
 
 export M2_HOME=/usr/share/maven
-export ANDROID_HOME=/Developer/android
+export ANDROID_HOME=~/developer/android
 export GRADLE_HOME=~/Tools/gradle-1.0-milestone-7
 export PATH=$PATH:$ANDROID_HOME:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:~/Tools:~/Tools/bin:$GRADLE_HOME/bin:~/Tools/dex2jar:$M2_HOME
 export DATABASE_URL=postgres://kmcmahon:0c791fd488@beta.spacialdb.com:9999/spacialdb_1321928742fe_kmcmahon

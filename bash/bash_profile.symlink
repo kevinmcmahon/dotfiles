@@ -13,7 +13,7 @@ fi
 alias clogcat='$ANDROID_HOME/platform-tools/adb logcat | ~/Tools/coloredlogcat.py'
 
 [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
-export PATH=$rvm_path/bin:/usr/local/Cellar/python/2.7.1/bin/:$PATH:.
+export PATH=$rvm_path/bin:/usr/local/share/python:$PATH:.
 [[ -s "/Users/kevin/.rvm/scripts/rvm" ]] && source "/Users/kevin/.rvm/scripts/rvm"
 
 source ~/.git_completion.sh

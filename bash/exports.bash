@@ -20,7 +20,7 @@ export LANG="en_US"
 
 export M2_HOME=/usr/share/maven
 export ANDROID_HOME=~/developer/android
-export GRADLE_HOME=~/Tools/gradle-1.0-milestone-9
+export GRADLE_HOME=~/Tools/gradle-1.0-rc-1
 export PATH=$PATH:$ANDROID_HOME:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:~/Tools:~/Tools/bin:$GRADLE_HOME/bin:~/Tools/dex2jar:$M2_HOME
 #export DATABASE_URL=postgres://kmcmahon:0c791fd488@beta.spacialdb.com:9999/spacialdb_1321928742fe_kmcmahon
 

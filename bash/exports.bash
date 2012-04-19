@@ -11,6 +11,9 @@ export HISTSIZE=32768
 export HISTFILESIZE=$HISTSIZE
 export HISTCONTROL=ignoredups
 
+export ARCHFLAGS="-arch x86_64"
+export ARCH_FLAGS=$ARCHFLAGS
+
 # Make some commands not show up in history
 export HISTIGNORE="ls:ls *:cd:cd -:pwd;exit:date:* --help"
 

@@ -4,6 +4,8 @@ shopt -s nocaseglob
 # includes PATH setup
 source ~/dotfiles/bash/exports.bash
 source ~/dotfiles/bash/alias.bash
+source ~/dotfiles/bash/heroku.aliases.bash
+source ~/dotfiles/bash/osx.aliases.bash
 source ~/dotfiles/bash/bash_complete/adb
 
 if [ -f `brew --prefix`/etc/bash-completion ]; then

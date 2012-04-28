@@ -29,4 +29,4 @@ alias gp='git pull'
 
 alias reload="source $HOME/.bashrc"
 
-
+alias ded="rm -rf /Users/kevin/Library/Developer/Xcode/DerivedData"

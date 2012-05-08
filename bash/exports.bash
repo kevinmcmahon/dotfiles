@@ -23,7 +23,7 @@ export LANG="en_US"
 
 export M2_HOME=/usr/share/maven
 export ANDROID_HOME=~/developer/android
-export GRADLE_HOME=~/Tools/gradle-1.0-rc-1
+export GRADLE_HOME=~/Tools/gradle-1.0-rc-3
 export PATH=$PATH:$ANDROID_HOME:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:~/Tools:~/Tools/bin:$GRADLE_HOME/bin:~/Tools/dex2jar:$M2_HOME
 
 export PS1='\[\033[G\]\h:\W$(__git_ps1 "[\[\e[0;32m\]%s\[\e[0m\]\[\e[0;33m\]$(parse_git_dirty)\[\e[0m\]]")$ '

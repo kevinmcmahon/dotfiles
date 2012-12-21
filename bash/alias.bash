@@ -9,6 +9,7 @@ alias a="cd ~/Projects/android"
 alias g="git"
 alias v="vim"
 alias m="mate ."
+alias o="open ."
 alias work="cd ~/work"
 
 # Hide/show all desktop icons (useful when presenting)
@@ -26,6 +27,7 @@ alias gs='git status'
 alias g='git'
 alias gc='git commit'
 alias gp='git pull'
+alias gsu='git submodule update'
 
 alias reload="source $HOME/.bashrc"
 

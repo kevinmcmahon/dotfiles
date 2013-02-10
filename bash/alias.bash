@@ -28,6 +28,7 @@ alias g='git'
 alias gc='git commit'
 alias gp='git pull'
 alias gsu='git submodule update'
+alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
 alias reload="source $HOME/.bashrc"
 

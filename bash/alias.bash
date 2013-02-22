@@ -35,3 +35,5 @@ alias reload="source $HOME/.bashrc"
 alias ded="rm -rf /Users/kevin/Library/Developer/Xcode/DerivedData"
 
 alias fixbootstrap="launchctl list|grep UIKitApplication|awk '{print $3}'|xargs launchctl remove"
+
+alias fixopenwith='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user'

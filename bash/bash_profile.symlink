@@ -7,6 +7,7 @@ source ~/dotfiles/bash/alias.bash
 source ~/dotfiles/bash/heroku.aliases.bash
 source ~/dotfiles/bash/osx.aliases.bash
 source ~/dotfiles/bash/bash_complete/adb
+source ~/dotfiles/bash/maven_bash_completion.bash
 
 if [ -f `brew --prefix`/etc/bash-completion ]; then
  . `brew --prefix`/etc/bash-completion
@@ -15,9 +16,7 @@ fi
 # Android logcat alias
 alias clogcat='$ANDROID_HOME/platform-tools/adb logcat | ~/Tools/coloredlogcat.py'
 
-[[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
-export PATH=$rvm_path/bin:/usr/local/share/python:$PATH:.
-[[ -s "/Users/kevin/.rvm/scripts/rvm" ]] && source "/Users/kevin/.rvm/scripts/rvm"
+export PATH=~/.rbenv/shims:/usr/local/share/python:$PATH:.
 
 source ~/.git_completion.sh
 
@@ -29,4 +28,4 @@ function parse_git_branch {
   git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/[\1$(parse_git_dirty)]/"
 }
 
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+eval "$(rbenv init -)"

@@ -13,6 +13,7 @@ alias o="open ."
 alias work="cd ~/work"
 alias apps="cd ~/Projects/apps"
 
+alias bex='bundle exec'
 # Hide/show all desktop icons (useful when presenting)
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"

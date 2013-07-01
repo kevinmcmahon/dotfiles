@@ -12,6 +12,7 @@ alias m="mate ."
 alias o="open ."
 alias work="cd ~/work"
 alias apps="cd ~/Projects/apps"
+alias cls="clear"
 
 alias bex='bundle exec'
 # Hide/show all desktop icons (useful when presenting)

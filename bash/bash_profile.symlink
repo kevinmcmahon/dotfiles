@@ -13,6 +13,11 @@ if [ -f `brew --prefix`/etc/bash-completion ]; then
  . `brew --prefix`/etc/bash-completion
 fi
 
+if [ ! -z `which brew` ]
+then
+  [ -e "$( brew --prefix )/bin/rbenv" ] && eval "$(rbenv init -)"
+fi
+
 # Android logcat alias
 alias clogcat='$ANDROID_HOME/platform-tools/adb logcat | ~/Tools/coloredlogcat.py'
 

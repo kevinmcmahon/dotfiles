@@ -10,8 +10,6 @@ source ~/dotfiles/bash/bash_complete/adb
 source ~/dotfiles/bash/bash_complete/gradle
 source ~/dotfiles/bash/maven_bash_completion.bash
 
-export PATH=$PATH:.
-
 source ~/.git_completion.sh
 
 function parse_git_dirty {
@@ -27,5 +25,3 @@ if [ -f $(brew --prefix)/etc/bash_completion ]; then
 fi
 
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
-
-export PATH=/Users/kevin/.rbenv/shims:/usr/local/bin:/usr/local/sbin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:/Library/Frameworks/GDAL.framework/Programs:/usr/local/git/bin:/usr/local/bin:/usr/local/sbin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:/Library/Frameworks/GDAL.framework/Programs:/usr/local/git/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/Applications/Android Studio.app/sdk:/Applications/Android Studio.app/sdk/platform-tools:/Applications/Android Studio.app/sdk/tools:/Users/kevin/Tools:/Users/kevin/Tools/bin:/Users/kevin/Tools/gradle/bin:/Users/kevin/Tools/dex2jar:/usr/local/Cellar/maven/3.1.0/libexec:.:/Applications/Android Studio.app/sdk:/Applications/Android Studio.app/sdk/platform-tools:/Applications/Android Studio.app/sdk/tools:/Users/kevin/Tools:/Users/kevin/Tools/bin:/Users/kevin/Tools/gradle/bin:/Users/kevin/Tools/dex2jar:/usr/local/Cellar/maven/3.1.1/libexec:.:/usr/local/mysql/bin

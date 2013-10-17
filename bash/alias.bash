@@ -1,6 +1,9 @@
 # Recursively delete `.DS_Store` files
 alias cleanup="find . -name '*.DS_Store' -type f -ls -delete"
 
+# Android logcat alias
+alias clogcat='"$ANDROID_HOME/platform-tools/adb" logcat | ~/Tools/coloredlogcat.py'
+
 # Shortcuts
 alias d="cd ~/Dropbox"
 alias dl="cd ~/Downloads"
@@ -13,8 +16,8 @@ alias o="open ."
 alias work="cd ~/work"
 alias apps="cd ~/Projects/apps"
 alias cls="clear"
-
 alias bex='bundle exec'
+
 # Hide/show all desktop icons (useful when presenting)
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
@@ -46,3 +49,6 @@ alias showhidden='defaults write com.apple.finder AppleShowAllFiles TRUE && kill
 
 # Hide hidden files in Finder
 alias hidehidden='defaults write com.apple.finder AppleShowAllFiles FALSE && killall Finder'
+
+alias mp='cd /Users/kevin/Projects/apps/markerpal/'
+

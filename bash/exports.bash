@@ -1,6 +1,7 @@
 export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:/Library/Frameworks/GDAL.framework/Programs:/usr/local/git/bin:$PATH"
+
 # Make vim the default editor
-export EDITOR="vim"
+export EDITOR="/usr/local/bin/mate -w"
 export GIT_EDITOR="mate -wl1"
 
 # Don’t clear the screen after quitting a manual page
@@ -21,7 +22,7 @@ export HISTIGNORE="ls:ls *:cd:cd -:pwd;exit:date:* --help"
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US"
 
-export M2_HOME=/usr/share/maven
+export M2_HOME=/usr/local/Cellar/maven/3.1.1/libexec
 export ANDROID_HOME=/Applications/Android\ Studio.app/sdk
 export GRADLE_HOME=/Users/kevin/Tools/gradle
 export PATH=$PATH:$ANDROID_HOME:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:~/Tools:~/Tools/bin:$GRADLE_HOME/bin:~/Tools/dex2jar:$M2_HOME

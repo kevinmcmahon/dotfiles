@@ -7,21 +7,10 @@ source ~/dotfiles/bash/alias.bash
 source ~/dotfiles/bash/heroku.aliases.bash
 source ~/dotfiles/bash/osx.aliases.bash
 source ~/dotfiles/bash/bash_complete/adb
+source ~/dotfiles/bash/bash_complete/gradle
 source ~/dotfiles/bash/maven_bash_completion.bash
 
-if [ -f `brew --prefix`/etc/bash-completion ]; then
- . `brew --prefix`/etc/bash-completion
-fi
-
-if [ ! -z `which brew` ]
-then
-  [ -e "$( brew --prefix )/bin/rbenv" ] && eval "$(rbenv init -)"
-fi
-
-# Android logcat alias
-alias clogcat='$ANDROID_HOME/platform-tools/adb logcat | ~/Tools/coloredlogcat.py'
-
-export PATH=~/.rbenv/shims:/usr/local/share/python:$PATH:.
+export PATH=$PATH:.
 
 source ~/.git_completion.sh
 
@@ -33,4 +22,10 @@ function parse_git_branch {
   git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/[\1$(parse_git_dirty)]/"
 }
 
-eval "$(rbenv init -)"
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+  . $(brew --prefix)/etc/bash_completion
+fi
+
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+
+export PATH=/Users/kevin/.rbenv/shims:/usr/local/bin:/usr/local/sbin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:/Library/Frameworks/GDAL.framework/Programs:/usr/local/git/bin:/usr/local/bin:/usr/local/sbin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:/Library/Frameworks/GDAL.framework/Programs:/usr/local/git/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/Applications/Android Studio.app/sdk:/Applications/Android Studio.app/sdk/platform-tools:/Applications/Android Studio.app/sdk/tools:/Users/kevin/Tools:/Users/kevin/Tools/bin:/Users/kevin/Tools/gradle/bin:/Users/kevin/Tools/dex2jar:/usr/local/Cellar/maven/3.1.0/libexec:.:/Applications/Android Studio.app/sdk:/Applications/Android Studio.app/sdk/platform-tools:/Applications/Android Studio.app/sdk/tools:/Users/kevin/Tools:/Users/kevin/Tools/bin:/Users/kevin/Tools/gradle/bin:/Users/kevin/Tools/dex2jar:/usr/local/Cellar/maven/3.1.1/libexec:.:/usr/local/mysql/bin

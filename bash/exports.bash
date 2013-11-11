@@ -1,7 +1,5 @@
 export M2_HOME=/usr/local/Cellar/maven/3.1.1/libexec
 export ANDROID_HOME=/Applications/Android\ Studio.app/sdk
-export GRADLE_HOME=/Users/kevin/Tools/gradle
-export PATH="/usr/local/bin:/usr/local/sbin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:/Library/Frameworks/GDAL.framework/Programs:/usr/local/git/bin:$ANDROID_HOME:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:/Users/kevin/Tools:/Users/kevin/Tools/bin:$GRADLE_HOME/bin:~/Tools/dex2jar:$M2_HOME:$PATH:."
 
 # Make TextMate the default editor
 export EDITOR="/usr/local/bin/mate -w"
@@ -32,3 +30,5 @@ export LANG="en_US"
 export PS1='\[\033[G\]\h:\W$(__git_ps1 "[\[\e[0;32m\]%s\[\e[0m\]\[\e[0;33m\]$(parse_git_dirty)\[\e[0m\]]")$ '
 
 export PROMPT_COMMAND='echo -ne "\033]0; ${PWD##*/}\007"'
+
+export JAVA_HOME=`/usr/libexec/java_home` 

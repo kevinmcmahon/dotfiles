@@ -52,3 +52,5 @@ alias hidehidden='defaults write com.apple.finder AppleShowAllFiles FALSE && kil
 
 alias mp='cd /Users/kevin/Projects/apps/markerpal/'
 
+alias kitkat='/Applications/Android\ Studio.app/sdk/tools/emulator -avd N4_KITKAT -netspeed full -netdelay none'
+alias mat='open -n ~/Tools/mat/MemoryAnalyzer.app'

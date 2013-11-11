@@ -2,6 +2,7 @@
 shopt -s nocaseglob
 
 # includes PATH setup
+
 source ~/dotfiles/bash/exports.bash
 source ~/dotfiles/bash/alias.bash
 source ~/dotfiles/bash/heroku.aliases.bash
@@ -9,7 +10,6 @@ source ~/dotfiles/bash/osx.aliases.bash
 source ~/dotfiles/bash/bash_complete/adb
 source ~/dotfiles/bash/bash_complete/gradle
 source ~/dotfiles/bash/maven_bash_completion.bash
-
 source ~/.git_completion.sh
 
 function parse_git_dirty {

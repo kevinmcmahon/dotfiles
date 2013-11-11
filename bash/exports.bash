@@ -1,6 +1,10 @@
 export M2_HOME=/usr/local/Cellar/maven/3.1.1/libexec
 export ANDROID_HOME=/Applications/Android\ Studio.app/sdk
 
+if [ -f ~/dotfiles/bash/exports.bash.local ]; then
+	source ~/dotfiles/bash/exports.bash.local	
+fi
+
 # Make TextMate the default editor
 export EDITOR="/usr/local/bin/mate -w"
 export GIT_EDITOR="mate -wl1"
@@ -23,12 +27,7 @@ export HISTIGNORE="ls:ls *:cd:cd -:pwd;exit:date:* --help"
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US"
 
-#export DATABASE_URL=postgres://kmcmahon:0c791fd488@beta.spacialdb.com:9999/spacialdb_1321928742fe_kmcmahon
-#export DATABASE_URL=postgres://mnaijy_wasnok:63992490@spacialdb.com:9999/mnaijy_wasnok
-#export DATABASE_URL=postgres://qwjvxk_fbrczr:da4ed395@spacialdb.com:9999/qwjvxk_fbrczr
-
 export PS1='\[\033[G\]\h:\W$(__git_ps1 "[\[\e[0;32m\]%s\[\e[0m\]\[\e[0;33m\]$(parse_git_dirty)\[\e[0m\]]")$ '
 
 export PROMPT_COMMAND='echo -ne "\033]0; ${PWD##*/}\007"'
-
 export JAVA_HOME=`/usr/libexec/java_home` 

@@ -1,8 +1,6 @@
 [include]
 	path = .githubconfig
-[user]
-	name = Kevin McMahon
-	email = kmcmahon@redpointtech.com
+	path = .gituserconfig
 [core]
 	autocrlf = input
 	editor = mate -w

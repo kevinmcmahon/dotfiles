@@ -62,3 +62,6 @@ defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
 
 # Increase window resize speed for Cocoa applications
 defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+
+# Save screenshots with a lowercase file extension
+defaults write com.apple.screencapture type png

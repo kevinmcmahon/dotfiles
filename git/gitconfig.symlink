@@ -14,16 +14,20 @@
 [alias]
     undo = reset --hard
     lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
-    st = status
+    st = status -s
     ci = commit
     br = branch
     co = checkout
     df = diff
-    standup = log --since yesterday --author="Kevin McMahon" --pretty=oneline
+    standup = log --since yesterday --author='Kevin McMahon' --pretty=oneline
+    amend = commit --amend --reuse-message=HEAD
+    tags = tag -l
+    branches = branch -a
+    remotes = remote -v
 [color]
     ui = auto
 [push]
-	default = simple
+    default = simple
 [difftool "Kaleidoscope"]
 	cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
 [diff]
@@ -37,3 +41,4 @@
 	prompt = false
 [merge]
 	tool = Kaleidoscope
+

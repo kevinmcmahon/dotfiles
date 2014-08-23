@@ -30,6 +30,7 @@ alias ...='cd ../..'
 # git aliases
 alias g='git'
 alias gp='git pull'
+alias gs='git st'
 alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
 alias reload='source $HOME/.bash_profile'

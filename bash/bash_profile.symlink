@@ -9,9 +9,10 @@ source ~/dotfiles/bash/heroku.aliases.bash
 
 if [ "$(uname)" == "Darwin" ]; then
   source ~/dotfiles/bash/osx.aliases.bash    
-elif
+else
   source ~/dotfiles/bash/linux.aliases.bash    
 fi
+
 source ~/dotfiles/bash/bash_complete/adb
 source ~/dotfiles/bash/bash_complete/gradle
 source ~/dotfiles/bash/maven_bash_completion.bash

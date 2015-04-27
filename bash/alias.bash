@@ -8,7 +8,6 @@ alias clogcat='"$ANDROID_HOME/platform-tools/adb" logcat | ~/Tools/coloredlogcat
 alias d="cd ~/Dropbox"
 alias dl="cd ~/Downloads"
 alias p="cd ~/Projects"
-alias a="cd ~/Projects/android"
 alias g="git"
 alias v="vim"
 alias m="mate ."
@@ -29,10 +28,17 @@ alias ...='cd ../..'
 
 # git aliases
 alias g='git'
-alias gp='git pull'
+alias gp='git pull --rebase'
+alias gm='git merge --no-ff'
 alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias gs='git st'
+alias ga='git add'
+alias stash='git stash'
+alias pop='git stash pop'
 
 alias reload='source $HOME/.bash_profile'
+
+alias rmorig='find . -name "*.orig" -print0 | xargs -0 rm -rf'
 
 alias ded='rm -rf /Users/kevin/Library/Developer/Xcode/DerivedData'
 

@@ -3,7 +3,7 @@
 	path = .gituserconfig
 [core]
 	autocrlf = input
-	editor = mate -w
+	editor = bbedit --wait --resume
 	excludesfile = ~/.gitignore_global
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
@@ -27,7 +27,7 @@
 [color]
     ui = auto
 [push]
-    default = simple
+    default = upstream
 [difftool "Kaleidoscope"]
 	cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
 [diff]
@@ -42,3 +42,7 @@
 [merge]
 	tool = Kaleidoscope
 
+[filter "media"]
+	clean = git media clean %f
+	smudge = git media smudge %f
+	required = true

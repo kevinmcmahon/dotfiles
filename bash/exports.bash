@@ -1,5 +1,5 @@
 export M2_HOME=/usr/local/Cellar/maven/3.1.1/libexec
-export ANDROID_HOME=/Applications/Android\ Studio.app/sdk
+export ANDROID_HOME=~/tools/android-sdk
 
 if [ -f ~/dotfiles/bash/exports.bash.local ]; then
 	source ~/dotfiles/bash/exports.bash.local	

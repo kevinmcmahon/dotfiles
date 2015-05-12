@@ -6,8 +6,8 @@ if [ -f ~/dotfiles/bash/exports.bash.local ]; then
 fi
 
 # Make TextMate the default editor
-export EDITOR="/usr/local/bin/mate -w"
-export GIT_EDITOR="mate -wl1"
+export EDITOR="bbedit --wait --resume"
+export GIT_EDITOR="bbedit --wait --resume"
 
 # Don’t clear the screen after quitting a manual page
 export MANPAGER="less -X"

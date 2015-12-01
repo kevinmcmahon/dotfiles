@@ -9,6 +9,9 @@ source ~/dotfiles/bash/heroku.aliases.bash
 
 if [ "$(uname)" == "Darwin" ]; then
   source ~/dotfiles/bash/osx.aliases.bash    
+  source ~/.dnx/dnvm/dnvm.sh
+  export MONO_MANAGED_WATCHER=disabled
+  test -e ${HOME}/.iterm2_shell_integration.bash && source ${HOME}/.iterm2_shell_integration.bash
 else
   source ~/dotfiles/bash/linux.aliases.bash    
 fi

@@ -3,6 +3,8 @@ export ANDROID_HOME=~/tools/android-sdk
 
 if [ -f ~/dotfiles/bash/exports.bash.local ]; then
 	source ~/dotfiles/bash/exports.bash.local	
+else
+  echo "There is no exports.bash.local file. PATH not customized."
 fi
 
 # Make TextMate the default editor

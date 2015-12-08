@@ -1,3 +1,11 @@
+settings set prompt [lldb]$
+
+# Quickly import UIKit or Foundation.
+# http://furbo.org/2015/05/11/an-import-ant-change-in-xcode/
 command alias uikit expr @import UIKit
 command alias foundation expr @import Foundation
+
+command alias uikits expr import UIKit
+command alias foundations expr import Foundation
+
 command script import /usr/local/opt/chisel/libexec/fblldb.py

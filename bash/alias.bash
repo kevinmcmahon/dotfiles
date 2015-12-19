@@ -42,6 +42,8 @@ alias rmorig='find . -name "*.orig" -print0 | xargs -0 rm -rf'
 
 alias ded='rm -rf /Users/kevin/Library/Developer/Xcode/DerivedData'
 
+alias dskill='find . -name .DS_Store -delete'
+
 alias fixbootstrap="launchctl list|grep UIKitApplication|awk '{print $3}'| xargs launchctl remove"
 
 alias fixopenwith='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user'

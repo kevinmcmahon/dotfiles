@@ -95,3 +95,72 @@ code () {
        open -a "Visual Studio Code" --args "$F"
    fi
 }
+
+
+## url2path functions from brettterpstra.com
+## http://brettterpstra.com/2015/11/16/shell-tricks-convert-file-urls-to-unix-paths/
+
+# Ruby ShellWords escape
+shellesc() {
+    local output
+    # If any arguments are passed to the function, assume that's the input
+    if [[ $# == 0 ]]; then
+        output=$(ruby -e 'require "shellwords"; puts Shellwords.escape(STDIN.read.strip)')
+    # otherwise, take input from STDIN so it can be used in piped commands
+    else
+        output=$(ruby -e 'require "shellwords"; puts Shellwords.escape(ARGV.join(" ").strip)' $@)
+    fi
+
+    echo "$output"
+}
+
+# Ruby cgi unescape
+unesc() {
+    local output
+
+    if [[ $# == 0 ]]; then
+        output=$(ruby -r cgi -e 'require "cgi"; puts CGI.unescape(STDIN.read)')
+    else
+        output=$(ruby -e 'require "cgi"; puts CGI.unescape(ARGV.join(" "))' $@)
+    fi
+    
+    echo "$output"
+}
+
+shorthome() {
+    local input
+    if [[ $# == 0 ]]; then
+        read input
+        input=$(shellesc "$input")
+    else
+        input="$@"
+    fi
+    echo -n "$input" | sed -E "s/^${HOME//\//\\/}/~/"
+}
+
+# convert a file:// URL to shell path
+url2path() {
+    local input output
+    local copy=false
+    if [[ $1 == '-c' ]]; then
+        copy=true
+        shift
+    fi
+    if [[ $# == 0 ]]; then
+        read input
+    else
+        input=$@
+    fi
+
+    # 1. Replace 'file://', `%20` (space), and other entities in the url
+    # 2. Add shell escaping for spaces and any non-legal characters
+    # 3. Replace hardcoded home paths with the tilde abbreviation
+    output=$(unesc ${input#file:\/\/} | shorthome)
+
+    if $copy; then
+        echo -n "$output"|pbcopy
+        echo "Result in clipboard"
+    else
+        echo -n "$output"
+    fi
+}

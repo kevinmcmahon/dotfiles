@@ -56,9 +56,6 @@ alias hidehidden='defaults write com.apple.finder AppleShowAllFiles FALSE && kil
 
 alias mp='cd /Users/kevin/Projects/apps/markerpal/'
 
-alias kitkat='/Applications/Android\ Studio.app/sdk/tools/emulator -avd N4_KITKAT -netspeed full -netdelay none'
-alias mat='open -n ~/Tools/mat/MemoryAnalyzer.app'
-
 alias wifi="networksetup -setairportpower $WIFI_IFACE"
 
 # Open iOS Simulator
@@ -71,3 +68,7 @@ alias lscleanup="/System/Library/Frameworks/CoreServices.framework/Frameworks/La
 # Also, clear Apple’s System Logs to improve shell startup speed
 alias emptytrash="sudo rm -rfv /Volumes/\*/.Trashes; sudo rm -rfv $HOME/.Trash/; sudo rm -rfv /private/var/log/asl/\*.asl"
 alias secureemptytrash="sudo srm -rfv /Volumes/\*/.Trashes; sudo srm -rfv $HOME/.Trash/; sudo srm -rfv /private/var/log/asl/\*.asl"
+
+# Code Analysis Tools
+alias maat='java -jar ~/tools/code-maat/latest.jar'
+alias mat='open -n ~/Tools/mat/MemoryAnalyzer.app'

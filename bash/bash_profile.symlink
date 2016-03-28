@@ -8,13 +8,17 @@ source ~/dotfiles/bash/alias.bash
 source ~/dotfiles/bash/heroku.aliases.bash
 
 if [ "$(uname)" == "Darwin" ]; then
-  source ~/dotfiles/bash/osx.aliases.bash    
-  source ~/.dnx/dnvm/dnvm.sh
+  source ~/dotfiles/bash/osx.aliases.bash 
   export MONO_MANAGED_WATCHER=disabled
   test -e ${HOME}/.iterm2_shell_integration.bash && source ${HOME}/.iterm2_shell_integration.bash
 else
   source ~/dotfiles/bash/linux.aliases.bash    
 fi
+
+# If DNX available, source the script.
+if [ -f ~/.dnx/dnvm/dnvm.sh ]; then
+  source ~/.dnx/dnvm/dnvm.sh
+fi   
 
 source ~/dotfiles/bash/bash_complete/adb
 source ~/dotfiles/bash/bash_complete/gradle

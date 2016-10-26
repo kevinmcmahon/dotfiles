@@ -48,11 +48,7 @@ alias fixbootstrap="launchctl list|grep UIKitApplication|awk '{print $3}'| xargs
 
 alias fixopenwith='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user'
 
-# Show hidden files in Finder
-alias showhidden='defaults write com.apple.finder AppleShowAllFiles TRUE && killall Finder'
-
-# Hide hidden files in Finder
-alias hidehidden='defaults write com.apple.finder AppleShowAllFiles FALSE && killall Finder'
+alias fixmenubar='killall -KILL SystemUIServer'
 
 alias mp='cd /Users/kevin/Projects/apps/markerpal/'
 

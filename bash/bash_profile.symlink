@@ -47,3 +47,4 @@ unset fasd_cache
 
 # OPAM configuration
 . ~/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+eval $(/usr/libexec/path_helper -s)

@@ -13,6 +13,8 @@ alias showhidden='defaults write com.apple.finder AppleShowAllFiles TRUE && kill
 # Hide hidden files in Finder
 alias hidehidden='defaults write com.apple.finder AppleShowAllFiles FALSE && killall Finder'
 
+# Remove App Translocation 
+alias rmapptrans='xattr -dr com.apple.quarantine'
 
 alias dskill='find . -name .DS_Store -delete'
 

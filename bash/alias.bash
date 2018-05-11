@@ -13,7 +13,7 @@ alias v="vim"
 alias m="mate ."
 alias o="open ."
 alias work="cd ~/work"
-alias apps="cd ~/Projects/apps"
+alias apps="cd ~/projects/apps"
 alias cls="clear"
 alias bex='bundle exec'
 

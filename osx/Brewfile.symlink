@@ -1,0 +1,46 @@
+cask_args appdir: "/Applications"
+tap 'caskroom/cask'
+tap 'caskroom/fonts'
+tap 'caskroom/versions'
+tap 'homebrew/boneyard'
+tap 'homebrew/bundle'
+tap 'homebrew/command-not-found'
+tap 'homebrew/core'
+tap 'homebrew/services'
+tap 'dart-lang/dart'
+
+brew 'brew-cask-completion'
+cask 'iterm2'
+cask '1password'
+cask 'resilio-sync'
+cask 'visual-studio-code'
+cask 'marked'
+cask 'bartender'
+cask 'hazel'
+cask 'keyboard-maestro'
+cask 'deckset'
+cask 'dropshare'
+cask 'jetbrains-toolbox'
+cask 'private-internet-access'
+cask 'daisydisk'
+cask 'simplenote'
+cask 'keepingyouawake'
+
+brew 'mas'
+brew 'wget'
+brew 'fasd'
+
+# Hosting Cli
+brew 'awscli'
+brew 'doctl'
+brew 'heroku-toolbelt'
+
+# Docker
+brew 'docker'
+brew 'docker-compose'
+brew 'docker-machine'
+
+# iOS / Flutter
+brew 'ideviceinstaller'
+brew 'ios-deploy'
+brew 'cocoapods'

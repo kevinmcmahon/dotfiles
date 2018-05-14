@@ -25,6 +25,8 @@ cask 'private-internet-access'
 cask 'daisydisk'
 cask 'simplenote'
 cask 'keepingyouawake'
+cask 'cleanmymac'
+cask 'kaleidoscope'
 
 brew 'mas'
 brew 'wget'

@@ -27,6 +27,7 @@ cask 'simplenote'
 cask 'keepingyouawake'
 cask 'cleanmymac'
 cask 'kaleidoscope'
+cask 'charles'
 
 brew 'mas'
 brew 'wget'
@@ -36,6 +37,7 @@ brew 'fasd'
 brew 'awscli'
 brew 'doctl'
 brew 'heroku-toolbelt'
+brew 'azure-cli'
 
 # Docker
 brew 'docker'
@@ -46,3 +48,16 @@ brew 'docker-machine'
 brew 'ideviceinstaller'
 brew 'ios-deploy'
 brew 'cocoapods'
+
+# asdf nodejs
+brew 'gpg'
+
+# Fonts
+cask 'font-fira-code'
+
+# Mac App Store
+mas 'OneDrive', id: 823766827
+mas 'Numbers', id: 409203825
+mas 'Keynote', id: 409183694
+mas 'Pages', id: 409201541
+mas 'Trello', id: 1278508951

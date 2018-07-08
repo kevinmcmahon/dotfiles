@@ -7,6 +7,7 @@ tap 'homebrew/bundle'
 tap 'homebrew/command-not-found'
 tap 'homebrew/core'
 tap 'homebrew/services'
+tap 'cloudfoundry/tap'
 tap 'dart-lang/dart'
 
 brew 'brew-cask-completion'
@@ -28,6 +29,7 @@ cask 'keepingyouawake'
 cask 'cleanmymac'
 cask 'kaleidoscope'
 cask 'charles'
+cask 'ngrok'
 
 brew 'mas'
 brew 'wget'
@@ -51,6 +53,9 @@ brew 'cocoapods'
 
 # asdf nodejs
 brew 'gpg'
+# Cloud Stuff
+brew 'kubectl'
+brew 'cf-cli'
 
 # Fonts
 cask 'font-fira-code'

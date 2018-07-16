@@ -22,7 +22,6 @@ fi
 
 source ~/dotfiles/bash/bash_complete/adb
 source ~/dotfiles/bash/bash_complete/gradle
-source ~/dotfiles/bash/maven_bash_completion.bash
 source ~/.git_completion.sh
 
 source ~/dotfiles/bash/functions.bash
@@ -52,6 +51,5 @@ HEROKU_AC_BASH_SETUP_PATH=/Users/kevin/Library/Caches/heroku/autocomplete/bash_s
 
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
-. $HOME/.asdf/asdf.sh
-. $HOME/.asdf/completions/asdf.bash
-
+source $HOME/.asdf/asdf.sh
+source $HOME/.asdf/completions/asdf.bash

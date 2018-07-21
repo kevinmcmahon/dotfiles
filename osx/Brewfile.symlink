@@ -30,6 +30,7 @@ cask 'cleanmymac'
 cask 'kaleidoscope'
 cask 'charles'
 cask 'ngrok'
+cask 'rocket-chat'
 
 brew 'mas'
 brew 'wget'

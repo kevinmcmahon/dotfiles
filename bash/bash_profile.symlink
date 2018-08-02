@@ -3,6 +3,9 @@ shopt -s nocaseglob
 
 # includes PATH setup
 
+source $HOME/.asdf/asdf.sh
+source $HOME/.asdf/completions/asdf.bash
+
 source ~/dotfiles/bash/exports.bash
 source ~/dotfiles/bash/alias.bash
 source ~/dotfiles/bash/heroku.aliases.bash
@@ -51,5 +54,3 @@ HEROKU_AC_BASH_SETUP_PATH=/Users/kevin/Library/Caches/heroku/autocomplete/bash_s
 
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
-source $HOME/.asdf/asdf.sh
-source $HOME/.asdf/completions/asdf.bash

@@ -38,16 +38,17 @@ if [ "$(uname)" == "Darwin" ]; then
   fi
 fi
 
-fasd_cache="$HOME/.fasd-init-bash"
-if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
-  fasd --init posix-alias bash-hook bash-ccomp bash-ccomp-install >| "$fasd_cache"
+if [ "$(uname)" == "Darwin" ]; then
+ fasd_cache="$HOME/.fasd-init-bash"
+ if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
+   fasd --init posix-alias bash-hook bash-ccomp bash-ccomp-install >| "$fasd_cache"
+ fi
+ source "$fasd_cache"
+ unset fasd_cache
+ # OPAM configuration
+ . ~/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+ eval $(/usr/libexec/path_helper -s)
 fi
-source "$fasd_cache"
-unset fasd_cache
-
-# OPAM configuration
-. ~/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
-eval $(/usr/libexec/path_helper -s)
 
 # heroku autocomplete setup
 HEROKU_AC_BASH_SETUP_PATH=/Users/kevin/Library/Caches/heroku/autocomplete/bash_setup && test -f $HEROKU_AC_BASH_SETUP_PATH && source $HEROKU_AC_BASH_SETUP_PATH;

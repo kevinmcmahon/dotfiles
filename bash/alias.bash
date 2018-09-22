@@ -17,6 +17,9 @@ alias apps="cd ~/projects/apps"
 alias cls="clear"
 alias bex='bundle exec'
 
+# Applications
+alias ci='/usr/local/bin/code-insiders'
+
 # Hide/show all desktop icons (useful when presenting)
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
@@ -47,3 +50,6 @@ alias wifi="networksetup -setairportpower $WIFI_IFACE"
 # Code Analysis Tools
 alias maat='java -jar ~/tools/code-maat/latest.jar'
 alias mat='open -n ~/Tools/mat/MemoryAnalyzer.app'
+
+# Blockchain POC
+alias poc='cd ~/work/siemens/blockchain/'

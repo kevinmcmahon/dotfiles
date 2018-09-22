@@ -14,7 +14,7 @@ brew 'brew-cask-completion'
 cask 'iterm2'
 cask '1password'
 cask 'resilio-sync'
-cask 'visual-studio-code'
+cask 'visual-studio-code-insiders'
 cask 'marked'
 cask 'bartender'
 cask 'hazel'
@@ -66,4 +66,6 @@ mas 'OneDrive', id: 823766827
 mas 'Numbers', id: 409203825
 mas 'Keynote', id: 409183694
 mas 'Pages', id: 409201541
+mas 'Bear', id: 1091189122
 mas 'Trello', id: 1278508951
+mas 'Magnet', id: 441258766

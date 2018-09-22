@@ -55,3 +55,4 @@ HEROKU_AC_BASH_SETUP_PATH=/Users/kevin/Library/Caches/heroku/autocomplete/bash_s
 
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
+complete -C '/usr/local/bin/aws_completer' aws

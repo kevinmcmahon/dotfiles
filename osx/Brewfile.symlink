@@ -12,7 +12,6 @@ tap 'dart-lang/dart'
 
 brew 'brew-cask-completion'
 cask 'iterm2'
-cask '1password'
 cask 'resilio-sync'
 cask 'visual-studio-code-insiders'
 cask 'marked'
@@ -22,19 +21,32 @@ cask 'keyboard-maestro'
 cask 'deckset'
 cask 'dropshare'
 cask 'jetbrains-toolbox'
-cask 'private-internet-access'
 cask 'daisydisk'
 cask 'simplenote'
 cask 'keepingyouawake'
-cask 'cleanmymac'
+cask 'cleanmymac3'
 cask 'kaleidoscope'
 cask 'charles'
 cask 'ngrok'
 cask 'rocket-chat'
+cask 'microsoft-office'
+cask 'microsoft-teams'
+cask 'onedrive'
+cask 'postman'
+cask 'android-sdk'
+cask 'android-studio'
+cask 'docker'
+cask 'dash'
+cask 'zoomus'
+cask 'slack'
+cask 'google-chrome'
+cask 'caffeine'
+cask '1password'
 
 brew 'mas'
 brew 'wget'
 brew 'fasd'
+brew 'yarn',  args: ["without-node"]
 
 # Hosting Cli
 brew 'awscli'
@@ -62,10 +74,10 @@ brew 'cf-cli'
 cask 'font-fira-code'
 
 # Mac App Store
-mas 'OneDrive', id: 823766827
-mas 'Numbers', id: 409203825
-mas 'Keynote', id: 409183694
-mas 'Pages', id: 409201541
-mas 'Bear', id: 1091189122
-mas 'Trello', id: 1278508951
-mas 'Magnet', id: 441258766
+#mas 'OneDrive', id: 823766827
+#mas 'Numbers', id: 409203825
+#mas 'Keynote', id: 409183694
+#mas 'Pages', id: 409201541
+#mas 'Bear', id: 1091189122
+#mas 'Trello', id: 1278508951
+#mas 'Magnet', id: 441258766

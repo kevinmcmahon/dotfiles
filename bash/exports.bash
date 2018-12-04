@@ -4,9 +4,12 @@ else
   echo "There is no exports.bash.local file. PATH not customized."
 fi
 
-# Make TextMate the default editor
+# Make BBEdit the default editor
 export EDITOR="bbedit --wait --resume"
 export GIT_EDITOR="bbedit --wait --resume"
+
+# Opt-out of dotnet core data collection
+DOTNET_CLI_TELEMETRY_OPTOUT=true
 
 # Don’t clear the screen after quitting a manual page
 export MANPAGER="less -X"

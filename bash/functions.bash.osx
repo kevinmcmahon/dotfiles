@@ -57,46 +57,6 @@ function copy {
 
 function anybar { echo -n $1 | nc -4u -w0 localhost ${2:-1738}; }
 
-### dnvm list ...
-### dnx web -> dotnet run
-### dnx run -> dotnet run
-### dnu publish -> dotnet publish
-### dnu build -> dotnet compile
-### dnu restore -> dotnet restore
-### dnu install -> dotnet install
-
-function dotnet() {  
-     local c=$1;
-     local args=$2;
-     local opt=$3
-
-case $c in  
-'run')      dnx web  
-            ;;
-'publish')  dnu publish $args $opt  
-            ;;
-'compile') dnu build $args $opt  
-           ;;
-'restore') dnu restore  
-           ;;
-'install') dnu install $args $opt  
-           ;;
-'list')    dnvm list  
-           ;;
- esac
-}
-
-code () {
-   if [[ $# = 0 ]]
-   then
-       open -a "Visual Studio Code"
-   else
-       [[ $1 = /* ]] && F="$1" || F="$PWD/${1#./}"
-       open -a "Visual Studio Code" --args "$F"
-   fi
-}
-
-
 ## url2path functions from brettterpstra.com
 ## http://brettterpstra.com/2015/11/16/shell-tricks-convert-file-urls-to-unix-paths/
 

@@ -1,10 +1,10 @@
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob
 
-# includes PATH setup
-
 source $HOME/.asdf/asdf.sh
 source $HOME/.asdf/completions/asdf.bash
+
+# includes PATH setup
 
 source ~/dotfiles/bash/exports.bash
 source ~/dotfiles/bash/alias.bash
@@ -50,9 +50,18 @@ if [ "$(uname)" == "Darwin" ]; then
  eval $(/usr/libexec/path_helper -s)
 fi
 
+### Auto-complete Setups
+
 # heroku autocomplete setup
 HEROKU_AC_BASH_SETUP_PATH=/Users/kevin/Library/Caches/heroku/autocomplete/bash_setup && test -f $HEROKU_AC_BASH_SETUP_PATH && source $HEROKU_AC_BASH_SETUP_PATH;
 
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
-
+# aws-cli
 complete -C '/usr/local/bin/aws_completer' aws
+
+# general bash completion
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+	. $(brew --prefix)/etc/bash_completion
+fi
+
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+export PATH="$HOME/.cargo/bin:$PATH"

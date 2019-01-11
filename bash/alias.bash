@@ -11,7 +11,7 @@ alias clogcat='"$ANDROID_HOME/platform-tools/adb" logcat | ~/Tools/coloredlogcat
 
 # Shortcuts
 alias cls="clear"
-alias d="cd ~/Downloads"
+alias dl="cd ~/Downloads"
 alias p="cd ~/projects"
 alias g="git"
 alias v="vim"

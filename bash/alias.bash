@@ -1,12 +1,17 @@
+alias reload='source $HOME/.bash_profile'
+
 # Recursively delete `.DS_Store` files
 alias cleanup="find . -name '*.DS_Store' -type f -ls -delete"
+
+# more tidying up scripts
+alias rmorig='find . -name "*.orig" -print0 | xargs -0 rm -rf'
 
 # Android logcat alias
 alias clogcat='"$ANDROID_HOME/platform-tools/adb" logcat | ~/Tools/coloredlogcat.py'
 
 # Shortcuts
-alias d="cd ~/Dropbox"
-alias dl="cd ~/Downloads"
+alias cls="clear"
+alias d="cd ~/Downloads"
 alias p="cd ~/projects"
 alias g="git"
 alias v="vim"
@@ -14,16 +19,17 @@ alias m="mate ."
 alias o="open ."
 alias work="cd ~/work"
 alias apps="cd ~/projects/apps"
-alias cls="clear"
 alias bex='bundle exec'
 
 # Applications
 alias ci='/usr/local/bin/code-insiders'
+alias marked="open -a Marked\ 2"
 
 # Hide/show all desktop icons (useful when presenting)
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
 
+# directory view/nav
 alias ll='ls -lHG'
 alias la='ls -laHG'
 alias ..='cd ..'
@@ -39,17 +45,5 @@ alias ga='git add'
 alias stash='git stash'
 alias pop='git stash pop'
 
-alias reload='source $HOME/.bash_profile'
-
-alias rmorig='find . -name "*.orig" -print0 | xargs -0 rm -rf'
-
-alias mp='cd /Users/kevin/Projects/apps/markerpal/'
 
 alias wifi="networksetup -setairportpower $WIFI_IFACE"
-
-# Code Analysis Tools
-alias maat='java -jar ~/tools/code-maat/latest.jar'
-alias mat='open -n ~/Tools/mat/MemoryAnalyzer.app'
-
-# Blockchain POC
-alias poc='cd ~/work/siemens/blockchain/'

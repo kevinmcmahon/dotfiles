@@ -46,4 +46,11 @@ alias stash='git stash'
 alias pop='git stash pop'
 
 
-alias wifi="networksetup -setairportpower $WIFI_IFACE"
+# Toggle wifi (add on or off after command)
+alias wifi="networksetup -setairportpower en0"
+
+# Get current external IP
+alias ip="curl icanhazip.com"
+
+# copy the working directory path
+alias cpwd='pwd|tr -d "\n"|pbcopy'

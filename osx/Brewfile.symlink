@@ -43,6 +43,7 @@ cask 'google-chrome'
 cask 'caffeine'
 cask '1password'
 
+brew 'git'
 brew 'mas'
 brew 'wget'
 brew 'fasd'

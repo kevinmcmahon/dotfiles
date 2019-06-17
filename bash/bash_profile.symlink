@@ -1,8 +1,8 @@
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob
 
-source $HOME/.asdf/asdf.sh
-source $HOME/.asdf/completions/asdf.bash
+source $(brew --prefix asdf)/asdf.sh
+source $(brew --prefix asdf)/etc/bash_completion.d/asdf.bash
 
 # includes PATH setup
 

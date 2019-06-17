@@ -2,13 +2,13 @@ cask_args appdir: "/Applications"
 tap 'caskroom/cask'
 tap 'caskroom/fonts'
 tap 'caskroom/versions'
-tap 'homebrew/boneyard'
 tap 'homebrew/bundle'
 tap 'homebrew/command-not-found'
 tap 'homebrew/core'
 tap 'homebrew/services'
 tap 'cloudfoundry/tap'
 tap 'dart-lang/dart'
+tap 'heroku/brew'
 
 brew 'brew-cask-completion'
 cask 'iterm2'
@@ -33,9 +33,9 @@ cask 'microsoft-office'
 cask 'microsoft-teams'
 cask 'onedrive'
 cask 'postman'
-cask 'android-sdk'
-cask 'android-studio'
-cask 'docker'
+#cask 'android-sdk'
+#cask 'android-studio'
+#cask 'docker'
 cask 'dash'
 cask 'zoomus'
 cask 'slack'
@@ -43,16 +43,18 @@ cask 'google-chrome'
 cask 'caffeine'
 cask '1password'
 
+# asdf nodejs
+brew 'gpg'
 brew 'git'
 brew 'mas'
 brew 'wget'
 brew 'fasd'
-brew 'yarn',  args: ["without-node"]
+brew 'yarn',  args: ["ignore-dependencies"]
 
 # Hosting Cli
 brew 'awscli'
 brew 'doctl'
-brew 'heroku-toolbelt'
+brew 'heroku'
 brew 'azure-cli'
 
 # Docker
@@ -65,8 +67,6 @@ brew 'ideviceinstaller'
 brew 'ios-deploy'
 brew 'cocoapods'
 
-# asdf nodejs
-brew 'gpg'
 # Cloud Stuff
 brew 'kubectl'
 brew 'cf-cli'
@@ -75,10 +75,12 @@ brew 'cf-cli'
 cask 'font-fira-code'
 
 # Mac App Store
-#mas 'OneDrive', id: 823766827
-#mas 'Numbers', id: 409203825
-#mas 'Keynote', id: 409183694
-#mas 'Pages', id: 409201541
-#mas 'Bear', id: 1091189122
-#mas 'Trello', id: 1278508951
-#mas 'Magnet', id: 441258766
+mas 'OneDrive', id: 823766827
+mas 'Numbers', id: 409203825
+mas 'Keynote', id: 409183694
+mas 'Pages', id: 409201541
+mas 'Bear', id: 1091189122
+mas 'Trello', id: 1278508951
+mas 'Magnet', id: 441258766
+mas 'Drafts', id: 1435957248
+mas 'Tweetbot', id: 1384080005

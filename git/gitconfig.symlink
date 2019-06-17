@@ -25,6 +25,7 @@
     tagsbydate = for-each-ref --sort=-taggerdate --format='%(refname:short)' refs/tags
     previoustag = !sh -c 'git tagsbydate --count 2 | cut -f2 | sed -n 2p'
 	releasenotes = !sh -c 'git markdownlog ...`git previoustag`'
+	first = rev-list --max-parents=0 HEAD
 
 [color]
     ui = auto
@@ -78,3 +79,5 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[pull]
+	rebase = true

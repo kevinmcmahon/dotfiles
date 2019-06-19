@@ -1,3 +1,4 @@
 githubconfig.symlink
 gituserconfig.symlink
 *.local
+.vscode/

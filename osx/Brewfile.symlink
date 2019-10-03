@@ -48,7 +48,6 @@ brew 'gpg'
 brew 'git'
 brew 'mas'
 brew 'wget'
-brew 'fasd'
 brew 'yarn',  args: ["ignore-dependencies"]
 
 # Hosting Cli

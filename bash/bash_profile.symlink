@@ -1,8 +1,11 @@
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob
 
-source $(brew --prefix asdf)/asdf.sh
-source $(brew --prefix asdf)/etc/bash_completion.d/asdf.bash
+#source $(brew --prefix asdf)/asdf.sh
+source /usr/local/opt/asdf/asdf.sh
+
+#source $(brew --prefix asdf)/etc/bash_completion.d/asdf.bash
+source /usr/local/opt/asdf/etc/bash_completion.d/asdf.bash
 
 # includes PATH setup
 
@@ -38,18 +41,6 @@ if [ "$(uname)" == "Darwin" ]; then
   fi
 fi
 
-if [ "$(uname)" == "Darwin" ]; then
- fasd_cache="$HOME/.fasd-init-bash"
- if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
-   fasd --init posix-alias bash-hook bash-ccomp bash-ccomp-install >| "$fasd_cache"
- fi
- source "$fasd_cache"
- unset fasd_cache
- # OPAM configuration
- . ~/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
- eval $(/usr/libexec/path_helper -s)
-fi
-
 ### Auto-complete Setups
 
 # heroku autocomplete setup
@@ -60,11 +51,8 @@ complete -C '/usr/local/bin/aws_completer' aws
 
 # general bash completion
 if [ -f $(brew --prefix)/etc/bash_completion ]; then
-	. $(brew --prefix)/etc/bash_completion
+	source $(brew --prefix)/etc/bash_completion
 fi
-
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
-export PATH="$HOME/.cargo/bin:$PATH"
 
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi

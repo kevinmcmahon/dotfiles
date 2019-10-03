@@ -118,15 +118,11 @@ url2path() {
     output=$(unesc ${input#file:\/\/} | shorthome)
 
     if $copy; then
-        echo -n "$output"|pbcopy
+        echo -n "$output"| pbcopy
         echo "Result in clipboard"
     else
         echo -n "$output"
     fi
 }
 
-hlf-destroy() {
-	docker kill $(docker ps -q)
-    docker rm $(docker ps -aq)
-    docker rmi $(docker images dev-* -q)
-}
+function f() { open -a "Finder" "${1-.}"; }

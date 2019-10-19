@@ -25,3 +25,5 @@ function fs() {
 		du $arg .[^.]* ./*;
 	fi;
 }
+
+function gi() { curl -sL https://www.gitignore.io/api/$@ ;}

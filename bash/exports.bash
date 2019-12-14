@@ -29,6 +29,10 @@ export HISTIGNORE="ls:ls *:cd:cd -:pwd;exit:date:* --help"
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US"
 
+# GIT
+export GIT_PS1_SHOWCOLORHINTS=1
+export GIT_PS1_SHOWUPSTREAM=1
+
 export PS1='\[\033[G\]\h:\W$(__git_ps1 "[\[\e[0;32m\]%s\[\e[0m\]\[\e[0;33m\]$(parse_git_dirty)\[\e[0m\]]")$ '
 
 export PROMPT_COMMAND='echo -ne "\033]0; ${PWD##*/}\007"'

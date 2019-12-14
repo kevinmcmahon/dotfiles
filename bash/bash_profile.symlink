@@ -1,10 +1,8 @@
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob
 
-#source $(brew --prefix asdf)/asdf.sh
 source /usr/local/opt/asdf/asdf.sh
 
-#source $(brew --prefix asdf)/etc/bash_completion.d/asdf.bash
 source /usr/local/opt/asdf/etc/bash_completion.d/asdf.bash
 
 # includes PATH setup
@@ -29,6 +27,7 @@ fi
 source ~/dotfiles/bash/bash_complete/adb
 source ~/dotfiles/bash/bash_complete/gradle
 source ~/.git_completion.sh
+source ~/.git-prompt.sh
 
 source ~/dotfiles/bash/functions.bash
 
@@ -56,5 +55,7 @@ fi
 
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+
+eval "$(direnv hook bash)"
 
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi

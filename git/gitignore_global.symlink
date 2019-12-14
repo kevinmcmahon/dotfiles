@@ -3,7 +3,7 @@
 .AppleDouble
 .LSOverride
 Icon
-
+.envrc
 
 # Thumbnails
 ._*
@@ -16,3 +16,4 @@ vendor/bundle
 *.ipr
 *.iws
 .idea/
+

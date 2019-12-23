@@ -57,5 +57,3 @@ fi
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 eval "$(direnv hook bash)"
-
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi

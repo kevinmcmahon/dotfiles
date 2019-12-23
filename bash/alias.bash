@@ -21,6 +21,9 @@ alias work="cd ~/work"
 alias apps="cd ~/projects/apps"
 alias bex='bundle exec'
 
+# bat!
+alias cat='bat'
+
 # Applications
 alias ci='/usr/local/bin/code-insiders'
 alias marked="open -a Marked\ 2"

@@ -22,7 +22,7 @@
     standup = log --since yesterday --author='Kevin McMahon' --pretty=oneline
     amend = commit -v --amend --reuse-message=HEAD
     tags = tag -l
-    branches = for-each-ref --sort=-committerdate --format=\"%(color:blue)%(authordate:relative)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)\" refs/remotes
+    branches = for-each-ref --sort=-committerdate --format=\"%(color:bold blue)%(authordate:relative)\t%(color:reset)%(color:red)%(authorname)\t%(color:bold white)%(refname:short)\" refs/remotes
     remotes = remote -v
     markdownlog = log --color --pretty=format:'* %s `%Cred%h%Creset` - %C(bold blue)[%an](mailto:%ae)%Creset' --abbrev-commit --dense --no-merges --reverse	
     tagsbydate = for-each-ref --sort=-taggerdate --format='%(refname:short)' refs/tags

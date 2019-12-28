@@ -2,6 +2,9 @@
 	path = .githubconfig
 	path = .gituserconfig
 
+[includeIf "gitdir:~/work/"]
+    path = ~/work/.gitconfig
+
 [core]
 	autocrlf = input
 	editor = bbedit --wait --resume

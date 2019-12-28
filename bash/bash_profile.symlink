@@ -57,3 +57,7 @@ fi
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 eval "$(direnv hook bash)"
+
+# Created by `userpath` on 2019-12-27 23:31:02
+export PATH="$PATH:/Users/kevin/.local/bin"
+eval "$(register-python-argcomplete pipx)"

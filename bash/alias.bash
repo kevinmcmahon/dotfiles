@@ -59,3 +59,5 @@ alias ip="curl icanhazip.com"
 
 # copy the working directory path
 alias cpwd='pwd|tr -d "\n"|pbcopy'
+
+alias amplify='npx @aws-amplify/cli'

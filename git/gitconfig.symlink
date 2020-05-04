@@ -54,15 +54,17 @@
 [diff "localizablestrings"]
 	textconv = "iconv -f utf-16 -t utf-8"
 
-[mergetool]
-	prompt = false
-
-[mergetool "Kaleidoscope"]
-	trustexitcode = true
-
 [merge]
 	tool = Kaleidoscope
 	ff = only
+    keepBackup = false
+
+[mergetool]
+    prompt = false
+
+[mergetool "Kaleidoscope"]
+	cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+    trustExitCode = true
 
 [filter "media"]
 	clean = git media clean %f

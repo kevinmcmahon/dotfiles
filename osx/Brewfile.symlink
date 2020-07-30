@@ -42,7 +42,7 @@ cask 'slack'
 cask 'google-chrome'
 cask 'caffeine'
 cask '1password'
-
+cask 'amazon-chime'
 # asdf nodejs
 brew 'gpg'
 brew 'git'

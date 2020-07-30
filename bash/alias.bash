@@ -18,8 +18,8 @@ alias v="vim"
 alias m="mate ."
 alias o="open ."
 alias work="cd ~/work"
-alias apps="cd ~/projects/apps"
 alias bex='bundle exec'
+alias blog='cd ~/projects/blog'
 
 # bat!
 alias cat='bat'

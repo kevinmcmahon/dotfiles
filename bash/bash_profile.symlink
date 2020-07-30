@@ -19,11 +19,6 @@ else
   source ~/dotfiles/bash/linux.aliases.bash    
 fi
 
-# If DNX available, source the script.
-if [ -f ~/.dnx/dnvm/dnvm.sh ]; then
-  source ~/.dnx/dnvm/dnvm.sh
-fi   
-
 source ~/dotfiles/bash/bash_complete/adb
 source ~/dotfiles/bash/bash_complete/gradle
 source ~/.git_completion.sh
@@ -56,8 +51,11 @@ fi
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
-eval "$(direnv hook bash)"
+source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.bash.inc"
+source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.bash.inc"
 
-# Created by `userpath` on 2019-12-27 23:31:02
-export PATH="$PATH:/Users/kevin/.local/bin"
-eval "$(register-python-argcomplete pipx)"
+#if [ -f ~/projects/scripts/aic-bash/aic.sh ]; then
+#  ~/projects/scripts/aic-bash/aic.sh --quality medium --ratio 120
+#fi
+
+eval "$(direnv hook bash)"

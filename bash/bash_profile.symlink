@@ -51,9 +51,6 @@ fi
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
-source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.bash.inc"
-source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.bash.inc"
-
 #if [ -f ~/projects/scripts/aic-bash/aic.sh ]; then
 #  ~/projects/scripts/aic-bash/aic.sh --quality medium --ratio 120
 #fi

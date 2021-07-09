@@ -103,6 +103,9 @@ defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int
 defaults write com.apple.finder NewWindowTarget -string "PfDe"
 defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/Desktop/"
 
+# Remove proxy icon hover delay in Finder (Big Sur)
+defaults write com.apple.Finder NSToolbarTitleViewRolloverDelay -float 0
+
 ###############################################################################
 # Safari & WebKit                                                             #
 ###############################################################################

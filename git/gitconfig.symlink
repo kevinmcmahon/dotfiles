@@ -95,3 +95,4 @@
 	allowed = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 [init]
 	templateDir = /Users/kevin/.git-templates/git-secrets
+	defaultBranch = main

@@ -1,87 +1,148 @@
-cask_args appdir: "/Applications"
-tap 'caskroom/cask'
-tap 'caskroom/fonts'
-tap 'caskroom/versions'
-tap 'homebrew/bundle'
-tap 'homebrew/command-not-found'
-tap 'homebrew/core'
-tap 'homebrew/services'
-tap 'cloudfoundry/tap'
-tap 'dart-lang/dart'
-tap 'heroku/brew'
+tap "aws/tap"
+tap "azure/functions"
+tap "cloudfoundry/tap"
+tap "dart-lang/dart"
+tap "ethereum/ethereum"
+tap "github/gh"
+tap "heroku/brew"
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/cask-fonts"
+tap "homebrew/cask-versions"
+tap "homebrew/command-not-found"
+tap "homebrew/core"
+tap "homebrew/services"
+tap "buo/cask-upgrade"
+tap "mas-cli/tap"
+tap "microsoft/mssql-release"
+tap "sass/sass"
 
-brew 'brew-cask-completion'
-cask 'iterm2'
-cask 'resilio-sync'
-cask 'visual-studio-code-insiders'
-cask 'marked'
-cask 'bartender'
-cask 'hazel'
-cask 'keyboard-maestro'
-cask 'deckset'
-cask 'dropshare'
-cask 'jetbrains-toolbox'
-cask 'daisydisk'
-cask 'simplenote'
-cask 'keepingyouawake'
-cask 'cleanmymac3'
-cask 'kaleidoscope'
-cask 'charles'
-cask 'ngrok'
-cask 'rocket-chat'
-cask 'microsoft-office'
-cask 'microsoft-teams'
-cask 'onedrive'
-cask 'postman'
-#cask 'android-sdk'
-#cask 'android-studio'
-#cask 'docker'
-cask 'dash'
-cask 'zoomus'
-cask 'slack'
-cask 'google-chrome'
-cask 'caffeine'
-cask '1password'
-cask 'amazon-chime'
-# asdf nodejs
-brew 'gpg'
-brew 'git'
-brew 'mas'
-brew 'wget'
-brew 'yarn',  args: ["ignore-dependencies"]
+brew "webp"
+brew "openssl@1.1"
+brew "gmp"
+brew "coreutils"
+brew "readline"
+brew "asdf"
+brew "sqlite"
+brew "xz"
+brew "python@3.9"
+brew "aws-cdk"
+brew "aws-iam-authenticator"
+brew "awscurl"
+brew "bandwhich"
+brew "bash"
+brew "bat"
+brew "brew-cask-completion"
+brew "libffi"
+brew "pcre"
+brew "certbot"
+brew "cfn-lint"
+brew "cmake"
+brew "cocoapods"
+brew "cookiecutter"
+brew "deno"
+brew "direnv"
+brew "doctl"
+brew "doitlive"
+brew "dotnet"
+brew "ffmpeg"
+brew "fzf"
+brew "gcc"
+brew "gh"
+brew "git"
+brew "git-lfs"
+brew "git-secrets"
+brew "libusb"
+brew "gnupg"
+brew "go"
+brew "graphicsmagick"
+brew "hub"
+brew "libimobiledevice"
+brew "ideviceinstaller"
+brew "imagemagick"
+brew "jp2a"
+brew "jq"
+brew "kubernetes-cli"
+brew "leveldb"
+brew "mas"
+brew "mbedtls"
+brew "mkdocs"
+brew "mono-libgdiplus"
+brew "mysql"
+brew "pngcrush"
+brew "pngquant"
+brew "qt"
+brew "postgresql"
+brew "postgresql@11"
+brew "proj"
+brew "putty"
+brew "r"
+brew "rbenv"
+brew "rclone"
+brew "ripgrep-all"
+brew "sassc"
+brew "shellcheck"
+brew "skaffold"
+brew "swig"
+brew "vale"
+brew "wget"
+brew "whalebrew"
+brew "yarn"
+brew "youtube-dl"
+brew "zlib"
+brew "aws/tap/aws-sam-cli"
+brew "aws/tap/aws-sam-cli-beta-cdk"
+brew "heroku/brew/heroku"
+brew "sass/sass/sass"
 
-# Hosting Cli
-brew 'awscli'
-brew 'doctl'
-brew 'heroku'
-brew 'azure-cli'
-
-# Docker
-brew 'docker'
-brew 'docker-compose'
-brew 'docker-machine'
-
-# iOS / Flutter
-brew 'ideviceinstaller'
-brew 'ios-deploy'
-brew 'cocoapods'
-
-# Cloud Stuff
-brew 'kubectl'
-brew 'cf-cli'
-
-# Fonts
-cask 'font-fira-code'
-
-# Mac App Store
-mas 'OneDrive', id: 823766827
-mas 'Numbers', id: 409203825
-mas 'Keynote', id: 409183694
-mas 'Pages', id: 409201541
-mas 'Bear', id: 1091189122
-mas 'Trello', id: 1278508951
-mas 'Magnet', id: 441258766
-mas 'Drafts', id: 1435957248
-mas 'Tweetbot', id: 1384080005
-mas 'Pastebot', id: 1179623856
-mas 'Microsoft To-Do', id: 1274495053
+cask "1password-cli"
+cask "acorn"
+cask "amazon-chime"
+cask "android-studio"
+cask "authy"
+cask "azure-data-studio"
+cask "bartender"
+cask "bbedit"
+cask "brave-browser"
+cask "caffeine"
+cask "camtasia"
+cask "carbon-copy-cloner"
+cask "charles"
+cask "chromedriver"
+cask "daisydisk"
+cask "deckset"
+cask "docker"
+cask "dropshare"
+cask "font-fira-code"
+cask "google-drive"
+cask "grammarly"
+cask "handbrake"
+cask "hazel"
+cask "iterm2"
+cask "java8"
+cask "jetbrains-toolbox"
+cask "kaleidoscope"
+cask "keepingyouawake"
+cask "keyboard-maestro"
+cask "kitematic"
+cask "mactex"
+cask "mark-text"
+cask "marked"
+cask "microsoft-office"
+cask "microsoft-teams"
+cask "miro"
+cask "ngrok"
+cask "nosql-workbench-for-amazon-dynamodb"
+cask "obs"
+cask "onedrive"
+cask "postman"
+cask "provisionql"
+cask "quicklook-json"
+cask "resilio-sync"
+cask "simplenote"
+cask "slack"
+cask "spotify"
+cask "transmit"
+cask "visual-studio-code-insiders"
+cask "whatsapp"
+cask "zoom"

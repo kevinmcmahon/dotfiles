@@ -1,5 +1,6 @@
-githubconfig.symlink
 gituserconfig.symlink
-gituserconfig-work.symlink
+gituserconfig.work.symlink
+gituserconfig.kmc.symlink
+gituserconfig.*
 *.local
 .vscode/

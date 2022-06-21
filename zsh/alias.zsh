@@ -14,18 +14,20 @@ alias clogcat='"$ANDROID_HOME/platform-tools/adb" logcat | ~/Tools/coloredlogcat
 
 # Shortcuts
 alias cls="clear"
-alias dl="cd ~/Downloads"
-alias p="cd ~/projects"
-alias g="git"
-alias o="open ."
-alias work="cd ~/work"
+alias dl='cd ~/Downloads'
+alias p='cd ~/projects'
+alias o='open .'
+alias work='cd ~/work'
 alias blog='cd ~/projects/blog'
 
 # bat!
 alias cat='bat'
 
 # Applications
-alias marked="open -a Marked\ 2"
+alias marked='open -a Marked\ 2'
+
+# In VS Code do `Cmd+Shift+P` then `Shell Command: Install 'code' command in PATH`
+alias ci='/usr/local/bin/code-insiders'
 
 # Hide/show all desktop icons (useful when presenting)
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
@@ -49,3 +51,6 @@ alias ip="curl icanhazip.com"
 
 # copy the working directory path
 alias cpwd='pwd|tr -d "\n"|pbcopy'
+
+alias ded='rm -rf ~/Library/Developer/Xcode/DerivedData/'
+

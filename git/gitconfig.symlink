@@ -1,13 +1,15 @@
 [include]
-	path = .githubconfig
 	path = .gituserconfig
 
 [includeIf "gitdir:~/work/"]
-    path = ~/work/.gitconfig
+    path = ~/.gituserconfig.work
+    
+[includeIf "gitdir:~/projects/dronebocks"]
+	path = ~/.gituserconfig.kmc
 
 [core]
 	autocrlf = input
-	editor = bbedit --wait --resume
+	editor = bbedit --wait
 	excludesfile = ~/.gitignore_global
 
 [alias]
@@ -93,6 +95,7 @@
 	patterns = (\"|')?(AWS|aws|Aws)?_?(ACCOUNT|account|Account)_?(ID|id|Id)?(\"|')?\\s*(:|=>|=)\\s*(\"|')?[0-9]{4}\\-?[0-9]{4}\\-?[0-9]{4}(\"|')?
 	allowed = AKIAIOSFODNN7EXAMPLE
 	allowed = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+        allowed = 123456789012
 [init]
 	templateDir = /Users/kevin/.git-templates/git-secrets
 	defaultBranch = main

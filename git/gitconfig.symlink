@@ -4,7 +4,7 @@
 [includeIf "gitdir:~/work/"]
     path = ~/.gituserconfig.work
     
-[includeIf "gitdir:~/projects/dronebocks"]
+[includeIf "gitdir:~/projects/kmc/"]
 	path = ~/.gituserconfig.kmc
 
 [core]

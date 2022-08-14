@@ -1,10 +1,10 @@
 [include]
 	path = .gituserconfig
 
-[includeIf "gitdir:~/work/"]
+[includeIf "gitdir:~/work/**"]
     path = ~/.gituserconfig.work
     
-[includeIf "gitdir:~/projects/kmc/"]
+[includeIf "gitdir:~/projects/kmc/**"]
 	path = ~/.gituserconfig.kmc
 
 [core]

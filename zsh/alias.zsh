@@ -42,6 +42,7 @@ alias gs='git st'
 alias ga='git add'
 alias stash='git stash'
 alias pop='git stash pop'
+alias gldk='git lgdk'
 
 # Toggle wifi (add on or off after command)
 alias wifi="networksetup -setairportpower en0"

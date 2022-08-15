@@ -16,6 +16,7 @@
 	aa = add --all
 	undo = reset --hard
 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
+	lgdk = log --decorate --graph --oneline
 	st = status -s
 	ci = commit -v
 	br = branch

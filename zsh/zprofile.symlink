@@ -4,3 +4,4 @@ FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 
 path+=('/Users/kevin/tools/flutter/bin')
 export PATH
+

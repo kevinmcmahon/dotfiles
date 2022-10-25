@@ -1,0 +1,7 @@
+[gcloud]
+symbol = "️🇬️ "
+format = "[$symbol$active]($style) "
+style = "bold green"
+
+[gcloud.region_aliases]
+us-central1 = "uc1"

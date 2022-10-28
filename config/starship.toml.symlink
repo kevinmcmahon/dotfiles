@@ -1,3 +1,5 @@
+command_timeout = 1000
+
 [gcloud]
 symbol = "️🇬️ "
 format = "[$symbol$active]($style) "
@@ -5,3 +7,6 @@ style = "bold green"
 
 [gcloud.region_aliases]
 us-central1 = "uc1"
+
+[aws]
+symbol = "☁️ "

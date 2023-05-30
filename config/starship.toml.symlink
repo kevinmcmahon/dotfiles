@@ -1,12 +1,47 @@
 command_timeout = 1000
 
+add_newline = true
+
+# Make prompt a single line instead of two lines
+[line_break]
+disabled = false
+
+[java]
+symbol = " "
+
+[python]
+format = "[$symbol$version]($style) "
+style = "bold green"
+
 [gcloud]
+disabled = true
 symbol = "️🇬️ "
 format = "[$symbol$active]($style) "
-style = "bold green"
+style = "green"
 
 [gcloud.region_aliases]
 us-central1 = "uc1"
 
 [aws]
 symbol = "☁️ "
+
+[battery]
+full_symbol = "🔋 "
+charging_symbol = "🔌 "
+discharging_symbol = " "
+
+[[battery.display]]  # "bold red" style when capacity is between 0% and 10%
+threshold = 10
+style = "bold red"
+
+[[battery.display]]  # "bold orange" style when capacity is between 10% and 30%
+threshold = 30
+style = "bold orange"
+
+[[battery.display]]  # "bold orange" style when capacity is between 10% and 30%
+threshold = 50
+style = "bold yellow"
+
+[[battery.display]]  # "bold green" style when capacity is between 10% and 30%
+threshold = 90
+style = "bold green"

@@ -86,6 +86,8 @@
   prune = true
 [credential]
 	helper = osxkeychain
+	helper = 
+	helper = /usr/local/share/gcm-core/git-credential-manager
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -104,3 +106,5 @@
 [init]
 	templateDir = /Users/kevin/.git-templates/git-secrets
 	defaultBranch = main
+[credential "https://dev.azure.com"]
+	useHttpPath = true

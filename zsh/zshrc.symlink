@@ -147,6 +147,8 @@ export PATH="$PATH:/Users/kevin/.foundry/bin"
 autoload -U compinit
 compinit -i
 
+source /Users/kevin/.config/op/plugins.sh
+
 ### functions
 
 fpath+=~/dotfiles/zsh/functions

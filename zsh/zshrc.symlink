@@ -90,7 +90,7 @@ ZSH_THEME="robbyrussell"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
 	git
-  ssh-agent
+	ssh-agent
 	aws
 	dotenv
 	yarn
@@ -142,7 +142,7 @@ is_macos &&
 	
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
 
-export PATH="$PATH:/Users/kevin/.foundry/bin"
+export PATH="/Users/kevin/tools/bin:$PATH:/Users/kevin/.foundry/bin"
 
 autoload -U compinit
 compinit -i
@@ -157,13 +157,16 @@ autoload gi && gi
 # tabtab source for packages
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
-
+ 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/kevin/tools/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/kevin/tools/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/kevin/tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/kevin/tools/google-cloud-sdk/completion.zsh.inc'; fi
 
- [ -f /opt/homebrew/etc/profile.d/autojump.sh ] && . /opt/homebrew/etc/profile.d/autojump.sh
+[ -f /opt/homebrew/etc/profile.d/autojump.sh ] && . /opt/homebrew/etc/profile.d/autojump.sh
  
- eval "$(starship init zsh)"
+eval "$(starship init zsh)"
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+

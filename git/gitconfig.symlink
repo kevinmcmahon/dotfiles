@@ -108,3 +108,5 @@
 	defaultBranch = main
 [credential "https://dev.azure.com"]
 	useHttpPath = true
+[user]
+	name = Kevin McMahon

@@ -99,6 +99,7 @@ plugins=(
 	yarn
 	vscode
 	git-open
+	gitignore
 )
 
 mac_plugins=(
@@ -155,7 +156,6 @@ source /Users/kevin/.config/op/plugins.sh
 ### functions
 
 fpath+=~/dotfiles/zsh/functions
-autoload gi && gi
 autoload listening
 
 # tabtab source for packages

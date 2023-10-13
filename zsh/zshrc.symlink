@@ -1,7 +1,7 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH:$HOME/.pub-cache/bin
 
-export PATH=/opt/homebrew/opt/curl/bin:$HOME/bin:/usr/local/bin:$PATH:$HOME/.pub-cache/bin
+export PATH=/opt/homebrew/opt/libpq/bin:/opt/homebrew/opt/curl/bin:$HOME/bin:/usr/local/bin:$PATH:$HOME/.pub-cache/bin
 
 is_macos() {
   [[ "$OSTYPE" =~ ^darwin ]] || return 1
@@ -43,11 +43,14 @@ ZSH_THEME="robbyrussell"
 
 # Uncomment one of the following lines to change the auto-update behavior
 # zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
+zstyle ':omz:update' mode auto      # update automatically without asking
 # zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # Uncomment the following line to change how often to auto-update (in days).
 # zstyle ':omz:update' frequency 13
+
+zstyle :omz:plugins:ssh-agent ssh-add-args --apple-load-keychain
+
 
 # Uncomment the following line if pasting URLs and other text is messed up.
 # DISABLE_MAGIC_FUNCTIONS="true"
@@ -153,16 +156,19 @@ source /Users/kevin/.config/op/plugins.sh
 
 fpath+=~/dotfiles/zsh/functions
 autoload gi && gi
+autoload listening
 
 # tabtab source for packages
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
- 
+
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/kevin/tools/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/kevin/tools/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/kevin/tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/kevin/tools/google-cloud-sdk/completion.zsh.inc'; fi
+
+eval "$(direnv hook zsh)"
 
 [ -f /opt/homebrew/etc/profile.d/autojump.sh ] && . /opt/homebrew/etc/profile.d/autojump.sh
  

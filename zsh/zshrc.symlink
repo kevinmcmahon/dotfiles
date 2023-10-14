@@ -157,6 +157,7 @@ source /Users/kevin/.config/op/plugins.sh
 
 fpath+=~/dotfiles/zsh/functions
 autoload listening
+autoload h
 
 # tabtab source for packages
 # uninstall by removing these lines

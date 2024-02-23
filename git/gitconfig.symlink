@@ -2,19 +2,36 @@
 	path = .gituserconfig
 
 [includeIf "gitdir:~/**/work/**"]
-    path = ~/.gituserconfig.work
-    
+	path = ~/.gituserconfig.work
+
 [includeIf "gitdir:~/projects/kmc/**"]
 	path = ~/.gituserconfig.kmc
 
 [includeIf "gitdir:~/sync/projects/kmc/**"]
 	path = ~/.gituserconfig.kmc
 
+[includeIf "gitdir:~/projects/nsv/**"]
+	path = /Users/kevin/.gituserconfig.nsv
+
+[includeIf "gitdir:~/projects/nsv/**"]
+	path = /Users/kevin/.gituserconfig.nsv
+
+[includeIf "gitdir:/Users/kevin/projects/fete/**"]
+	path = /Users/kevin/.gituserconfig.nsv
 
 [core]
 	autocrlf = input
 	editor = bbedit --wait
 	excludesfile = ~/.gitignore_global
+
+[init]
+	defaultBranch = main
+
+[rerere]
+	enabled = true
+
+[url "git@github.com:"]
+	insteadOf = "https://github.com/"
 
 [alias]
 	aa = add --all
@@ -26,26 +43,33 @@
 	br = branch
 	co = checkout
 	df = diff
-    standup = log --since yesterday --author='Kevin McMahon' --pretty=oneline
-    amend = commit -v --amend --reuse-message=HEAD
-    tags = tag -l
-    branches = for-each-ref --sort=-committerdate --format=\"%(color:bold blue)%(authordate:relative)\t%(color:reset)%(color:red)%(authorname)\t%(color:bold white)%(refname:short)\" refs/remotes
-    remotes = remote -v
-    markdownlog = log --color --pretty=format:'* %s `%Cred%h%Creset` - %C(bold blue)[%an](mailto:%ae)%Creset' --abbrev-commit --dense --no-merges --reverse	
-    tagsbydate = for-each-ref --sort=-taggerdate --format='%(refname:short)' refs/tags
-    previoustag = !sh -c 'git tagsbydate --count 2 | cut -f2 | sed -n 2p'
+	standup = log --since yesterday --author='Kevin McMahon' --pretty=oneline
+	amend = commit -v --amend --reuse-message=HEAD
+	tags = tag -l
+	branches = for-each-ref --sort=-committerdate --format=\"%(color:bold blue)%(authordate:relative)\t%(color:reset)%(color:red)%(authorname)\t%(color:bold white)%(refname:short)\" refs/remotes
+	remotes = remote -v
+	markdownlog = log --color --pretty=format:'* %s `%Cred%h%Creset` - %C(bold blue)[%an](mailto:%ae)%Creset' --abbrev-commit --dense --no-merges --reverse
+	tagsbydate = for-each-ref --sort=-taggerdate --format='%(refname:short)' refs/tags
+	previoustag = !sh -c 'git tagsbydate --count 2 | cut -f2 | sed -n 2p'
 	releasenotes = !sh -c 'git markdownlog ...`git previoustag`'
 	first = rev-list --max-parents=0 HEAD
 	new = !git init && git symbolic-ref HEAD refs/heads/main
 
 [color]
-    ui = auto
+	ui = auto
 	branch = auto
 	diff = auto
 	status = auto
-	
+
+[help]
+	autocorrect = 10
+
 [push]
-    default = upstream
+    default = current
+	followtags = true
+
+[rebase]
+	autostash = true
 
 [difftool]
 	prompt = false
@@ -84,10 +108,6 @@
 
 [fetch]
   prune = true
-[credential]
-	helper = osxkeychain
-	helper = 
-	helper = /usr/local/share/gcm-core/git-credential-manager
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -110,3 +130,7 @@
 	useHttpPath = true
 [user]
 	name = Kevin McMahon
+[credential "https://huggingface.co"]
+	provider = generic
+[credential]
+	helper = osxkeychain

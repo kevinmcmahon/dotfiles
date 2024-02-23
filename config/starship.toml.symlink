@@ -1,5 +1,9 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
 command_timeout = 1000
 
+# Inserts a blank line between shell prompts
 add_newline = true
 
 # Make prompt a single line instead of two lines

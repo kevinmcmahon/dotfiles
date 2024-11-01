@@ -126,8 +126,6 @@
 [init]
 	templateDir = /Users/kevin/.git-templates/git-secrets
 	defaultBranch = main
-[credential "https://dev.azure.com"]
-	useHttpPath = true
 [user]
 	name = Kevin McMahon
 [credential "https://huggingface.co"]

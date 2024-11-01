@@ -108,13 +108,16 @@
 
 [fetch]
   prune = true
+  
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+
 [pull]
 	rebase = true
+
 [secrets]
 	providers = git secrets --aws-provider
 	patterns = (A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}
@@ -123,12 +126,20 @@
 	allowed = AKIAIOSFODNN7EXAMPLE
 	allowed = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
         allowed = 123456789012
+
 [init]
 	templateDir = /Users/kevin/.git-templates/git-secrets
 	defaultBranch = main
+
 [user]
 	name = Kevin McMahon
-[credential "https://huggingface.co"]
-	provider = generic
+
 [credential]
 	helper = osxkeychain
+
+[credential "https://huggingface.co"]
+	provider = generic
+
+[credential "https://dev.azure.com"]
+	useHttpPath = true
+	helper = /usr/local/share/gcm-core/git-credential-manager

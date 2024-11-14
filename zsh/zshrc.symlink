@@ -100,6 +100,7 @@ plugins=(
 	vscode
 	git-open
 	gitignore
+	poetry
 )
 
 mac_plugins=(
@@ -146,7 +147,7 @@ is_macos &&
 	
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
 
-export PATH="/Users/kevin/tools/bin:$PATH:/Users/kevin/.foundry/bin"
+export PATH="/Users/kevin/.local/bin:/Users/kevin/tools/bin:$PATH:/Users/kevin/.foundry/bin"
 
 autoload -U compinit
 compinit -i
@@ -179,3 +180,6 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 
 eval "$(uv --generate-shell-completion zsh)"
 eval "$(uvx --generate-shell-completion zsh)"
+
+# Created by `pipx` on 2024-11-13 00:04:38
+export PATH="$PATH:/Users/kevin/.local/bin"

@@ -6,3 +6,6 @@ FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 
 export PATH
 
+
+# Created by `pipx` on 2024-11-13 00:04:38
+export PATH="$PATH:/Users/kevin/.local/bin"

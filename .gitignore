@@ -4,3 +4,6 @@ gituserconfig.kmc.symlink
 gituserconfig.*
 *.local
 .vscode/
+
+# Exclude all private configuration files
+*private.zsh

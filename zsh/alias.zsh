@@ -20,6 +20,8 @@ alias o='open .'
 alias work='cd ~/work'
 alias blog='cd ~/projects/blog'
 
+alias ip="echo Your ip is; dig +short myip.opendns.com @resolver1.opendns.com;"
+
 # bat!
 alias cat='bat'
 

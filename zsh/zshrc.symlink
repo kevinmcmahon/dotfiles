@@ -6,17 +6,15 @@ is_apple_silicon() {
 }
 
 is_ubuntu() {
-  [[ "$(cat /etc/issue 2> /dev/null)" =~ Ubuntu ]] || [[ "$(cat /etc/issue 2> /dev/null)" =~ "Pop!_OS" ]] || return 1
+  [[ $(cat /etc/issue 2> /dev/null) =~ (Ubuntu|Pop!_OS) ]] || return 1
 }
 
 is_zsh() {
   [[ "${ZSH_NAME}" == "zsh" ]] || return 1
 }
 
-# Load core functions
+# Load core functions and configurations
 source ~/.zsh/env/core/functions.zsh
-
-# Load core configurations
 load_env_dir ~/.zsh/env/core
 
 # Load platform-specific configurations
@@ -144,16 +142,28 @@ is_macos &&
 #	printf "%s\\n" "🦋  Load Navi" &&
 	source <(navi widget zsh)
 	
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
-
-autoload -U compinit
+autoload -Uz compinit
 compinit -i
+
+# Completion styling
+zstyle ':completion:*' menu select
+
+# Add completion paths
+fpath=(
+    ${ASDF_DATA_DIR:-$HOME/.asdf}/completions
+    ~/dotfiles/zsh/functions
+    ~/.zfunc
+    $fpath
+)
+
+# Load specific completions
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /opt/homebrew/bin/terraform terraform
 
 source /Users/kevin/.config/op/plugins.sh
 
 ### functions
 
-fpath+=~/dotfiles/zsh/functions
 autoload listening
 autoload h
 
@@ -170,17 +180,10 @@ if [ -f '/Users/kevin/tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/Use
 eval "$(direnv hook zsh)"
 
 [ -f /opt/homebrew/etc/profile.d/autojump.sh ] && . /opt/homebrew/etc/profile.d/autojump.sh
- 
-eval "$(starship init zsh)"
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 eval "$(uv --generate-shell-completion zsh)"
 eval "$(uvx --generate-shell-completion zsh)"
 
-# Created by `pipx` on 2024-11-13 00:04:38
-export PATH="$PATH:/Users/kevin/.local/bin"
-
-autoload -Uz compinit
-zstyle ':completion:*' menu select
-fpath+=~/.zfunc
+eval "$(starship init zsh)"

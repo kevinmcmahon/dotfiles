@@ -2,6 +2,4 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 
-#path+=('/Users/kevin/tools/flutter/bin')
-
 export PATH="$PATH:/Users/kevin/.local/bin"

@@ -1,0 +1,439 @@
+{
+    // -------------------------------------------------------------------------
+    // WORKBENCH & UI SETTINGS
+    // -------------------------------------------------------------------------
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.colorTheme": "Monokai Pro (Filter Spectrum)",
+    "workbench.editor.enablePreview": false,
+    "workbench.editorAssociations": {
+        "*.pdf": "latex-workshop-pdf-hook"
+    },
+    "window.zoomLevel": 1,
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "telemetry.telemetryLevel": "off",
+    "vsicons.dontShowNewVersionMessage": true,
+
+    // -------------------------------------------------------------------------
+    // EDITOR BEHAVIOR & APPEARANCE
+    // -------------------------------------------------------------------------
+    "editor.fontFamily": "'Monaspace Argon','FiraCode Nerd Font', 'Fira Code'",
+    "editor.fontLigatures": "'calt', 'liga', 'dlig', 'ss01', 'ss02', 'ss03', 'ss04', 'ss05', 'ss06', 'ss07', 'ss08'",
+    "editor.detectIndentation": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.linkedEditing": true,
+    "editor.minimap.enabled": false,
+    "editor.scrollBeyondLastLine": false,
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.cursorBlinking": "smooth",
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": true,
+    "editor.stickyScroll.enabled": true,
+    "editor.suggestSelection": "first",
+    "editor.suggest.showMethods": true,
+    "editor.suggest.preview": true,
+    "editor.acceptSuggestionOnEnter": "on",
+    "editor.snippetSuggestions": "top",
+    "editor.accessibilitySupport": "off",
+    "editor.inlineSuggest.enabled": true,
+    "editor.inlineSuggest.suppressSuggestions": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+
+    // -------------------------------------------------------------------------
+    // FILES & STORAGE
+    // -------------------------------------------------------------------------
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 100,
+    "files.insertFinalNewline": true,
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    },
+    "files.associations": {
+        "*.symlink": "shellscript"
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/*.code-search": true,
+        "**/.git": true,
+        "**/.venv": true,
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/.mypy_cache": true,
+        "**/.ruff_cache": true,
+        "**/.nova": true,
+        "**/.vscode": true
+    },
+    "security.workspace.trust.untrustedFiles": "open",
+
+    // -------------------------------------------------------------------------
+    // TERMINAL SETTINGS
+    // -------------------------------------------------------------------------
+    "terminal.external.osxExec": "iTerm.app",
+    "terminal.integrated.fontFamily": "'Monaspace Argon','FiraCode Nerd Font', 'Fira Code'",
+    "terminal.integrated.fontSize": 12,
+    "terminal.integrated.cursorStyle": "line",
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.env.osx": {},
+    "terminal.explorerKind": "external",
+    "terminal.integrated.allowedLinkSchemes": [
+        "file",
+        "http",
+        "https",
+        "mailto",
+        "vscode",
+        "vscode-insiders",
+        "docker-desktop"
+    ],
+    "terminal.integrated.profiles.osx": {
+        "bash": {
+            "path": "bash",
+            "args": ["-l"],
+            "icon": "terminal-bash"
+        },
+        "zsh": {
+            "path": "zsh",
+            "args": ["-l"]
+        },
+        "fish": {
+            "path": "fish",
+            "args": ["-l"]
+        },
+        "tmux": {
+            "path": "tmux",
+            "icon": "terminal-tmux"
+        },
+        "pwsh": {
+            "path": "pwsh",
+            "icon": "terminal-powershell"
+        }
+    },
+
+    // -------------------------------------------------------------------------
+    // DEBUG & DIAGNOSTICS
+    // -------------------------------------------------------------------------
+    "debug.openDebug": "openOnDebugBreak",
+    "debug.console.closeOnEnd": true,
+    "debug.terminal.clearBeforeReusing": true,
+    "debug.internalConsoleOptions": "neverOpen",
+    "diffEditor.renderSideBySide": true,
+
+    // -------------------------------------------------------------------------
+    // LANGUAGE SPECIFIC SETTINGS
+    // -------------------------------------------------------------------------
+    "[svelte]": {
+        "editor.defaultFormatter": "svelte.svelte-vscode",
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4,
+        "editor.formatOnSave": true
+    },
+    "[javascript]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascriptreact]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[vue]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.showUnused": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.showUnused": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[css]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[html]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[dart]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.rulers": [80],
+        "editor.selectionHighlight": false,
+        "editor.suggest.snippetsPreventQuickSuggestions": false,
+        "editor.suggestSelection": "recentlyUsedByPrefix",
+        "editor.tabCompletion": "onlySnippets",
+        "editor.wordBasedSuggestions": "off"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[solidity]": {
+        "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
+    },
+
+    // -------------------------------------------------------------------------
+    // CODE FORMATTING & LINTING
+    // -------------------------------------------------------------------------
+    "prettier.singleQuote": true,
+    "prettier.jsxSingleQuote": true,
+    "prettier.tabWidth": 4,
+    "prettier.useTabs": false,
+    "prettier.semi": true,
+    "prettier.printWidth": 100,
+    "emmet.includeLanguages": {
+        "html": "html",
+        "erb": "erb",
+        "javascript": "javascriptreact",
+        "vue": "html",
+        "ejs": "html"
+    },
+    "emmet.triggerExpansionOnTab": true,
+    "emmet.syntaxProfiles": {
+        "html": {
+            "attr_quotes": "single"
+        },
+        "jsx": {
+            "self_closing_tag": true,
+            "attr_quotes": "single"
+        }
+    },
+    "eslint.validate": ["javascript", "javascriptreact", "vue"],
+    "eslint.workingDirectories": [{ "mode": "auto" }],
+    "html.completion.attributeDefaultValue": "singlequotes",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "sonarlint.rules": {
+        "javascript:S1516": {
+            "level": "off"
+        },
+        "typescript:S1848": {
+            "level": "off"
+        },
+        "Web:PageWithoutTitleCheck": {
+            "level": "off"
+        },
+        "Web:S5254": {
+            "level": "off"
+        }
+    },
+    "sonarlint.pathToNodeExecutable": "/opt/homebrew/bin/node",
+
+    // -------------------------------------------------------------------------
+    // LANGUAGE & FRAMEWORK SETTINGS
+    // -------------------------------------------------------------------------
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "svelte.enable-ts-plugin": true,
+    "go.toolsManagement.autoUpdate": true,
+    "yaml.customTags": [
+        "!And",
+        "!And sequence",
+        "!If",
+        "!If sequence",
+        "!Not",
+        "!Not sequence",
+        "!Equals",
+        "!Equals sequence",
+        "!Or",
+        "!Or sequence",
+        "!FindInMap",
+        "!FindInMap sequence",
+        "!Base64",
+        "!Join",
+        "!Join sequence",
+        "!Cidr",
+        "!Ref",
+        "!Sub",
+        "!Sub sequence",
+        "!GetAtt",
+        "!GetAZs",
+        "!ImportValue",
+        "!ImportValue sequence",
+        "!Select",
+        "!Select sequence",
+        "!Split",
+        "!Split sequence"
+    ],
+    "yaml.schemas": {},
+    "yaml.validate": false,
+    "node-module-intellisense.modulePaths": [],
+    "json.schemas": [],
+    "plantuml.previewAutoUpdate": false,
+    "latex-workshop.view.pdf.viewer": "tab",
+
+    // -------------------------------------------------------------------------
+    // PACKAGE & PROJECT MANAGEMENT
+    // -------------------------------------------------------------------------
+    "npm.packageManager": "yarn",
+    "npm.keybindingsChangedWarningShown": true,
+    "redhat.telemetry.enabled": false,
+    "versionlens.suggestions.showOnStartup": true,
+    "settingsSync.ignoredSettings": ["-sonarlint.pathToNodeExecutable"],
+
+    // -------------------------------------------------------------------------
+    // GIT & VERSION CONTROL
+    // -------------------------------------------------------------------------
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "git.openRepositoryInParentFolders": "always",
+
+    // -------------------------------------------------------------------------
+    // REMOTE DEVELOPMENT & CONTAINERS
+    // -------------------------------------------------------------------------
+    "remote.SSH.defaultExtensions": ["gitpod.gitpod-remote-ssh"],
+    "remote.SSH.remotePlatform": {
+        "*.gitpod.io": "linux"
+    },
+    "dev.containers.dockerPath": "docker",
+    "dev.containers.dockerComposePath": "docker-compose",
+    "liveshare.featureSet": "insiders",
+    "liveshare.launcherClient": "visualStudioCode",
+    "vs-kubernetes": {
+        "vscode-kubernetes.minikube-path.mac": "/Users/kevin/.vs-kubernetes/tools/minikube/darwin-arm64/minikube",
+        "vscode-kubernetes.helm-path.mac": "/Users/kevin/.vs-kubernetes/tools/helm/darwin-arm64/helm"
+    },
+
+    // -------------------------------------------------------------------------
+    // PATHS & LOCATIONS
+    // -------------------------------------------------------------------------
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
+    "application.shellEnvironmentResolutionTimeout": 20,
+
+    // -------------------------------------------------------------------------
+    // CLOUD & API SETTINGS (PATHS MOVED TO ENVIRONMENT VARIABLES)
+    // -------------------------------------------------------------------------
+    "aws.suppressPrompts": {
+        "regionAddAutomatically": true
+    },
+    "vscode-edge-devtools.webhint": false,
+    "prisma.showPrismaDataPlatformNotification": false,
+
+    // -------------------------------------------------------------------------
+    // AI ASSISTANCE & EXTENSIONS
+    // -------------------------------------------------------------------------
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    },
+    "github.copilot.editor.enableAutoCompletions": true,
+    "cody.autocomplete.enabled": false,
+    "cody.agentic.context.experimentalShell": true,
+    "cody.suggestions.mode": "autocomplete",
+    "cody.commandCodeLenses": false,
+    "cody.telemetry.level": "off",
+    "cody.autocomplete.formatOnAccept": true,
+    "extensions.autoCheckUpdates": false,
+    "extensions.ignoreRecommendations": true,
+    "extensions.trustedPublishers": [
+        "1000ch",
+        "766b",
+        "aaron-bond",
+        "alefragnani",
+        "alexdima",
+        "amazonwebservices",
+        "ardenivanov",
+        "astro-build",
+        "aws-scripting-guy",
+        "bierner",
+        "bradlc",
+        "christian-kohler",
+        "codesandbox-io",
+        "codespaces-contrib",
+        "cschlosser",
+        "dart-code",
+        "davidanson",
+        "donjayamanne",
+        "dsznajder",
+        "ecmel",
+        "editorconfig",
+        "ericadamski",
+        "esbenp",
+        "fabiospampinato",
+        "firefox-devtools",
+        "fivethree",
+        "fmoronzirfas",
+        "formulahendry",
+        "gitpod",
+        "golang",
+        "hashicorp",
+        "heaths",
+        "james-yu",
+        "jebbs",
+        "jeff-hykin",
+        "josetr",
+        "jspolancor",
+        "juanblanco",
+        "kaleidoscope-app",
+        "karunamurti",
+        "kddejong",
+        "kenhowardpdx",
+        "kumar-harsh",
+        "leizongmin",
+        "mechatroner",
+        "mikestead",
+        "monokai",
+        "msyrus",
+        "nomicfoundation",
+        "oderwat",
+        "pflannery",
+        "pkief",
+        "pkosta2005",
+        "postman",
+        "prisma",
+        "quicktype",
+        "qwtel",
+        "rangav",
+        "redhat",
+        "ritwickdey",
+        "rust-lang",
+        "saoudrizwan",
+        "shd101wyy",
+        "sleistner",
+        "smartbearsoftware",
+        "sonarsource",
+        "sourcegraph",
+        "styled-components",
+        "svelte",
+        "sysoev",
+        "tamasfe",
+        "timonwong",
+        "tintinweb",
+        "verygoodventures",
+        "vincaslt",
+        "vscode-icons-team",
+        "vsls-contrib",
+        "wix",
+        "xabikos",
+        "yoavbls",
+        "yzhang",
+        "zignd"
+    ]
+}

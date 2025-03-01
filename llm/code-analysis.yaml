@@ -1,0 +1,34 @@
+model: anthropic/claude-3-7-sonnet-latest
+
+prompt: >
+  I have a codebase analysis represented in the file provided below. Please analyze this content and provide a comprehensive summary of the codebase with the following elements:
+
+  ## Required Analysis Points:
+
+  1. **Project Overview**: Identify the main purpose of the application/project based on the code structure and key components.
+
+  2. **Technology Stack**: List the primary programming languages, frameworks, libraries, and tools used in the project.
+
+  3. **Architecture Summary**: Describe the high-level architecture, including key patterns (MVC, microservices, etc.) and how the components interact.
+
+  4. **Key Components**: Identify and describe the main modules, services, or components and their responsibilities.
+
+  5. **Data Models**: Summarize the primary data structures or database models if identifiable.
+
+  6. **Code Quality Assessment**: Provide insights on code quality, including:
+     - Code organization
+     - Apparent coding standards
+     - Potential technical debt areas
+     - Test coverage (if detectable)
+  
+  7. **Potential Issues**: Highlight any red flags, anti-patterns, or areas that might need improvement.
+  
+  8. **Dependencies**: List critical external dependencies and their usage.
+  
+  9. **Summary Recommendations**: Suggest 3-5 areas for potential improvement or optimization.
+  
+  Please ensure your analysis is objective and based solely on the provided content. Focus on providing actionable insights rather than just listing files. Include code structure insights when relevant to understanding the project architecture.
+  
+  ---
+  
+  {{input}}" --save code-analysis 

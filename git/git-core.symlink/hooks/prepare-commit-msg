@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Run git-secrets hook if it exists (don't fail if it doesn't)
+if command -v git-secrets &> /dev/null; then
+  git secrets --prepare_commit_msg_hook -- "$@"
+fi
+
+# Run our custom LLM commit message generator
+"${HOME}/.git-core/hooks/prepare-commit-msg-llm" "$@"

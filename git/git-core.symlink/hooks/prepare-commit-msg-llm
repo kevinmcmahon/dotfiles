@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# Skip if message is already specified (e.g., via -m flag or amend)
+if [ -n "$2" ]; then
+  exit 0
+fi
+
+# Get the diff of staged changes
+DIFF=$(git diff --cached)
+
+# Skip if there are no changes
+if [ -z "$DIFF" ]; then
+  echo "No staged changes detected."
+  exit 0
+fi
+
+# check if llm is installed
+if ! command -v llm &> /dev/null; then
+  echo "⚠️ llm is not installed. Please install it by running 'pipx install llm'."
+  exit 1
+fi
+
+# Generate a commit message using llm
+GENERATED_MSG=$(echo "$DIFF" | llm -t gitcommit)
+
+# Only proceed if we got a non-empty response
+if [ -n "$GENERATED_MSG" ]; then
+  # Save the original message
+  ORIG_MSG=$(cat "$1")
+  
+  # Write the generated message, followed by a separator and the original message
+  echo "$GENERATED_MSG" > "$1"
+  
+  # If there was an original message, append it after a separator
+  if [ -n "$ORIG_MSG" ]; then
+    echo "" >> "$1"
+    echo "# Original message:" >> "$1"
+    echo "# $ORIG_MSG" >> "$1"
+  fi
+  
+  echo "✅ Generated commit message based on your changes"
+else
+  echo "⚠️ Failed to generate commit message"
+fi
+
+exit 0

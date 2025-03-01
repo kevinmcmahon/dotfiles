@@ -11,18 +11,16 @@
 	path = ~/.gituserconfig.kmc
 
 [includeIf "gitdir:~/projects/nsv/**"]
-	path = /Users/kevin/.gituserconfig.nsv
-
-[includeIf "gitdir:~/projects/nsv/**"]
-	path = /Users/kevin/.gituserconfig.nsv
+	path = ~/.gituserconfig.nsv
 
 [includeIf "gitdir:/Users/kevin/projects/fete/**"]
-	path = /Users/kevin/.gituserconfig.nsv
+	path = ~/.gituserconfig.nsv
 
 [core]
 	autocrlf = input
 	editor = bbedit --wait
 	excludesfile = ~/.gitignore_global
+	hooksPath = ~/.git-core/hooks
 
 [init]
 	defaultBranch = main
@@ -119,17 +117,9 @@
 	rebase = true
 
 [secrets]
-	providers = git secrets --aws-provider
-	patterns = (A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}
-	patterns = (\"|')?(AWS|aws|Aws)?_?(SECRET|secret|Secret)?_?(ACCESS|access|Access)?_?(KEY|key|Key)(\"|')?\\s*(:|=>|=)\\s*(\"|')?[A-Za-z0-9/\\+=]{40}(\"|')?
-	patterns = (\"|')?(AWS|aws|Aws)?_?(ACCOUNT|account|Account)_?(ID|id|Id)?(\"|')?\\s*(:|=>|=)\\s*(\"|')?[0-9]{4}\\-?[0-9]{4}\\-?[0-9]{4}(\"|')?
-	allowed = AKIAIOSFODNN7EXAMPLE
-	allowed = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-        allowed = 123456789012
-
-[init]
-	templateDir = /Users/kevin/.git-templates/git-secrets
-	defaultBranch = main
+  providers = git secrets --aws-provider
+  patterns = @~/.git-core/secrets/patterns
+  allowed = @~/.git-core/secrets/allowed
 
 [user]
 	name = Kevin McMahon
@@ -139,7 +129,3 @@
 
 [credential "https://huggingface.co"]
 	provider = generic
-
-[credential "https://dev.azure.com"]
-	useHttpPath = true
-	helper = /usr/local/share/gcm-core/git-credential-manager

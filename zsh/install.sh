@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+set -eo pipefail  # Exit on error
+
+# Check for required dependencies
+for cmd in git curl zsh; do
+  if ! command -v $cmd &> /dev/null; then
+    echo "Error: $cmd is required but not installed. Please install it first."
+    exit 1
+  fi
+done
 
 # Define base directories
 DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

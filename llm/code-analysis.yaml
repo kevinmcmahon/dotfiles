@@ -31,4 +31,4 @@ prompt: >
   
   ---
   
-  {{input}}" --save code-analysis 
+  $input

@@ -1,0 +1,17 @@
+## Use anthropic/claude-3-7-sonnet-20250219 model for the main chat
+sonnet: true
+
+# Git settings
+git: true
+auto-commits: false
+
+# UI settings
+pretty: true
+dark-mode: false
+
+
+## Check for new aider versions on launch
+check-update: true
+
+## Use VI editing mode in the terminal (default: False)
+vim: true

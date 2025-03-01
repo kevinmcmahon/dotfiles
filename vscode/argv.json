@@ -1,0 +1,4 @@
+{
+  "enable-use-zoom-for-dsf": false,
+  "js-flags": "--max-old-space-size=8192"
+}

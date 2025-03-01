@@ -1,0 +1,16 @@
+model: anthropic/claude-3-7-sonnet-latest
+prompt: >
+  Write a descriptive commit following the Conventional Commits specification describing the changes in the following diff.
+  Keep the commit message brief, but informative. Avoid stating the obvious. Focus on important changes a reviewer would care about.
+
+  Think carefully before you write your commit message.
+
+  Don't add fluff. No string delimiters wrapping it (like ```), no yapping, no markdown, no fenced code.
+
+  <template>
+  <type>: <gitmoji> <description>
+
+  [optional body]
+  </template>
+
+  The diff: $input

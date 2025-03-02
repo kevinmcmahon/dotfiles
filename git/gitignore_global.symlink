@@ -16,4 +16,4 @@ vendor/bundle
 *.ipr
 *.iws
 .idea/
-
+.goose/

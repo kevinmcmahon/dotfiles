@@ -10,15 +10,32 @@ if [ -n "$2" ]; then
   exit 0
 fi
 
-# ANSI color codes for styling the output
-RED='\033[0;31m'    # Sets text to red
-GREEN='\033[0;32m'  # Sets text to green
-YELLOW='\033[0;33m' # Sets text to yellow
-BLUE='\033[0;34m'   # Sets text to blue
-NC='\033[0m'        # Resets the text color to default, no color
+# Detect if we're in an interactive terminal
+if [ -t 1 ]; then
+  # ANSI color codes for styling the output (only in interactive terminal)
+  RED='\033[0;31m'
+  GREEN='\033[0;32m'
+  YELLOW='\033[0;33m'
+  BLUE='\033[0;34m'
+  NC='\033[0m'
+  INTERACTIVE=true
+else
+  # No colors in non-interactive mode
+  RED=''
+  GREEN=''
+  YELLOW=''
+  BLUE=''
+  NC=''
+  INTERACTIVE=false
+fi
 
 # Function to display a spinning animation during the LLM processing
 spin_animation() {
+  # Only show animation in interactive mode
+  if [ "$INTERACTIVE" = false ]; then
+    return
+  fi
+  
   # Array of spinner characters for the animation
   spinner=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
   # Infinite loop to keep the animation running
@@ -31,6 +48,28 @@ spin_animation() {
       tput cub 32 # Move the cursor back 32 columns to reset the spinner position
     done
   done
+}
+
+# Function to safely display terminal animations/formatting
+safe_display() {
+  if [ "$INTERACTIVE" = true ]; then
+    # In interactive terminal, we can use animations and formatting
+    "$@"
+  fi
+}
+
+# Function to print a message before the commit editor opens
+print_pre_editor_message() {
+  if [ "$INTERACTIVE" = true ]; then
+    echo "${BLUE}=== Generated Commit Message ===${NC}"
+    echo "${GREEN}$GENERATED_MSG${NC}"
+    echo "${BLUE}=================================${NC}"
+    echo
+    echo "${GREEN}✅ Generated commit message based on your changes${NC}"
+    echo "Opening editor for final review..."
+  else
+    echo "Generated commit message. Opening editor for final review..."
+  fi
 }
 
 # Get the diff of staged changes
@@ -48,9 +87,13 @@ if ! command -v llm &> /dev/null; then
   exit 1
 fi
 
-# Start the spinning animation in the background
-spin_animation &
-spin_pid=$!  # Capture the process ID of the spinning animation
+# Only start animation in interactive terminal
+if [ "$INTERACTIVE" = true ]; then
+  spin_animation &
+  spin_pid=$!
+else
+  echo "Generating LLM commit message..."
+fi
 
 # Check if system prompt file exists and use it if it does
 SYSTEM_PROMPT_FILE="$HOME/.config/prompts/commit-system-prompt.txt"
@@ -61,13 +104,13 @@ else
 fi
 result_code=$?
 
-# Stop the spinning animation
-kill $spin_pid
-wait $spin_pid 2>/dev/null  # Wait for the process to terminate and suppress error messages
-
-# Finalizing output
-tput cnorm  # Show the cursor again
-echo  # Move the cursor to the next line
+# Stop the spinning animation if it was started
+if [ "$INTERACTIVE" = true ]; then
+  kill $spin_pid 2>/dev/null
+  wait $spin_pid 2>/dev/null
+  tput cnorm  # Show the cursor again
+  echo  # Move the cursor to the next line
+fi
 
 # Check if generation was successful
 if [ $result_code -ne 0 ] || [ -z "$GENERATED_MSG" ]; then
@@ -75,11 +118,8 @@ if [ $result_code -ne 0 ] || [ -z "$GENERATED_MSG" ]; then
   exit 1
 fi
 
-# Display the generated commit message with color-coded headings
-echo "${BLUE}=== Generated Commit Message ===${NC}"
-echo "${GREEN}$GENERATED_MSG${NC}"
-echo "${BLUE}=================================${NC}"
-echo
+# Display the message before editor opens
+print_pre_editor_message
 
 # Save the original message
 ORIG_MSG=$(cat "$1")
@@ -94,5 +134,4 @@ if [ -n "$ORIG_MSG" ]; then
   echo "# $ORIG_MSG" >> "$1"
 fi
 
-echo "${GREEN}✅ Generated commit message based on your changes${NC}"
 exit 0

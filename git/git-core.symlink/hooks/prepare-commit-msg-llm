@@ -44,10 +44,10 @@ log() {
 log "Hook started"
 
 # Get the diff of staged changes
-DIFF=$(git diff --cached)
+DIFF_INPUT=$(git diff --cached)
 
 # Skip if there are no changes
-if [ -z "$DIFF" ]; then
+if [ -z "$DIFF_INPUT" ]; then
   echo "No staged changes detected."
   log "No staged changes detected"
   exit 0
@@ -69,10 +69,10 @@ log "Started spinner animation (PID: $spin_pid)"
 SYSTEM_PROMPT_FILE="$HOME/.config/prompts/commit-system-prompt.txt"
 if [ -f "$SYSTEM_PROMPT_FILE" ]; then
   log "Using system prompt from file"
-  GENERATED_MSG=$(git diff --cached | llm -s "$(cat $SYSTEM_PROMPT_FILE)" 2>>"$LOG_FILE")
+  GENERATED_MSG=$(echo "$DIFF_INPUT" | llm -s "$(cat $SYSTEM_PROMPT_FILE)" 2>>"$LOG_FILE")
 else
   log "Using default gitcommit template"
-  GENERATED_MSG=$(git diff --cached | llm -t gitcommit 2>>"$LOG_FILE")
+  GENERATED_MSG=$(echo "$DIFF_INPUT" | llm -t gitcommit 2>>"$LOG_FILE")
 fi
 result_code=$?
 log "LLM command completed with code: $result_code"
@@ -101,6 +101,13 @@ echo
 echo "✅ Generated commit message based on your changes"
 echo "Opening editor for final review..."
 log "Generated commit message displayed"
+
+# Check if the commit message file is empty or contains only whitespace
+if [[ -z "$(cat "$1" | tr -s '[:space:]')" ]]; then
+  echo "Commit aborted: Empty commit message."
+  log "Commit aborted: Empty commit message"
+  exit 1
+fi
 
 # Save the original message
 ORIG_MSG=$(cat "$1")

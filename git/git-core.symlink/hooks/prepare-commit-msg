@@ -10,4 +10,4 @@ fi
 "${HOME}/.git-core/hooks/prepare-commit-msg-llm" "$@" 2>/dev/null
 
 # Return success (the actual result comes from the LLM script)
-exit 0
+# exit 0

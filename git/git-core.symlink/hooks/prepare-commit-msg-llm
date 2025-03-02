@@ -1,46 +1,98 @@
 #!/usr/bin/env bash
 
+# Exit if the `SKIP_LLM_GITHOOK` environment variable is set
+if [ ! -z "$SKIP_LLM_GITHOOK" ]; then
+  exit 0
+fi
+
 # Skip if message is already specified (e.g., via -m flag or amend)
 if [ -n "$2" ]; then
   exit 0
 fi
+
+# ANSI color codes for styling the output
+RED='\033[0;31m'    # Sets text to red
+GREEN='\033[0;32m'  # Sets text to green
+YELLOW='\033[0;33m' # Sets text to yellow
+BLUE='\033[0;34m'   # Sets text to blue
+NC='\033[0m'        # Resets the text color to default, no color
+
+# Function to display a spinning animation during the LLM processing
+spin_animation() {
+  # Array of spinner characters for the animation
+  spinner=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
+  # Infinite loop to keep the animation running
+  while true; do
+    for i in "${spinner[@]}"; do
+      tput civis  # Hide the cursor to enhance the animation appearance
+      tput el1    # Clear the line from the cursor to the beginning to display the spinner
+      printf "\\r${YELLOW}%s${NC} Generating LLM commit message..." "$i"  # Print the spinner and message
+      sleep 0.1   # Delay to control the speed of the animation
+      tput cub 32 # Move the cursor back 32 columns to reset the spinner position
+    done
+  done
+}
 
 # Get the diff of staged changes
 DIFF=$(git diff --cached)
 
 # Skip if there are no changes
 if [ -z "$DIFF" ]; then
-  echo "No staged changes detected."
+  echo "${YELLOW}No staged changes detected.${NC}"
   exit 0
 fi
 
-# check if llm is installed
+# Check if llm is installed
 if ! command -v llm &> /dev/null; then
-  echo "⚠️ llm is not installed. Please install it by running 'pipx install llm'."
+  echo "${RED}⚠️ llm is not installed. Please install it by running 'pipx install llm'.${NC}"
   exit 1
 fi
 
-# Generate a commit message using llm
-GENERATED_MSG=$(echo "$DIFF" | llm -t gitcommit)
+# Start the spinning animation in the background
+spin_animation &
+spin_pid=$!  # Capture the process ID of the spinning animation
 
-# Only proceed if we got a non-empty response
-if [ -n "$GENERATED_MSG" ]; then
-  # Save the original message
-  ORIG_MSG=$(cat "$1")
-  
-  # Write the generated message, followed by a separator and the original message
-  echo "$GENERATED_MSG" > "$1"
-  
-  # If there was an original message, append it after a separator
-  if [ -n "$ORIG_MSG" ]; then
-    echo "" >> "$1"
-    echo "# Original message:" >> "$1"
-    echo "# $ORIG_MSG" >> "$1"
-  fi
-  
-  echo "✅ Generated commit message based on your changes"
+# Check if system prompt file exists and use it if it does
+SYSTEM_PROMPT_FILE="$HOME/.config/prompts/commit-system-prompt.txt"
+if [ -f "$SYSTEM_PROMPT_FILE" ]; then
+  GENERATED_MSG=$(git diff --cached | llm -s "$(cat $SYSTEM_PROMPT_FILE)" 2>&1)
 else
-  echo "⚠️ Failed to generate commit message"
+  GENERATED_MSG=$(git diff --cached | llm -t gitcommit 2>&1)
+fi
+result_code=$?
+
+# Stop the spinning animation
+kill $spin_pid
+wait $spin_pid 2>/dev/null  # Wait for the process to terminate and suppress error messages
+
+# Finalizing output
+tput cnorm  # Show the cursor again
+echo  # Move the cursor to the next line
+
+# Check if generation was successful
+if [ $result_code -ne 0 ] || [ -z "$GENERATED_MSG" ]; then
+  echo "${RED}⚠️ Failed to generate commit message: ${GENERATED_MSG}${NC}"
+  exit 1
 fi
 
+# Display the generated commit message with color-coded headings
+echo "${BLUE}=== Generated Commit Message ===${NC}"
+echo "${GREEN}$GENERATED_MSG${NC}"
+echo "${BLUE}=================================${NC}"
+echo
+
+# Save the original message
+ORIG_MSG=$(cat "$1")
+
+# Write the generated message, followed by a separator and the original message
+echo "$GENERATED_MSG" > "$1"
+
+# If there was an original message, append it after a separator
+if [ -n "$ORIG_MSG" ]; then
+  echo "" >> "$1"
+  echo "# Original message:" >> "$1"
+  echo "# $ORIG_MSG" >> "$1"
+fi
+
+echo "${GREEN}✅ Generated commit message based on your changes${NC}"
 exit 0

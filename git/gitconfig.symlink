@@ -18,7 +18,7 @@
 
 [core]
 	autocrlf = input
-	editor = bbedit --wait
+	editor = vim
 	excludesfile = ~/.gitignore_global
 	hooksPath = ~/.git-core/hooks
 

@@ -17,6 +17,9 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+# Create a log file for debugging if needed
+LOG_FILE="/tmp/git-commit-hook-$$.log"
+
 # Function to display a spinning animation during the LLM processing
 spin_animation() {
   # Array of spinner characters for the animation
@@ -26,44 +29,58 @@ spin_animation() {
     for i in "${spinner[@]}"; do
       tput civis  # Hide the cursor to enhance the animation appearance
       tput el1    # Clear the line from the cursor to the beginning to display the spinner
-      printf "\\r${YELLOW}%s${NC} Generating LLM commit message..." "$i"  # Print the spinner and message
+      printf "\\r%s Generating LLM commit message..." "$i"  # Print the spinner and message without color codes
       sleep 0.1   # Delay to control the speed of the animation
       tput cub 32 # Move the cursor back 32 columns to reset the spinner position
     done
   done
 }
 
+# Log function to capture what's happening
+log() {
+  echo "$(date): $1" >> "$LOG_FILE"
+}
+
+log "Hook started"
+
 # Get the diff of staged changes
 DIFF=$(git diff --cached)
 
 # Skip if there are no changes
 if [ -z "$DIFF" ]; then
-  echo "${YELLOW}No staged changes detected.${NC}"
+  echo "No staged changes detected."
+  log "No staged changes detected"
   exit 0
 fi
 
 # Check if llm is installed
 if ! command -v llm &> /dev/null; then
-  echo "${RED}⚠️ llm is not installed. Please install it by running 'pipx install llm'.${NC}"
+  echo "⚠️ llm is not installed. Please install it by running 'pipx install llm'."
+  log "llm command not found"
   exit 1
 fi
 
 # Start the spinning animation in the background
 spin_animation &
 spin_pid=$!  # Capture the process ID of the spinning animation
+log "Started spinner animation (PID: $spin_pid)"
 
 # Check if system prompt file exists and use it if it does
 SYSTEM_PROMPT_FILE="$HOME/.config/prompts/commit-system-prompt.txt"
 if [ -f "$SYSTEM_PROMPT_FILE" ]; then
-  GENERATED_MSG=$(git diff --cached | llm -s "$(cat $SYSTEM_PROMPT_FILE)" 2>&1)
+  log "Using system prompt from file"
+  GENERATED_MSG=$(git diff --cached | llm -s "$(cat $SYSTEM_PROMPT_FILE)" 2>>"$LOG_FILE")
 else
-  GENERATED_MSG=$(git diff --cached | llm -t gitcommit 2>&1)
+  log "Using default gitcommit template"
+  GENERATED_MSG=$(git diff --cached | llm -t gitcommit 2>>"$LOG_FILE")
 fi
 result_code=$?
+log "LLM command completed with code: $result_code"
 
 # Stop the spinning animation
 kill $spin_pid
 wait $spin_pid 2>/dev/null  # Wait for the process to terminate and suppress error messages
+log "Spinner stopped"
 
 # Finalizing output
 tput cnorm  # Show the cursor again
@@ -71,20 +88,23 @@ echo  # Move the cursor to the next line
 
 # Check if generation was successful
 if [ $result_code -ne 0 ] || [ -z "$GENERATED_MSG" ]; then
-  echo "${RED}⚠️ Failed to generate commit message: ${GENERATED_MSG}${NC}"
+  echo "⚠️ Failed to generate commit message"
+  log "Failed to generate commit message: $GENERATED_MSG"
   exit 1
 fi
 
-# Display the generated commit message with color-coded headings
-echo "${BLUE}=== Generated Commit Message ===${NC}"
-echo "${GREEN}$GENERATED_MSG${NC}"
-echo "${BLUE}=================================${NC}"
+# Display the generated commit message WITHOUT color codes
+echo "=== Generated Commit Message ==="
+echo "$GENERATED_MSG"
+echo "================================="
 echo
-echo "${GREEN}✅ Generated commit message based on your changes${NC}"
+echo "✅ Generated commit message based on your changes"
 echo "Opening editor for final review..."
+log "Generated commit message displayed"
 
 # Save the original message
 ORIG_MSG=$(cat "$1")
+log "Original message saved"
 
 # Write the generated message, followed by a separator and the original message
 echo "$GENERATED_MSG" > "$1"
@@ -94,6 +114,8 @@ if [ -n "$ORIG_MSG" ]; then
   echo "" >> "$1"
   echo "# Original message:" >> "$1"
   echo "# $ORIG_MSG" >> "$1"
+  log "Original message appended"
 fi
 
+log "Hook completed successfully"
 exit 0

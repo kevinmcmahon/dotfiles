@@ -5,5 +5,9 @@ if command -v git-secrets &> /dev/null; then
   git secrets --prepare_commit_msg_hook -- "$@"
 fi
 
-# Run our custom LLM commit message generator but suppress ALL output
-"${HOME}/.git-core/hooks/prepare-commit-msg-llm" "$@" > /dev/null 2>&1
+# Run our custom LLM commit message generator with stdout displayed but suppress stderr
+# This allows the animation to be visible but prevents error messages from appearing in the final output
+"${HOME}/.git-core/hooks/prepare-commit-msg-llm" "$@" 2>/dev/null
+
+# Return success (the actual result comes from the LLM script)
+exit 0

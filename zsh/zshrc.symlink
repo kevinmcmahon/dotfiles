@@ -159,6 +159,7 @@ zstyle ':completion:*' menu select
 
 # Add completion paths
 fpath=(
+    "$(brew --prefix)/share/zsh/site-functions"
     "${ASDF_DATA_DIR:-$HOME/.asdf}/completions"
     "${HOME}/dotfiles/zsh/functions"
     "${HOME}/.zfunc"

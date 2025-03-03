@@ -32,3 +32,5 @@ extensions:
       TAVILY_API_KEY: ${TAVILY_API_KEY}
     name: tavily
     type: stdio
+GOOSE_MODE: auto
+GOOSE_CLI_MIN_PRIORITY: 0.8

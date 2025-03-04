@@ -1,5 +1,5 @@
-GOOSE_MODEL: gemini-2.0-flash-exp
 GOOSE_PROVIDER: google
+GOOSE_MODEL: gemini-2.0-flash-exp
 extensions:
   computercontroller:
     enabled: true
@@ -32,5 +32,6 @@ extensions:
       TAVILY_API_KEY: ${TAVILY_API_KEY}
     name: tavily
     type: stdio
+OLLAMA_HOST: localhost
 GOOSE_MODE: auto
 GOOSE_CLI_MIN_PRIORITY: 0.8

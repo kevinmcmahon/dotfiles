@@ -16,17 +16,19 @@
 [includeIf "gitdir:/Users/kevin/projects/fete/**"]
 	path = ~/.gituserconfig.nsv
 
-[core]
-	autocrlf = input
-	editor = vim
-	excludesfile = ~/.gitignore_global
-	hooksPath = ~/.git-core/hooks
+[column]
+	ui = auto
+
+[branch]
+	autosetuprebase = always
+	sort = -committerdate
 
 [init]
 	defaultBranch = main
 
 [rerere]
 	enabled = true
+	autoupdate = true
 
 [url "git@github.com:"]
 	insteadOf = "https://github.com/"
@@ -60,14 +62,29 @@
 	status = auto
 
 [help]
-	autocorrect = 10
+	autocorrect = prompt
+
+[commit]
+	verbose = true	
+
+[core]
+	autocrlf = input
+	editor = vim
+	excludesfile = ~/.gitignore_global
+	hooksPath = ~/.git-core/hooks
 
 [push]
-    default = current
+    default = simple
+	autoSetupRemote = true
 	followtags = true
 
+[pull]
+	rebase = true
+
 [rebase]
-	autostash = true
+	autoStash = true
+	autoSquash = true
+	updateRefs = true
 
 [difftool]
 	prompt = false
@@ -105,21 +122,20 @@
 	autosetuprebase = always
 
 [fetch]
-  prune = true
-  
+	prune = true
+	pruneTags = true
+	all = true
+
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
 
-[pull]
-	rebase = true
-
 [secrets]
-  providers = git secrets --aws-provider
-  patterns = @~/.git-core/secrets/patterns
-  allowed = @~/.git-core/secrets/allowed
+	providers = git secrets --aws-provider
+	patterns = @~/.git-core/secrets/patterns
+	allowed = @~/.git-core/secrets/allowed
 
 [user]
 	name = Kevin McMahon

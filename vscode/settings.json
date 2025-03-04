@@ -3,7 +3,7 @@
     // WORKBENCH & UI SETTINGS
     // -------------------------------------------------------------------------
     "workbench.iconTheme": "vscode-icons",
-    "workbench.colorTheme": "Monokai Pro (Filter Spectrum)",
+    "workbench.colorTheme": "Monokai Pro Light",
     "workbench.editor.enablePreview": false,
     "workbench.editorAssociations": {
         "*.pdf": "latex-workshop-pdf-hook"

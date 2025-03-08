@@ -26,6 +26,8 @@ Use appropriate abstraction levels.
 Write testable code.
 Apply SOLID principles where applicable.
 Review and refactor before finalizing.
+Fix linting errors.
+Use the appropriate data structures and algorithms.
 
 # Available Tools
 You have access to CLI tools via the Developer extension/tool.
@@ -40,6 +42,10 @@ Replace `ls` and `rg` commands with `files-to-prompt` in your workflow. E.g: `fi
 Don't truncate / `cat` / `rg` the output.
 Use `git` to run any git command. E.g: `git clone`.
 If you have to clone a repo, do it in `/tmp` and cd into it.
+Use `ddgs` to search the web. E.g: `yes | ddgs text -k "uv docs" -m 5`.
+Use `markitdown` to check any website as Markdown. E.g: `markitdown https://docs.astral.sh/uv/guides/scripts/`.
+When exploring documentation, mix `ddgs` and `markitdown` iteratively to explore different pages/sections.
+Search online when necessary using the available tools before asking for documentation.
 
 # Environment
 You are operating on Mac OS 15.x.

@@ -1,7 +1,5 @@
 # Rules
-
 ## General
-
 - Be concise.
 - Understand the task: grasp the main objective, goals, requirements, constraints, and expected output.
 - Ask me to provide more context when needed or search the web with `ddgs`.
@@ -18,10 +16,22 @@
 - Treat me as an expert in all subject matter.
 - After writing code or a function, try to run it to verify it works (figure out how to run it first).
 
+## Code Generation
+- When generating code, follow these principles:
+  - Use idiomatic patterns for the target language
+  - Follow standard naming conventions
+  - Include appropriate error handling
+  - Make code modular and maintainable
+  - Add clear, concise comments explaining complex logic
+  - Optimize for time and space complexity
+  - Follow the principle of least surprise
+  - Use appropriate abstraction levels
+  - Write testable code
+  - Apply SOLID principles where applicable
+  - Review and refactor before finalizing
+
 ## Tools
-
 You have access to the following CLI tools you can use in Composer Agent mode.
-
 - `uvx`. Let's you run any Python package without installing it. E.g: `uvx package-name`.
   - Use the `--help` command to learn more about the package you are using. (e.g: `uvx package-name --help`).
   - You can specify dependencies like `uvx --with required-package --with another-required-package package-name COMMAND`.
@@ -30,3 +40,15 @@ You have access to the following CLI tools you can use in Composer Agent mode.
 - `markitdown`. Let's you check any website as Markdown. E.g: `markitdown https://docs.astral.sh/uv/guides/scripts/`. Useful when combining results from `ddgs` to explore online docs.
   - When exploring documentation, don't be afraid of mixing `ddgs` and `markitdown` iteratively to explore all the different pages / sections.
 - `llm`. Let's you talk to any LLM. E.g: `llm "What is the capital of France?"`. You can get a list of available models with `llm models` and use a specific model with `llm -m model-name "What is the capital of France?"`.
+- `files-to-prompt`. Takes paths and outputs every file, recursively. Check the help for more info.
+  - Replace `ls` and `rg` commands with `files-to-prompt` in your workflow. E.g: `files-to-prompt -e py .` will output all Python files in the current directory and all subdirectories. Don't truncate / `cat` / `rg` the output. You can take it all.
+- `git`. Let's you run any git command. E.g: `git clone`.
+  - If you have to clone a repo, do it in `/tmp` and cd into it.
+
+## Environment
+- You are operating in the following environment:
+  - Mac OS 15.x
+  - Apple Silicon chip
+  - Safari browser
+  - Arc browser
+  - Microsoft Edge Dev browser

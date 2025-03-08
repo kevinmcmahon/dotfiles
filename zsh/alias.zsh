@@ -1,3 +1,5 @@
+alias vim='nvim'
+alias vi='nvim'
 alias zshconfig="bbedit ~/.zshrc"
 alias ohmyzsh="bbedit ~/.oh-my-zsh"
 

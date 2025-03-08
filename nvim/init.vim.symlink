@@ -1,0 +1,97 @@
+" Basic settings
+set number             " Line numbers
+set relativenumber     " Relative line numbers
+set tabstop=4          " Tab width
+set shiftwidth=4       " Indentation width
+set expandtab          " Use spaces instead of tabs
+set autoindent         " Auto-indent new lines
+set smartindent        " Smart indent
+set cursorline         " Highlight current line
+set nowrap             " Don't wrap lines
+set ignorecase         " Case insensitive search
+set smartcase          " Case sensitive if search contains uppercase
+set mouse=a            " Enable mouse support
+set termguicolors      " True color support
+
+" Plugins (vim-plug)
+call plug#begin('~/.config/nvim/plugged')
+
+" Syntax highlighting and language support
+Plug 'sheerun/vim-polyglot'         " Language pack
+Plug 'neoclide/coc.nvim', {'branch': 'release'}  " LSP support
+Plug 'jiangmiao/auto-pairs'         " Auto close brackets/quotes
+
+" Navigation and search
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'             " Fuzzy finder
+Plug 'preservim/nerdtree'           " File explorer
+
+" Git integration
+Plug 'tpope/vim-fugitive'           " Git commands
+Plug 'airblade/vim-gitgutter'       " Git diff in gutter
+
+" Appearance
+Plug 'joshdick/onedark.vim'         " Theme
+Plug 'vim-airline/vim-airline'      " Status line
+Plug 'vim-airline/vim-airline-themes'
+
+" Editing
+Plug 'tpope/vim-commentary'         " Comment code
+Plug 'tpope/vim-surround'           " Surround text objects
+
+" Node.js/JavaScript specific
+Plug 'pangloss/vim-javascript'        " Enhanced JS syntax
+Plug 'maxmellon/vim-jsx-pretty'       " JSX/React support
+Plug 'HerringtonDarkholme/yats.vim'   " TypeScript syntax
+
+" Python specific
+Plug 'vim-python/python-syntax'       " Enhanced Python syntax
+Plug 'Vimjas/vim-python-pep8-indent'  " PEP8 indentation
+Plug 'tmhedberg/SimpylFold'           " Python code folding
+
+" Debugger support
+Plug 'puremourning/vimspector'       " Debugging (supports both Node.js and Python)
+
+" Environment & package management
+Plug 'tpope/vim-dotenv'              " .env file support
+
+" Testing
+Plug 'vim-test/vim-test'             " Run tests for various frameworks
+
+call plug#end()
+
+" Theme setup
+colorscheme onedark
+let g:airline_theme='onedark'
+let g:airline_powerline_fonts = 1
+
+" Key mappings
+let mapleader = " "              " Space as leader key
+nnoremap <leader>e :NERDTreeToggle<CR>
+nnoremap <leader>f :Files<CR>
+nnoremap <leader>g :Rg<CR>
+nnoremap <C-h> <C-w>h            " Window navigation
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Node.js/JavaScript settings
+autocmd FileType javascript,javascriptreact,typescript,typescriptreact setlocal tabstop=2 shiftwidth=2
+let g:javascript_plugin_jsdoc = 1        " Enable JSDoc syntax
+
+" Python settings
+let g:python_highlight_all = 1           " Enable all Python syntax highlighting features
+autocmd FileType python setlocal tabstop=4 shiftwidth=4
+autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv', '.venv', 'setup.cfg', 'setup.py', 'pyproject.toml', 'pyrightconfig.json']
+
+" Prettier for Node.js
+command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
+nnoremap <leader>p :Prettier<CR>
+
+" Run current file
+autocmd FileType javascript,typescript nnoremap <leader>r :!node %<CR>
+autocmd FileType python nnoremap <leader>r :!python3 %<CR>
+
+" Jump to related files in Node.js projects
+nnoremap <leader>jt :e %:r.test.js<CR>
+nnoremap <leader>ji :e %:r.js<CR>

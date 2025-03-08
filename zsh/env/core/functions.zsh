@@ -11,3 +11,9 @@ load_env_dir() {
         load_env_file "$file"
     done
 }
+
+function virtualenv_info {
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        echo "(${VIRTUAL_ENV:t})"
+    fi
+}

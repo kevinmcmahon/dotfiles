@@ -139,6 +139,9 @@ fi
 # else
 #   export EDITOR='mvim'
 # fi
+export EDITOR='nvim'
+
+export RPROMPT='${virtualenv_info}'
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"

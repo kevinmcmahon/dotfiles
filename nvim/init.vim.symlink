@@ -84,6 +84,16 @@ let g:python_highlight_all = 1           " Enable all Python syntax highlighting
 autocmd FileType python setlocal tabstop=4 shiftwidth=4
 autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv', '.venv', 'setup.cfg', 'setup.py', 'pyproject.toml', 'pyrightconfig.json']
 
+" folding
+autocmd Filetype python set foldenable
+autocmd Filetype python nnoremap <space> za
+autocmd Filetype python set foldmethod=indent
+" indentation
+autocmd Filetype python set tabstop=4
+autocmd Filetype python set shiftwidth=4
+autocmd Filetype python set textwidth=79
+autocmd Filetype python set softtabstop=4
+
 " Prettier for Node.js
 command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
 nnoremap <leader>p :Prettier<CR>

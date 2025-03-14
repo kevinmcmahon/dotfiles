@@ -1,6 +1,13 @@
-GOOSE_CLI_MIN_PRIORITY: 0.8
-GOOSE_PROVIDER: google
+OLLAMA_HOST: localhost
+GOOSE_MODEL: gemini-2.0-flash
 extensions:
+  browser-tools:
+    args:
+    - '@agentdeskai/browser-tools-mcp@1.1.0'
+    cmd: npx
+    enabled: true
+    name: browser-tools
+    type: stdio
   computercontroller:
     enabled: true
     name: computercontroller
@@ -9,6 +16,36 @@ extensions:
     enabled: true
     name: developer
     type: builtin
+  fetch:
+    args:
+    - mcp-server-fetch
+    cmd: uvx
+    enabled: true
+    name: fetch
+    type: stdio
+  filesystem:
+    args:
+    - -y
+    - '@modelcontextprotocol/server-filesystem'
+    - /Users/kevin
+    - /Users/kevin/Desktop
+    - /Users/kevin/Documents
+    - /Users/kevin/Downloads
+    - /Users/kevin/sync/projects
+    - /Users/kevin/Action
+    cmd: npx
+    enabled: true
+    name: filesystem
+    type: stdio
+  git:
+    args:
+    - mcp-server-git
+    - --repository
+    - /Users/kevin/projects/python/doc_classifier
+    cmd: uvx
+    enabled: true
+    name: git
+    type: stdio
   github:
     args:
     - -y
@@ -19,10 +56,47 @@ extensions:
       GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN}
     name: github
     type: stdio
+  iterm-mcp:
+    args:
+    - iterm-mcp
+    cmd: npx
+    enabled: true
+    name: iterm-mcp
+    type: stdio
+  mcp-installer:
+    args:
+    - '@anaisbetts/mcp-installer'
+    cmd: npx
+    enabled: true
+    name: mcp-installer
+    type: stdio
   memory:
     enabled: true
     name: memory
     type: builtin
+  puppeteer:
+    args:
+    - -y
+    - '@modelcontextprotocol/server-puppeteer'
+    cmd: npx
+    enabled: true
+    name: puppeteer
+    type: stdio
+  reddit:
+    args:
+    - mcp-server-reddit
+    cmd: uvx
+    enabled: true
+    name: reddit
+    type: stdio
+  sequential-thinking:
+    args:
+    - -y
+    - '@modelcontextprotocol/server-sequential-thinking'
+    cmd: npx
+    enabled: true
+    name: sequential-thinking
+    type: stdio
   tavily:
     args:
     - mcp-tavily
@@ -32,6 +106,6 @@ extensions:
       TAVILY_API_KEY: ${TAVILY_API_KEY}
     name: tavily
     type: stdio
-OLLAMA_HOST: localhost
-GOOSE_MODE: auto
-GOOSE_MODEL: gemini-2.0-flash
+GOOSE_MODE: approve
+GOOSE_CLI_MIN_PRIORITY: 0.8
+GOOSE_PROVIDER: google

@@ -10,9 +10,8 @@ alias cleanup="find . -name '*.DS_Store' -type f -ls -delete"
 
 # more tidying up scripts
 alias rmorig='find . -name "*.orig" -print0 | xargs -0 rm -rf'
-
-# Android logcat alias
-alias clogcat='"$ANDROID_HOME/platform-tools/adb" logcat | ~/Tools/coloredlogcat.py'
+ 
+alias llmg='llm -m gemini-2.0-flash'
 
 # Shortcuts
 alias cls="clear"

@@ -36,7 +36,8 @@ export ZSH="${HOME}/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+#ZSH_THEME="robbyrussell"
+ZSH_THEME="" # using starship
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -141,7 +142,7 @@ fi
 # fi
 export EDITOR='nvim'
 
-export RPROMPT='${virtualenv_info}'
+#export RPROMPT='${virtualenv_info}'
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -195,6 +196,15 @@ done
 command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
 command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
 
+_uv_run_mod() {
+    if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
+        _arguments '*:filename:_files'
+    else
+        _uv "$@"
+    fi
+}
+compdef _uv_run_mod uv
+
 # Shell integration that provides completions
 [[ $IS_MACOS -eq 1 && -f /opt/homebrew/etc/profile.d/autojump.sh ]] && . /opt/homebrew/etc/profile.d/autojump.sh
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
@@ -207,8 +217,8 @@ autoload h
 # 1Password
 [[ -f "$HOME/.config/op/plugins.sh" ]] && source "$HOME/.config/op/plugins.sh"
 
-# direnv
-command -v starship >/dev/null && eval "$(direnv hook zsh)"
+# For direnv (independent of starship)
+command -v direnv >/dev/null && eval "$(direnv hook zsh)"
 
 # Load starship prompt if available
 command -v starship >/dev/null && eval "$(starship init zsh)"

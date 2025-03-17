@@ -1,0 +1,25 @@
+function mdview() {
+  if [ -p /dev/stdin ]; then
+    # Create a unique temporary file with random suffix
+    TMP_FILE=$(mktemp /tmp/marked-preview-XXXXXX).md
+    # Ensure the file doesn't exist already
+    rm -f "$TMP_FILE"
+    # Use tee to capture stdin (handles broken pipes better)
+    tee "$TMP_FILE" > /dev/null
+    # Check if file was created successfully
+    if [ -f "$TMP_FILE" ]; then
+      open -a "Marked 2" "$TMP_FILE"
+    else
+      echo "Error: Failed to create temporary file" >&2
+      return 1
+    fi
+  else
+    # If there's a file argument, check if it exists
+    if [ -f "$1" ]; then
+      open -a "Marked 2" "$1"
+    else
+      echo "Error: File '$1' not found" >&2
+      return 1
+    fi
+  fi
+}

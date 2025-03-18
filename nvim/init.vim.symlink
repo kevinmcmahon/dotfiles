@@ -75,6 +75,17 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
+" Set up tab completion
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" Enable completion
+set completeopt=menu,menuone,noselect
+
+" Optional: configure how completion works
+set wildmode=longest,list,full
+set wildmenu
+
 " Node.js/JavaScript settings
 autocmd FileType javascript,javascriptreact,typescript,typescriptreact setlocal tabstop=2 shiftwidth=2
 let g:javascript_plugin_jsdoc = 1        " Enable JSDoc syntax

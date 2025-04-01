@@ -1,19 +1,24 @@
 alias vim='nvim'
 alias vi='nvim'
-alias zshconfig="bbedit ~/.zshrc"
-alias ohmyzsh="bbedit ~/.oh-my-zsh"
+alias zshconfig="vi ~/.zshrc"
+alias ohmyzsh="vi ~/.oh-my-zsh"
 
 alias reload='exec zsh'
 
 # Recursively delete `.DS_Store` files
 alias cleanup="find . -name '*.DS_Store' -type f -ls -delete"
+#
+# cleanup repomix outputs 
+alias rmrepomix="find . -name 'repomix-output*' -type f -ls -delete"
 
 # more tidying up scripts
 alias rmorig='find . -name "*.orig" -print0 | xargs -0 rm -rf'
  
 # llm and agents
-alias llmg='llm -m gemini-2.0-flash'
-alias l32="llm -m mlx-community/Llama-3.2-3B-Instruct-4bit"
+#alias llmg='llm -m gemini-2.0-flash'
+alias llmg='llm -m gemini-2.5-pro-exp-03-25'
+alias l32='llm -m mlx-community/Llama-3.2-3B-Instruct-4bit'
+alias claude='/Users/kevin/.claude/local/claude'
 alias cld='claude'
 
 # Shortcuts
@@ -23,6 +28,7 @@ alias p='cd ~/projects'
 alias o='open .'
 alias work='cd ~/work'
 alias blog='cd ~/projects/blog'
+alias f='fzf'
 
 alias ip="echo Your ip is; dig +short myip.opendns.com @resolver1.opendns.com;"
 
@@ -38,6 +44,8 @@ alias ci='/usr/local/bin/code-insiders'
 # Hide/show all desktop icons (useful when presenting)
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+
+alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
 
 # git aliases
 alias g='git'

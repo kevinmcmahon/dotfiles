@@ -211,9 +211,12 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 
 ### functions
 
-autoload listening
-autoload h
-autoload mdview
+autoload -Uz listening
+autoload -Uz h
+autoload -Uz mdview
+autoload -Uz kitty-themes-fzf
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd update_kitty_tab_title
 
 # 1Password
 [[ -f "$HOME/.config/op/plugins.sh" ]] && source "$HOME/.config/op/plugins.sh"
@@ -223,3 +226,15 @@ command -v direnv >/dev/null && eval "$(direnv hook zsh)"
 
 # Load starship prompt if available
 command -v starship >/dev/null && eval "$(starship init zsh)"
+
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+eval "$(zoxide init zsh)"
+eval "$(fzf --zsh)"
+
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+
+export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf"
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"

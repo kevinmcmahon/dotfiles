@@ -1,0 +1,20 @@
+function update_kitty_tab_title {
+  local dir="${PWD##*/}"
+  local branch=""
+  local venv=""
+
+  # Git branch
+  if git rev-parse --is-inside-work-tree &>/dev/null; then
+    branch="$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --exact-match 2>/dev/null)"
+  fi
+
+  # Python virtualenv
+  [[ -n "$VIRTUAL_ENV" ]] && venv="${VIRTUAL_ENV:t}"
+
+  # Use emoji + ASCII-safe fallback glyphs
+  local title="📁 $dir"
+  [[ -n "$branch" ]] && title+="  ⎇ $branch"
+  [[ -n "$venv" ]] && title+="  🐍 $venv"
+
+  echo -ne "\033]2;${title}\a"
+}

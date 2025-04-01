@@ -1,0 +1,20 @@
+function kitty-themes-fzf() {
+  local theme_dir="$HOME/.config/kitty/themes/themes"
+  local current_symlink="$HOME/.config/kitty/current-theme.conf"
+
+  if [[ ! -d "$theme_dir" ]]; then
+    echo "❌ Theme directory not found: $theme_dir"
+    return 1
+  fi
+
+  local selected
+  selected=$(ls "$theme_dir" | fzf --prompt="🎨 Select Kitty Theme: " --preview="bat --style=plain --color=always $theme_dir/{}" --height=40%)
+
+  if [[ -n "$selected" ]]; then
+    ln -sf "$theme_dir/$selected" "$current_symlink"
+    kitty @ set-colors --all "$current_symlink"
+    echo "✅ Theme applied: $selected"
+  else
+    echo "⚠️ No theme selected."
+  fi
+}

@@ -1,3 +1,6 @@
+[user]
+  name = Kevin McMahon
+
 [include]
 	path = .gituserconfig
 
@@ -23,6 +26,9 @@
 	autosetuprebase = always
 	sort = -committerdate
 
+[tag]
+  sort = version:refname
+
 [init]
 	defaultBranch = main
 
@@ -46,7 +52,6 @@
 	standup = log --since yesterday --author='Kevin McMahon' --pretty=oneline
 	amend = commit -v --amend --reuse-message=HEAD
 	tags = tag -l
-	branches = for-each-ref --sort=-committerdate --format=\"%(color:bold blue)%(authordate:relative)\t%(color:reset)%(color:red)%(authorname)\t%(color:bold white)%(refname:short)\" refs/remotes
 	remotes = remote -v
 	markdownlog = log --color --pretty=format:'* %s `%Cred%h%Creset` - %C(bold blue)[%an](mailto:%ae)%Creset' --abbrev-commit --dense --no-merges --reverse
 	tagsbydate = for-each-ref --sort=-taggerdate --format='%(refname:short)' refs/tags
@@ -54,6 +59,7 @@
 	releasenotes = !sh -c 'git markdownlog ...`git previoustag`'
 	first = rev-list --max-parents=0 HEAD
 	new = !git init && git symbolic-ref HEAD refs/heads/main
+	branches = for-each-ref --sort=-committerdate --format='%(color:bold blue)%(authordate:relative)	%(color:reset)%(color:red)%(authorname)	%(color:bold white)%(refname:short)' refs/remotes
 
 [color]
 	ui = auto
@@ -74,9 +80,9 @@
 	hooksPath = ~/.git-core/hooks
 
 [push]
-    default = simple
+	default = simple
 	autoSetupRemote = true
-	followtags = true
+	followTags = true
 
 [pull]
 	rebase = true
@@ -86,14 +92,18 @@
 	autoSquash = true
 	updateRefs = true
 
+[diff]
+	tool = Kaleidoscope
+  algorithm = histogram 
+  colorMoved = plain
+  mnemonicPrefix = true
+  renames = true
+
 [difftool]
 	prompt = false
 
 [difftool "Kaleidoscope"]
 	cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
-
-[diff]
-	tool = Kaleidoscope
 	
 [diff "plist"]
 	textconv = plutil -convert xml1 -o -
@@ -104,22 +114,19 @@
 [merge]
 	tool = Kaleidoscope
 	ff = only
-    keepBackup = false
+		keepBackup = false
 
 [mergetool]
-    prompt = false
+		prompt = false
 
 [mergetool "Kaleidoscope"]
 	cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
-    trustExitCode = true
+		trustExitCode = true
 
 [filter "media"]
 	clean = git media clean %f
 	smudge = git media smudge %f
-	required = true
-
-[branch]
-	autosetuprebase = always
+		required = true
 
 [fetch]
 	prune = true
@@ -136,9 +143,6 @@
 	providers = git secrets --aws-provider
 	patterns = @~/.git-core/secrets/patterns
 	allowed = @~/.git-core/secrets/allowed
-
-[user]
-	name = Kevin McMahon
 
 [credential]
 	helper = osxkeychain

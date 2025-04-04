@@ -4,7 +4,6 @@
     // -------------------------------------------------------------------------
     "workbench.iconTheme": "vscode-icons",
     "workbench.colorTheme": "Monokai Pro Light",
-    "workbench.editor.enablePreview": false,
     "workbench.editorAssociations": {
         "*.pdf": "latex-workshop-pdf-hook"
     },
@@ -90,13 +89,17 @@
     // -------------------------------------------------------------------------
     // TERMINAL SETTINGS
     // -------------------------------------------------------------------------
-    "terminal.external.osxExec": "iTerm.app",
+
+    // external terminal settings
+    "terminal.external.osxExec": "/Applications/kitty.app/Contents/MacOS/kitty",
+    "terminal.explorerKind": "external",
+
+    // xterm.js settings
     "terminal.integrated.fontFamily": "'Monaspace Argon','FiraCode Nerd Font', 'Fira Code'",
     "terminal.integrated.fontSize": 12,
     "terminal.integrated.cursorStyle": "line",
     "terminal.integrated.defaultProfile.osx": "zsh",
     "terminal.integrated.env.osx": {},
-    "terminal.explorerKind": "external",
     "terminal.integrated.shellIntegration.enabled": true,
     "terminal.integrated.persistentSessionReviveProcess": "never",
     "terminal.integrated.allowedLinkSchemes": [
@@ -211,9 +214,6 @@
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "[solidity]": {
-        "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
-    },
 
     // -------------------------------------------------------------------------
     // CODE FORMATTING & LINTING
@@ -301,14 +301,12 @@
     "yaml.validate": false,
     "node-module-intellisense.modulePaths": [],
     "json.schemas": [],
-    "plantuml.previewAutoUpdate": false,
     "latex-workshop.view.pdf.viewer": "tab",
 
     // -------------------------------------------------------------------------
     // PACKAGE & PROJECT MANAGEMENT
     // -------------------------------------------------------------------------
     "npm.packageManager": "yarn",
-    "npm.keybindingsChangedWarningShown": true,
     "redhat.telemetry.enabled": false,
     "versionlens.suggestions.showOnStartup": true,
     "settingsSync.ignoredSettings": ["-sonarlint.pathToNodeExecutable"],
@@ -329,12 +327,6 @@
     },
     "dev.containers.dockerPath": "docker",
     "dev.containers.dockerComposePath": "docker-compose",
-    "liveshare.featureSet": "insiders",
-    "liveshare.launcherClient": "visualStudioCode",
-    "vs-kubernetes": {
-        "vscode-kubernetes.minikube-path.mac": "/Users/kevin/.vs-kubernetes/tools/minikube/darwin-arm64/minikube",
-        "vscode-kubernetes.helm-path.mac": "/Users/kevin/.vs-kubernetes/tools/helm/darwin-arm64/helm"
-    },
 
     // -------------------------------------------------------------------------
     // PATHS & LOCATIONS
@@ -355,18 +347,19 @@
     // AI ASSISTANCE & EXTENSIONS
     // -------------------------------------------------------------------------
     "github.copilot.enable": {
-        "*": true,
+        "*": false,
         "plaintext": false,
         "markdown": false,
-        "scminput": false
+        "scminput": false,
+        "restructuredtext": false
     },
     "github.copilot.editor.enableAutoCompletions": true,
-    "cody.autocomplete.enabled": false,
-    "cody.agentic.context.experimentalShell": true,
-    "cody.suggestions.mode": "autocomplete",
+    "cody.suggestions.mode": "auto-edit (Beta)",
     "cody.commandCodeLenses": false,
     "cody.telemetry.level": "off",
+    "cody.autocomplete.completeSuggestWidgetSelection": true,
     "cody.autocomplete.formatOnAccept": true,
+    "openctx.enable": true,
     "extensions.autoCheckUpdates": false,
     "extensions.ignoreRecommendations": true,
     "extensions.trustedPublishers": [
@@ -452,5 +445,29 @@
         "yoavbls",
         "yzhang",
         "zignd"
+    ],
+    "mcp": {
+        "servers": {
+            "playwright": {
+                "command": "npx",
+                "args": ["@playwright/mcp@latest"]
+            },
+            "vscode": {
+                "command": "mcp-proxy",
+                "args": ["http://127.0.0.1:6010/sse"]
+            },
+            "perplexity-ask": {
+                "command": "docker",
+                "args": ["run", "-i", "--rm", "-e", "PERPLEXITY_API_KEY", "mcp/perplexity-ask"],
+                "env": {
+                    "PERPLEXITY_API_KEY": "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"
+                }
+            }
+        }
+    },
+    "remote.defaultExtensionsIfInstalledLocally": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "GitHub.vscode-pull-request-github"
     ]
 }

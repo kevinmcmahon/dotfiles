@@ -18,6 +18,9 @@ alias rmorig='find . -name "*.orig" -print0 | xargs -0 rm -rf'
 #alias llmg='llm -m gemini-2.0-flash'
 alias llmg='llm -m gemini-2.5-pro-exp-03-25'
 alias l32='llm -m mlx-community/Llama-3.2-3B-Instruct-4bit'
+alias cmdhelp='llm -t cmd'
+
+
 alias claude='/Users/kevin/.claude/local/claude'
 alias cld='claude'
 

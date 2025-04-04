@@ -227,8 +227,6 @@ command -v direnv >/dev/null && eval "$(direnv hook zsh)"
 # Load starship prompt if available
 command -v starship >/dev/null && eval "$(starship init zsh)"
 
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
 eval "$(zoxide init zsh)"
 eval "$(fzf --zsh)"
 
@@ -238,3 +236,4 @@ export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git
 
 export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf"
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
+alias claude="/Users/kevin/.claude/local/claude"

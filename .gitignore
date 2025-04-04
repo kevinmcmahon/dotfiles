@@ -7,3 +7,5 @@ gituserconfig.*
 
 # Exclude all private configuration files
 *private.zsh
+
+claude/claude_desktop_config.json

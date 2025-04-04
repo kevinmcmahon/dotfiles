@@ -1,0 +1,78 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "<YOUR_TOKEN>"
+      }
+    },
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"]
+    },
+    "reddit": {
+      "command": "uvx",
+      "args": ["mcp-server-reddit"]
+    },
+    "browser-tools": {
+      "command": "npx",
+      "args": ["@agentdeskai/browser-tools-mcp@1.1.0"]
+    },
+    "mcp-installer": {
+      "command": "npx",
+      "args": ["@anaisbetts/mcp-installer"]
+    },
+    "tavily": {
+      "command": "npx",
+      "args": ["-y", "tavily-mcp@0.1.3"],
+      "env": {
+        "TAVILY_API_KEY": "<YOUR_TOKEN>"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/kevin",
+        "/Users/kevin/Desktop",
+        "/Users/kevin/Documents",
+        "/Users/kevin/Downloads",
+        "/Users/kevin/sync/projects",
+        "/Users/kevin/Action"
+      ]
+    },
+    "puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+    },
+    "iterm-mcp": {
+      "command": "npx",
+      "args": ["iterm-mcp"]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "git": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-git",
+        "--repository",
+        "/Users/kevin/projects/python/doc_classifier"
+      ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    }
+  }
+}

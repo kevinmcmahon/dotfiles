@@ -1,0 +1,5 @@
+function terraform() {
+  unfunction terraform
+  complete -o nospace -C /opt/homebrew/bin/terraform terraform
+  terraform "$@"
+}

@@ -50,6 +50,8 @@ alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && k
 
 alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
 
+alias navi=navi_widget_load
+
 # git aliases
 alias g='git'
 alias gp='git pull --rebase'

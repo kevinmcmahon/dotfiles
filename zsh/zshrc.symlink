@@ -112,7 +112,7 @@ plugins=(
 	vscode
 	git-open
 	gitignore
-	poetry
+  zsh-defer
 )
 
 mac_plugins=(
@@ -124,6 +124,9 @@ mac_plugins=(
 if [[ $IS_MACOS -eq 1 ]]; then
   plugins+=("${mac_plugins[@]}")
 fi
+
+zstyle :omz:plugins:ssh-agent lazy yes
+zstyle :omz:plugins:ssh-agent quiet yes
 
 [[ -f $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh || echo "Warning: oh-my-zsh not found"
 
@@ -156,7 +159,11 @@ fi
 # -----------------------------
 # Initialize completion system
 autoload -Uz compinit
-compinit -i
+if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
 
 # Completion styling
 zstyle ':completion:*' menu select
@@ -172,11 +179,6 @@ fpath=(
 
 # Enable bash completion compatibility
 autoload -U +X bashcompinit && bashcompinit
-
-# Tool-specific completions
-if [[ $IS_MACOS -eq 1 && -f /opt/homebrew/bin/terraform ]]; then
-    complete -o nospace -C /opt/homebrew/bin/terraform terraform
-fi
 
 # Package manager completions
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . "${HOME}/.config/tabtab/zsh/__tabtab.zsh" || true
@@ -216,24 +218,24 @@ autoload -Uz h
 autoload -Uz mdview
 autoload -Uz kitty-themes-fzf
 autoload -Uz add-zsh-hook
+autoload -Uz terraform
 add-zsh-hook precmd update_kitty_tab_title
 
 # 1Password
 [[ -f "$HOME/.config/op/plugins.sh" ]] && source "$HOME/.config/op/plugins.sh"
 
 # For direnv (independent of starship)
-command -v direnv >/dev/null && eval "$(direnv hook zsh)"
+zsh-defer eval "$(direnv hook zsh)"
+zsh-defer eval "$(zoxide init zsh)"
+zsh-defer eval "$(fzf --zsh)"
 
 # Load starship prompt if available
 command -v starship >/dev/null && eval "$(starship init zsh)"
 
-eval "$(zoxide init zsh)"
-eval "$(fzf --zsh)"
-
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
-
 export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf"
+# Only load preview when actually triggered, not at startup
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
-alias claude="/Users/kevin/.claude/local/claude"

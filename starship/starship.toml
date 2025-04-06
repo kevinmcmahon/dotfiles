@@ -1,5 +1,12 @@
 # ~/.config/starship/starship.toml
 
+"$schema" = 'https://starship.rs/config-schema.json'
+
+command_timeout = 2000
+
+# Inserts a blank line between shell prompts
+add_newline = true
+
 format = """
 $directory\
 $git_branch\
@@ -13,9 +20,12 @@ $docker_context\
 $aws\
 ${custom.battery}\
 $cmd_duration\
-$shell\
 $character
 """
+
+# Make prompt a single line instead of two lines
+[line_break]
+disabled = false
 
 # ── Prompt Symbol ─────────────
 [character]

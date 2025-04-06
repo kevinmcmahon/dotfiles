@@ -1,0 +1,5 @@
+direnv() {
+  unfunction direnv
+  eval "$(direnv hook zsh)"
+  direnv "$@"
+}

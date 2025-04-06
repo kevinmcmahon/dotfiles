@@ -1,0 +1,29 @@
+# ~/.zshenv
+
+# Basic locale setup (safe to always apply)
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
+# Platform detection (used in multiple places)
+export IS_MACOS=0
+export IS_LINUX=0
+export IS_ARM=0
+
+case "$OSTYPE" in
+  darwin*)
+    export IS_MACOS=1
+    [[ "$(arch)" == "arm64" ]] && export IS_ARM=1
+    ;;
+  linux*)
+    export IS_LINUX=1
+    [[ "$(uname -m)" =~ ^(arm|aarch) ]] && export IS_ARM=1
+    ;;
+esac
+
+# Editor (useful for scripts too)
+export EDITOR="nvim"
+
+export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+
+# Don't let interactive Zsh config re-run this stuff
+export ZSHENV_LOADED=1

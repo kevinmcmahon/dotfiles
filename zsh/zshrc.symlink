@@ -1,19 +1,9 @@
-# Platform detection
-export IS_MACOS=0
-export IS_LINUX=0
-export IS_ARM=0
+# ~/.zshrc
 
-if [[ "$OSTYPE" =~ ^darwin ]]; then
-  export IS_MACOS=1
-  [[ "$(arch)" == "arm64" ]] && export IS_ARM=1
-elif [[ "$OSTYPE" =~ ^linux ]]; then
-  export IS_LINUX=1
-  [[ "$(uname -m)" =~ ^(arm|aarch) ]] && export IS_ARM=1
+# Check if .zshenv ran correctly
+if [[ -z "$ZSHENV_LOADED" ]]; then
+  echo "⚠️  Warning: .zshenv was not sourced. Some variables may be missing."
 fi
-
-# Then in other scripts, use:
-# if [[ $IS_MACOS -eq 1 ]]; then
-
 
 # Load core functions and configurations
 [[ -f "${HOME}/.zsh/env/core/functions.zsh" ]] && source "${HOME}/.zsh/env/core/functions.zsh" || echo "Warning: Core functions not found"
@@ -108,11 +98,14 @@ plugins=(
 	ssh-agent
 	aws
 	dotenv
-	yarn
 	vscode
 	git-open
 	gitignore
   zsh-defer
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  you-should-use
+  fzf-tab
 )
 
 mac_plugins=(
@@ -149,10 +142,6 @@ export EDITOR='nvim'
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
-
-if [[ $IS_MACOS -eq 1 ]]; then
-  source <(navi widget zsh)
-fi
 
 # -----------------------------
 # COMPLETIONS
@@ -219,6 +208,9 @@ autoload -Uz mdview
 autoload -Uz kitty-themes-fzf
 autoload -Uz add-zsh-hook
 autoload -Uz terraform
+autoload -Uz aws
+autoload -Uz direnv
+autoload -Uz z
 add-zsh-hook precmd update_kitty_tab_title
 
 # 1Password

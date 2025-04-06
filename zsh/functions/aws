@@ -1,0 +1,8 @@
+aws() {
+  unfunction aws
+  # Load completions
+  if [ -x "$(command -v aws_completer)" ]; then
+    complete -C "$(command -v aws_completer)" aws
+  fi
+  aws "$@"
+}

@@ -1,4 +1,0 @@
-navi_widget_load() {
-  source <(navi widget zsh)
-  unfunction navi_widget_load
-}

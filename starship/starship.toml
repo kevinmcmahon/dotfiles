@@ -1,0 +1,120 @@
+# ~/.config/starship/starship.toml
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$java\
+$python\
+$nodejs\
+$golang\
+$package\
+$docker_context\
+$aws\
+${custom.battery}\
+$cmd_duration\
+$shell\
+$character
+"""
+
+# ── Prompt Symbol ─────────────
+[character]
+success_symbol = "[❯](green)"
+error_symbol = "[❯](red)"
+vicmd_symbol = "[❮](blue)"
+disabled = false
+
+# ── Directory ─────────────────
+[directory]
+style = "bold blue"
+truncation_length = 3
+truncate_to_repo = true
+read_only = " "
+read_only_style = "red"
+
+# ── Git ───────────────────────
+[git_branch]
+symbol = "⎇ "
+style = "bold purple"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "yellow"
+format = '[$all_status$ahead_behind]($style) '
+disabled = false
+
+# ── Python ────────────────────
+[python]
+symbol = "🐍 "
+style = "bold blue"
+format = "[$symbol$version]($style) "
+python_binary = "python3"
+detect_extensions = ["py"]
+detect_files = ["pyproject.toml", "requirements.txt", ".python-version"]
+
+# ── Java ──────────────────────
+[java]
+symbol = "☕ "
+style = "bold red"
+format = "[$symbol$version]($style) "
+detect_extensions = ["java"]
+detect_files = ["pom.xml", "build.gradle", "build.gradle.kts"]
+
+# ── Node.js ───────────────────
+[nodejs]
+symbol = " "
+format = "[$symbol$version]($style) "
+style = "bold green"
+
+# ── Go ────────────────────────
+[golang]
+symbol = " "
+format = "[$symbol$version]($style) "
+style = "bold cyan"
+
+# ── NPM/Cargo/Rust/CocoaPods ─
+[package]
+symbol = "📦 "
+format = "[$symbol$version]($style) "
+style = "bold 208"
+
+# ── Docker Context ────────────
+[docker_context]
+symbol = "🐳 "
+format = "[$symbol$context]($style) "
+style = "bold blue"
+only_with_files = true
+detect_files = ["Dockerfile", "docker-compose.yml"]
+
+# ── AWS ───────────────────────
+[aws]
+symbol = "☁️ "
+format = "[$symbol($region)]($style) "
+style = "bold yellow"
+force_display = false
+
+# ── Battery via Custom Module ─
+[custom.battery]
+command = "/Users/kevin/.config/starship/battery-status.sh"
+format = "[$output]($style) "
+style = "bold green"
+when = true
+
+# ── Command Duration ──────────
+[cmd_duration]
+min_time = 2000
+format = "⏱️ [$duration]($style) "
+style = "bold italic magenta"
+
+# ── Shell (Zsh/Bash/Fish etc.) ─
+[shell]
+disabled = false
+style = "bold yellow"
+format = "[$indicator]($style) "
+
+# ── Time (optional right prompt) ─
+# [time]
+# disabled = false
+# format = "🕒 [$time]($style) "
+# time_format = "%T"
+# style = "bold dimmed white"

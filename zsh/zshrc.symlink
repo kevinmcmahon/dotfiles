@@ -218,7 +218,7 @@ add-zsh-hook precmd update_kitty_tab_title
 
 # For direnv (independent of starship)
 zsh-defer eval "$(direnv hook zsh)"
-zsh-defer eval "$(zoxide init zsh)"
+zsh-defer eval "$(zoxide init --cmd cd zsh)"
 zsh-defer eval "$(fzf --zsh)"
 
 # Load starship prompt if available

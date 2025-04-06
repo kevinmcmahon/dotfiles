@@ -32,6 +32,7 @@ alias o='open .'
 alias work='cd ~/work'
 alias blog='cd ~/projects/blog'
 alias f='fzf'
+alias y='yazi'
 
 alias ip="echo Your ip is; dig +short myip.opendns.com @resolver1.opendns.com;"
 
@@ -49,8 +50,6 @@ alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && 
 alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
 
 alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
-
-alias navi=navi_widget_load
 
 # git aliases
 alias g='git'

@@ -11,21 +11,23 @@ format = """
 $directory\
 $git_branch\
 $git_status\
+$fill\
+$lua\
 $java\
 $python\
 $nodejs\
 $golang\
 $package\
-$docker_context\
 $aws\
+$docker_context\
 ${custom.battery}\
 $cmd_duration\
+$line_break\
 $character
 """
 
-# Make prompt a single line instead of two lines
-[line_break]
-disabled = false
+[fill]
+symbol = " "
 
 # ── Prompt Symbol ─────────────
 [character]
@@ -55,7 +57,7 @@ disabled = false
 
 # ── Python ────────────────────
 [python]
-symbol = "🐍 "
+symbol = "  "
 style = "bold blue"
 format = "[$symbol$version]($style) "
 python_binary = "python3"
@@ -98,11 +100,9 @@ detect_files = ["Dockerfile", "docker-compose.yml"]
 
 # ── AWS ───────────────────────
 [aws]
-symbol = "☁️ "
-format = "[$symbol($region)]($style) "
-style = "bold yellow"
-force_display = false
-
+symbol = "\ue7ad "
+format = '[$symbol($profile )(\($region\) )]($style)'
+style = "bold bright-blue"
 # ── Battery via Custom Module ─
 [custom.battery]
 command = "/Users/kevin/.config/starship/battery-status.sh"

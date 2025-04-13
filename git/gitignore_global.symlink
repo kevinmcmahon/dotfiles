@@ -20,3 +20,4 @@ vendor/bundle
 .idea/
 .goose/
 .aider*
+.mcp.json

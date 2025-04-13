@@ -10,7 +10,7 @@
 [includeIf "gitdir:~/projects/kmc/**"]
 	path = ~/.gituserconfig.kmc
 
-[includeIf "gitdir:~/sync/projects/kmc/**"]
+[includeIf "gitdir:/Users/kevin/sync/projects/kmc/**"]
 	path = ~/.gituserconfig.kmc
 
 [includeIf "gitdir:~/projects/nsv/**"]
@@ -134,12 +134,6 @@
 	prune = true
 	pruneTags = true
 	all = true
-
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
 
 [secrets]
 	providers = git secrets --aws-provider

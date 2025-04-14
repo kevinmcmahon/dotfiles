@@ -147,15 +147,6 @@ export EDITOR='nvim'
 # COMPLETIONS
 # -----------------------------
 # Initialize completion system
-autoload -Uz compinit
-if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
-  compinit
-else
-  compinit -C
-fi
-
-# Completion styling
-zstyle ':completion:*' menu select
 
 # Add completion paths
 fpath=(
@@ -165,6 +156,11 @@ fpath=(
     "${HOME}/.zfunc"
     "${fpath[@]}"
 )
+
+# Completion styling
+zstyle ':completion:*' menu select
+
+autoload -Uz compinit && compinit
 
 # Enable bash completion compatibility
 autoload -U +X bashcompinit && bashcompinit
@@ -196,12 +192,15 @@ _uv_run_mod() {
 }
 compdef _uv_run_mod uv
 
-# Shell integration that provides completions
-[[ $IS_MACOS -eq 1 && -f /opt/homebrew/etc/profile.d/autojump.sh ]] && . /opt/homebrew/etc/profile.d/autojump.sh
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 ### functions
 
+autoload -Uz ssh-info
+autoload -Uz ssh-test
+autoload -Uz ssh-switch
+autoload -Uz ssh-git-id
+autoload -Uz recent-ssh-keys
+autoload -Uz ssh-autoload
 autoload -Uz listening
 autoload -Uz h
 autoload -Uz mdview
@@ -210,8 +209,9 @@ autoload -Uz add-zsh-hook
 autoload -Uz terraform
 autoload -Uz aws
 autoload -Uz direnv
-autoload -Uz z
 add-zsh-hook precmd update_kitty_tab_title
+
+source "${HOME}/dotfiles/zsh/functions/completions.zsh"
 
 # 1Password
 [[ -f "$HOME/.config/op/plugins.sh" ]] && source "$HOME/.config/op/plugins.sh"

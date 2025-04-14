@@ -1,6 +1,0 @@
-z() {
-  unfunction z
-  eval "$(zoxide init zsh)"
-  z "$@"
-}
-

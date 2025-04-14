@@ -1,0 +1,11 @@
+# Usage: recent-ssh-keys
+# Shows the most recently used SSH keys with timestamps
+function recent-ssh-keys() {
+  local logfile="$HOME/.ssh/.ssh_use_history"
+  if [[ ! -f "$logfile" ]]; then
+    echo "No recent SSH key usage found."
+    return
+  fi
+  echo "🕒 Recent SSH key usage:"
+  tail -n 20 "$logfile" | tac
+}

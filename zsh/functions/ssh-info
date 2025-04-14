@@ -1,0 +1,7 @@
+# Usage: ssh-info
+# Lists all SSH private keys in ~/.ssh/identities
+function ssh-info() {
+  echo "📁 Available SSH identities in ~/.ssh/identities:"
+  ls -1 ~/.ssh/identities | grep -v '\.pub$' | sort
+}
+compdef _files ssh-info

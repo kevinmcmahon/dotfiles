@@ -1,0 +1,20 @@
+function ssh-switch() {
+  local key_list key
+  key_list=$(find ~/.ssh/identities -maxdepth 1 \( -type f -o -type l \) ! -name "*.pub" -exec basename {} \; | sort)
+
+  if [[ -z "$key_list" ]]; then
+    echo "⚠️  No SSH identities found in ~/.ssh/identities"
+    return 1
+  fi
+
+  key=$(echo "$key_list" | fzf --prompt="🔐 Choose an SSH identity: " --height=40% --reverse \
+    --preview="echo {} | sed 's/\\.id.*//'" )
+
+  if [[ -n "$key" ]]; then
+    ssh-add -D
+    ssh-add "$HOME/.ssh/identities/$key" && echo "✅ Now using: $key"
+    echo "$(date +%Y-%m-%dT%H:%M:%S) $key" >> "$HOME/.ssh/.ssh_use_history"
+  else
+    echo "❌ Cancelled."
+  fi
+}

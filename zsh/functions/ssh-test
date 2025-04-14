@@ -1,0 +1,12 @@
+# Usage: ssh-test [alias]
+# Tests the currently loaded SSH identity against a host alias from ~/.ssh/config.d/*
+function ssh-test() {
+  local host="${1:-github.com}"
+  ssh -T git@"$host"
+}
+_ssh_test_complete() {
+  local aliases
+  aliases=($(grep -h '^Host ' ~/.ssh/config.d/* 2>/dev/null | awk '{print $2}' | sort -u))
+  compadd $aliases
+}
+compdef _ssh_test_complete ssh-test

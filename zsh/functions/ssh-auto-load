@@ -1,0 +1,25 @@
+# Auto-load SSH identity when entering a Git repo dir (used by .project-identities)
+
+function _ssh_auto_load_on_cd() {
+  local repo_root key identities_dir="$HOME/.ssh/identities"
+  local identities_file="$HOME/.ssh/.project-identities"
+
+  if ! command -v git >/dev/null; then return; fi
+  repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || return
+
+  if [[ -f "$identities_file" ]]; then
+    while IFS= read -r line; do
+      local path match_key
+      path="${line%% *}"
+      match_key="${line#* }"
+      if [[ "$repo_root" == "$path" ]]; then
+        local full_key_path="$identities_dir/$match_key"
+        if ! ssh-add -l 2>/dev/null | grep -q "$full_key_path"; then
+          echo "🔐 Loading SSH identity: $match_key"
+          ssh-add "$full_key_path" >/dev/null 2>&1 && echo "✅ Key loaded"
+        fi
+        return
+      fi
+    done < "$identities_file"
+  fi
+}

@@ -4,20 +4,20 @@
 [include]
 	path = .gituserconfig
 
-[includeIf "gitdir:~/**/work/**"]
-	path = ~/.gituserconfig.work
+[includeIf "gitdir:/Users/kevin/projects/kmc/"]
+  path = ~/.gituserconfig.kmc
 
-[includeIf "gitdir:~/projects/kmc/**"]
-	path = ~/.gituserconfig.kmc
+[includeIf "gitdir:/Users/kevin/sync/projects/kmc/"]
+  path = ~/.gituserconfig.kmc
 
-[includeIf "gitdir:/Users/kevin/sync/projects/kmc/**"]
-	path = ~/.gituserconfig.kmc
+[includeIf "gitdir:/Users/kevin/projects/nsv/"]
+  path = ~/.gituserconfig.nsv
 
-[includeIf "gitdir:~/projects/nsv/**"]
-	path = ~/.gituserconfig.nsv
+[includeIf "gitdir:/Users/kevin/projects/fete/"]
+  path = ~/.gituserconfig.nsv
 
-[includeIf "gitdir:/Users/kevin/projects/fete/**"]
-	path = ~/.gituserconfig.nsv
+[includeIf "gitdir:/Users/kevin/dev/work/"]
+  path = ~/.gituserconfig.work
 
 [column]
 	ui = auto

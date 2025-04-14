@@ -1,0 +1,112 @@
+# Usage: ssh-git-id [--fix]
+# Suggests or fixes the SSH alias in a Git remote using your ~/.ssh/config.d aliases
+function ssh-git-id() {
+  local fix=false
+  [[ "$1" == "--fix" ]] && fix=true
+
+  local remote host_alias repo_suffix new_url suggested_alias repo_path gitdir mapping
+  local config_dir="$HOME/.ssh/config.d"
+  local project_identities="$HOME/.ssh/.project-identities"
+
+  # Step 1: Parse current git remote
+  remote=$(git remote get-url origin 2>/dev/null) || {
+    echo "❌ Not a Git repo or no origin remote found"
+    return 1
+  }
+
+  host_alias=${remote#git@}
+  host_alias=${host_alias%%:*}
+  repo_suffix=${remote#*:}
+
+  echo "🔗 Git remote host: $host_alias"
+  echo "📦 Repo path: $repo_suffix"
+
+  # Step 2: Load known SSH aliases from ~/.ssh/config.d
+  local known_aliases=()
+  for file in "$config_dir"/*; do
+    [[ -f "$file" ]] || continue
+    while IFS= read -r line; do
+      [[ "$line" == Host\ * ]] && known_aliases+=("${line#Host }")
+    done < "$file"
+  done
+
+  known_aliases=($(printf '%s\n' "${known_aliases[@]}" | sort -u))
+
+  if [[ ${#known_aliases[@]} -eq 0 ]]; then
+    echo "❌ No SSH aliases found in $config_dir"
+    return 1
+  fi
+
+  # Step 3: If host_alias is not found, prompt to tailor
+  local alias_found=false
+  for alias in "${known_aliases[@]}"; do
+    [[ "$alias" == "$host_alias" ]] && alias_found=true && break
+  done
+
+  if $alias_found; then
+    echo "✅ Host alias '$host_alias' is already valid in ~/.ssh/config.d"
+    return 0
+  fi
+
+  echo "❌ Host alias '$host_alias' not found in SSH config"
+  echo "🔍 Searching for suggestions..."
+
+  local github_aliases=()
+  for alias in "${known_aliases[@]}"; do
+    [[ "$alias" == github.* ]] && github_aliases+=("$alias")
+  done
+
+  if [[ ${#github_aliases[@]} -eq 0 ]]; then
+    echo "❌ No GitHub-style aliases found in SSH config"
+    return 1
+  fi
+
+  # Step 4: Prompt with fzf or manual fallback
+  if command -v fzf >/dev/null; then
+    suggested_alias=$(printf '%s\n' "${github_aliases[@]}" | fzf --prompt="❓ Select SSH alias for '$host_alias': ")
+  else
+    echo "📋 GitHub aliases: ${github_aliases[*]}"
+    echo -n "🔧 Enter the alias to use for this Git remote: "
+    read suggested_alias
+  fi
+
+  if [[ -z "$suggested_alias" ]]; then
+    echo "⚠️ Cancelled. No alias selected."
+    return 1
+  fi
+
+  echo "✅ Selected alias: $suggested_alias"
+
+  # Step 5: Rewrite the remote and update .project-identities
+  new_url="git@${suggested_alias}:${repo_suffix}"
+  echo "💡 Suggested remote URL: $new_url"
+
+  if $fix; then
+    echo "🔁 Updating git remote origin..."
+    git remote set-url origin "$new_url" || {
+      echo "❌ Failed to update remote"
+      return 1
+    }
+
+    gitdir=$(git rev-parse --show-toplevel)
+    repo_path="$gitdir"
+    mapping="$repo_path $suggested_alias"
+
+    mkdir -p "$(dirname "$project_identities")"
+    touch "$project_identities"
+
+    if grep -qxF "$mapping" "$project_identities"; then
+      echo "📄 Mapping already exists in .project-identities:"
+    else
+      echo "$mapping" >> "$project_identities"
+      echo "📝 Added to .project-identities:"
+    fi
+
+    echo "    $mapping"
+
+    echo "🔌 Testing SSH connection..."
+    ssh -T -o IdentitiesOnly=yes -o ConnectTimeout=5 "git@$suggested_alias" 2>&1 | head -n 2
+  else
+    echo "💡 To apply: run \`ssh-git-id --fix\`"
+  fi
+}

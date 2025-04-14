@@ -1,0 +1,13 @@
+# Usage: ssh-use <key>
+# Loads a specific SSH key into the agent and logs usage
+function ssh-use() {
+  local key="$1"
+  local logfile="$HOME/.ssh/.ssh_use_history"
+  if [[ -z "$key" ]]; then
+    echo "Usage: ssh-use <key-filename> (e.g., github.kmcdev.id_ed25519)"
+    return 1
+  fi
+  ssh-add -D
+  ssh-add "$HOME/.ssh/identities/$key" && echo "✅ Now using: $key"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) $key" >> "$logfile"
+}

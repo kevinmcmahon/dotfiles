@@ -1,0 +1,49 @@
+# Usage: Auto-load SSH identity on cd into a Git repo
+# - Uses ~/.ssh/.project-identities if defined
+# - Falls back to parsing remote for alias
+# - Optionally writes back inferred mapping
+
+function _ssh_auto_load_identity() {
+  local repo_keymap="$HOME/.ssh/.project-identities"
+  local gitdir key host remote alias suggested_key
+
+  gitdir=$(git rev-parse --show-toplevel 2>/dev/null) || return
+
+  # Check if already defined in project-identities
+  key=$(grep "^$gitdir " "$repo_keymap" 2>/dev/null | awk '{print $2}')
+  if [[ -n "$key" ]]; then
+    if ! ssh-add -l | grep -q "$key"; then
+      echo "🔁 Loading identity for $(basename "$gitdir"): $key"
+      ssh-add -D
+      ssh-add "$HOME/.ssh/identities/$key"
+    fi
+    return
+  fi
+
+  # Fallback: try to infer from git remote
+  remote=$(git remote get-url origin 2>/dev/null) || return
+  alias=$(echo "$remote" | sed -E 's/.*@(.*):.*/\1/' | cut -d'.' -f1-2)
+
+  # Validate alias exists in config.d
+  if grep -q "Host $alias" ~/.ssh/config.d/* 2>/dev/null; then
+    suggested_key="$alias.id_ed25519"
+    echo "🤖 Suggesting key based on remote: $suggested_key"
+    echo "🔁 Loading identity: $suggested_key"
+    ssh-add -D
+    ssh-add "$HOME/.ssh/identities/$suggested_key"
+
+    # Prompt to remember
+    read -k 1 "save?💾 Save this mapping to .project-identities? [y/N] "
+    echo
+    if [[ "$save" == [yY] ]]; then
+      echo "$gitdir $suggested_key" >> "$repo_keymap"
+      echo "✅ Mapping saved: $gitdir $suggested_key"
+    fi
+  fi
+}
+
+# Hook on directory change
+autoload -Uz add-zsh-hook
+add-zsh-hook chpwd _ssh_auto_load_identity
+# Trigger on shell load
+_ssh_auto_load_identity

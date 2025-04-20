@@ -1,0 +1,5 @@
+# ~/.codex/config.yaml
+#model: o4-mini # Default model
+model: o4-mini-2025-04-16
+#model: gpt-4.1-2025-04-14
+fullAutoErrorMode: ask-user # or ignore-and-continue

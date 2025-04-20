@@ -206,9 +206,9 @@ autoload -Uz h
 autoload -Uz mdview
 autoload -Uz kitty-themes-fzf
 autoload -Uz add-zsh-hook
-autoload -Uz terraform
-autoload -Uz aws
-autoload -Uz direnv
+#autoload -Uz terraform
+#autoload -Uz aws
+#autoload -Uz direnv
 add-zsh-hook precmd update_kitty_tab_title
 
 source "${HOME}/dotfiles/zsh/functions/completions.zsh"

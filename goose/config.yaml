@@ -1,112 +1,177 @@
-GOOSE_MODEL: gemini-2.5-pro-exp-03-25
 extensions:
   browser-tools:
     args:
-      - "@agentdeskai/browser-tools-mcp@1.1.0"
+    - '@agentdeskai/browser-tools-mcp@1.1.0'
+    bundled: null
     cmd: npx
+    description: null
     enabled: true
+    envs: {}
     name: browser-tools
+    timeout: null
     type: stdio
   computercontroller:
+    bundled: true
+    display_name: Computer Controller
     enabled: true
     name: computercontroller
+    timeout: 300
     type: builtin
   developer:
+    bundled: true
+    display_name: Developer
     enabled: true
     name: developer
+    timeout: 300
     type: builtin
   fetch:
     args:
-      - mcp-server-fetch
+    - mcp-server-fetch
+    bundled: null
     cmd: uvx
+    description: null
     enabled: true
+    envs: {}
     name: fetch
+    timeout: null
     type: stdio
   filesystem:
     args:
-      - -y
-      - "@modelcontextprotocol/server-filesystem"
-      - /Users/kevin
-      - /Users/kevin/Desktop
-      - /Users/kevin/Documents
-      - /Users/kevin/Downloads
-      - /Users/kevin/sync/projects
-      - /Users/kevin/Action
+    - -y
+    - '@modelcontextprotocol/server-filesystem'
+    - /Users/kevin
+    - /Users/kevin/Desktop
+    - /Users/kevin/Documents
+    - /Users/kevin/Downloads
+    - /Users/kevin/sync/projects
+    - /Users/kevin/Action
+    bundled: null
     cmd: npx
+    description: null
     enabled: true
+    envs: {}
     name: filesystem
+    timeout: null
     type: stdio
   git:
     args:
-      - mcp-server-git
-      - --repository
-      - /Users/kevin/projects/python/doc_classifier
+    - mcp-server-git
+    - --repository
+    - /Users/kevin/projects/python/doc_classifier
+    bundled: null
     cmd: uvx
+    description: null
     enabled: true
+    envs: {}
     name: git
+    timeout: null
     type: stdio
   github:
     args:
-      - -y
-      - "@modelcontextprotocol/server-github"
+    - -y
+    - '@modelcontextprotocol/server-github'
+    bundled: null
     cmd: npx
+    description: null
     enabled: true
     envs:
       GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN}
     name: github
+    timeout: null
     type: stdio
   iterm-mcp:
     args:
-      - iterm-mcp
+    - iterm-mcp
+    bundled: null
     cmd: npx
+    description: null
     enabled: true
+    envs: {}
     name: iterm-mcp
+    timeout: null
     type: stdio
+  jetbrains:
+    bundled: true
+    display_name: Jetbrains
+    enabled: false
+    name: jetbrains
+    timeout: 300
+    type: builtin
   mcp-installer:
     args:
-      - "@anaisbetts/mcp-installer"
+    - '@anaisbetts/mcp-installer'
+    bundled: null
     cmd: npx
+    description: null
     enabled: true
+    envs: {}
     name: mcp-installer
+    timeout: null
     type: stdio
   memory:
+    bundled: true
+    display_name: Memory
     enabled: true
     name: memory
+    timeout: 300
     type: builtin
   puppeteer:
     args:
-      - -y
-      - "@modelcontextprotocol/server-puppeteer"
+    - -y
+    - '@modelcontextprotocol/server-puppeteer'
+    bundled: null
     cmd: npx
+    description: Puppeteer MCP Server
     enabled: true
-    name: puppeteer
+    envs: {}
+    name: Puppeteer
+    timeout: null
     type: stdio
   reddit:
     args:
-      - mcp-server-reddit
+    - mcp-server-reddit
+    bundled: null
     cmd: uvx
+    description: null
     enabled: true
+    envs: {}
     name: reddit
+    timeout: null
     type: stdio
   sequential-thinking:
     args:
-      - -y
-      - "@modelcontextprotocol/server-sequential-thinking"
+    - -y
+    - '@modelcontextprotocol/server-sequential-thinking'
+    bundled: null
     cmd: npx
+    description: null
     enabled: true
+    envs: {}
     name: sequential-thinking
+    timeout: null
     type: stdio
   tavily:
     args:
-      - -y
-      - tavily-mcp@0.1.4
+    - -y
+    - tavily-mcp@0.1.4
+    bundled: null
     cmd: npx
+    description: null
     enabled: true
     envs:
       TAVILY_API_KEY: ${TAVILY_API_KEY}
     name: tavily
+    timeout: null
     type: stdio
+  tutorial:
+    bundled: true
+    display_name: Tutorial
+    enabled: false
+    name: tutorial
+    timeout: 300
+    type: builtin
+GOOSE_MODE: smart_approve
 GOOSE_CLI_MIN_PRIORITY: 0.8
 GOOSE_PROVIDER: google
-GOOSE_MODE: smart_approve
 OLLAMA_HOST: localhost
+GOOSE_MODEL: gemini-2.5-pro-exp-03-25

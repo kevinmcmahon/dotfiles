@@ -21,3 +21,4 @@ vendor/bundle
 .goose/
 .aider*
 .mcp.json
+.claude/

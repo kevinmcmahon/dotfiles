@@ -469,5 +469,12 @@
         "GitHub.copilot",
         "GitHub.copilot-chat",
         "GitHub.vscode-pull-request-github"
-    ]
+    ],
+    "terminal.integrated.suggest.quickSuggestions": {
+        "commands": "on",
+        "arguments": "on",
+        "unknown": "off"
+    },
+    "terminal.integrated.suggest.enabled": true,
+    "terminal.integrated.fontLigatures.enabled": true
 }

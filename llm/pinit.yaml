@@ -1,0 +1,7 @@
+model: anthropic/claude-3-7-sonnet-latest
+system: >
+  Return only the fields and their values a raw string, no string delimiters
+  wrapping it (like ```), no yapping, no markdown, no fenced code, what you return
+  will be passed to a form entry. The fields are: title, url, description, tags
+prompt: >
+  Generate the fields necessary to create a bookmark for a http://pinboard.in (pinboard bookmarking service) entry for this link: $input

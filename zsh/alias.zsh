@@ -16,10 +16,10 @@ alias rmorig='find . -name "*.orig" -print0 | xargs -0 rm -rf'
  
 # llm and agents
 #alias llmg='llm -m gemini-2.0-flash'
-alias llmg='llm -m gemini-2.5-pro-exp-03-25'
+#alias llmg='llm -m gemini-2.5-pro-exp-03-25'
+alias llmg='llm -m gemini-2.5-pro-preview-05-06'
 alias l32='llm -m mlx-community/Llama-3.2-3B-Instruct-4bit'
 alias cmdhelp='llm -t cmd'
-
 
 alias claude='/Users/kevin/.claude/local/claude'
 alias cld='claude'
@@ -44,12 +44,19 @@ alias marked='open -a Marked\ 2'
 
 # In VS Code do `Cmd+Shift+P` then `Shell Command: Install 'code' command in PATH`
 alias ci='/usr/local/bin/code-insiders'
+alias code='/usr/local/bin/code-insiders'
 
 # Hide/show all desktop icons (useful when presenting)
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
 
 alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
+
+# remove any existing la/ll
+unalias la ll 2>/dev/null
+
+# long listing, human-readable sizes, “almost all” entries, with colors & icons
+alias ll='eza --long --color=always --icons=always --no-user'
 
 # git aliases
 alias g='git'
@@ -61,6 +68,7 @@ alias ga='git add'
 alias stash='git stash'
 alias pop='git stash pop'
 alias gldk='git lgdk'
+alias gdiff='g difftool'
 
 # Toggle wifi (add on or off after command)
 alias wifi="networksetup -setairportpower en0"

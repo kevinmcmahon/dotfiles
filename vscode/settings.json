@@ -23,7 +23,6 @@
     },
     "telemetry.telemetryLevel": "off",
     "vsicons.dontShowNewVersionMessage": true,
-
     // -------------------------------------------------------------------------
     // EDITOR BEHAVIOR & APPEARANCE
     // -------------------------------------------------------------------------
@@ -55,7 +54,6 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": "explicit"
     },
-
     // -------------------------------------------------------------------------
     // FILES & STORAGE
     // -------------------------------------------------------------------------
@@ -85,18 +83,22 @@
         "**/.vscode": true
     },
     "security.workspace.trust.untrustedFiles": "open",
-
     // -------------------------------------------------------------------------
     // TERMINAL SETTINGS
     // -------------------------------------------------------------------------
-
     // external terminal settings
     "terminal.external.osxExec": "/Applications/kitty.app/Contents/MacOS/kitty",
     "terminal.explorerKind": "external",
-
     // xterm.js settings
     "terminal.integrated.fontFamily": "'Monaspace Argon','FiraCode Nerd Font', 'Fira Code'",
     "terminal.integrated.fontSize": 12,
+    "terminal.integrated.suggest.quickSuggestions": {
+        "commands": "on",
+        "arguments": "on",
+        "unknown": "off"
+    },
+    "terminal.integrated.suggest.enabled": true,
+    "terminal.integrated.fontLigatures.enabled": true,
     "terminal.integrated.cursorStyle": "line",
     "terminal.integrated.defaultProfile.osx": "zsh",
     "terminal.integrated.env.osx": {},
@@ -114,16 +116,22 @@
     "terminal.integrated.profiles.osx": {
         "bash": {
             "path": "bash",
-            "args": ["-l"],
+            "args": [
+                "-l"
+            ],
             "icon": "terminal-bash"
         },
         "zsh": {
             "path": "zsh",
-            "args": ["-l"]
+            "args": [
+                "-l"
+            ]
         },
         "fish": {
             "path": "fish",
-            "args": ["-l"]
+            "args": [
+                "-l"
+            ]
         },
         "tmux": {
             "path": "tmux",
@@ -134,7 +142,6 @@
             "icon": "terminal-powershell"
         }
     },
-
     // -------------------------------------------------------------------------
     // DEBUG & DIAGNOSTICS
     // -------------------------------------------------------------------------
@@ -143,7 +150,6 @@
     "debug.terminal.clearBeforeReusing": true,
     "debug.internalConsoleOptions": "neverOpen",
     "diffEditor.renderSideBySide": true,
-
     // -------------------------------------------------------------------------
     // LANGUAGE SPECIFIC SETTINGS
     // -------------------------------------------------------------------------
@@ -201,7 +207,9 @@
     "[dart]": {
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
-        "editor.rulers": [80],
+        "editor.rulers": [
+            80
+        ],
         "editor.selectionHighlight": false,
         "editor.suggest.snippetsPreventQuickSuggestions": false,
         "editor.suggestSelection": "recentlyUsedByPrefix",
@@ -214,7 +222,6 @@
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-
     // -------------------------------------------------------------------------
     // CODE FORMATTING & LINTING
     // -------------------------------------------------------------------------
@@ -241,8 +248,16 @@
             "attr_quotes": "single"
         }
     },
-    "eslint.validate": ["javascript", "javascriptreact", "vue"],
-    "eslint.workingDirectories": [{ "mode": "auto" }],
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "vue"
+    ],
+    "eslint.workingDirectories": [
+        {
+            "mode": "auto"
+        }
+    ],
     "html.completion.attributeDefaultValue": "singlequotes",
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
     "sonarlint.rules": {
@@ -259,8 +274,7 @@
             "level": "off"
         }
     },
-    "sonarlint.pathToNodeExecutable": "/opt/homebrew/bin/node",
-
+    "sonarlint.pathToNodeExecutable": "/Users/kevin/.asdf/shims/node",
     // -------------------------------------------------------------------------
     // LANGUAGE & FRAMEWORK SETTINGS
     // -------------------------------------------------------------------------
@@ -302,38 +316,37 @@
     "node-module-intellisense.modulePaths": [],
     "json.schemas": [],
     "latex-workshop.view.pdf.viewer": "tab",
-
     // -------------------------------------------------------------------------
     // PACKAGE & PROJECT MANAGEMENT
     // -------------------------------------------------------------------------
     "npm.packageManager": "yarn",
     "redhat.telemetry.enabled": false,
     "versionlens.suggestions.showOnStartup": true,
-    "settingsSync.ignoredSettings": ["-sonarlint.pathToNodeExecutable"],
-
+    "settingsSync.ignoredSettings": [
+        "-sonarlint.pathToNodeExecutable"
+    ],
     // -------------------------------------------------------------------------
     // GIT & VERSION CONTROL
     // -------------------------------------------------------------------------
     "git.autofetch": true,
     "git.confirmSync": false,
     "git.openRepositoryInParentFolders": "always",
-
     // -------------------------------------------------------------------------
     // REMOTE DEVELOPMENT & CONTAINERS
     // -------------------------------------------------------------------------
-    "remote.SSH.defaultExtensions": ["gitpod.gitpod-remote-ssh"],
+    "remote.SSH.defaultExtensions": [
+        "gitpod.gitpod-remote-ssh"
+    ],
     "remote.SSH.remotePlatform": {
         "*.gitpod.io": "linux"
     },
     "dev.containers.dockerPath": "docker",
     "dev.containers.dockerComposePath": "docker-compose",
-
     // -------------------------------------------------------------------------
     // PATHS & LOCATIONS
     // -------------------------------------------------------------------------
     "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
     "application.shellEnvironmentResolutionTimeout": 20,
-
     // -------------------------------------------------------------------------
     // CLOUD & API SETTINGS (PATHS MOVED TO ENVIRONMENT VARIABLES)
     // -------------------------------------------------------------------------
@@ -342,7 +355,6 @@
     },
     "vscode-edge-devtools.webhint": false,
     "prisma.showPrismaDataPlatformNotification": false,
-
     // -------------------------------------------------------------------------
     // AI ASSISTANCE & EXTENSIONS
     // -------------------------------------------------------------------------
@@ -354,11 +366,6 @@
         "restructuredtext": false
     },
     "github.copilot.editor.enableAutoCompletions": true,
-    "cody.suggestions.mode": "auto-edit (Beta)",
-    "cody.commandCodeLenses": false,
-    "cody.telemetry.level": "off",
-    "cody.autocomplete.completeSuggestWidgetSelection": true,
-    "cody.autocomplete.formatOnAccept": true,
     "openctx.enable": true,
     "extensions.autoCheckUpdates": false,
     "extensions.ignoreRecommendations": true,
@@ -446,35 +453,12 @@
         "yzhang",
         "zignd"
     ],
-    "mcp": {
-        "servers": {
-            "playwright": {
-                "command": "npx",
-                "args": ["@playwright/mcp@latest"]
-            },
-            // "vscode": {
-            //   "command": "mcp-proxy",
-            //   "args": ["http://127.0.0.1:6010/sse"]
-            // },
-            "perplexity-ask": {
-                "command": "docker",
-                "args": ["run", "-i", "--rm", "-e", "PERPLEXITY_API_KEY", "mcp/perplexity-ask"],
-                "env": {
-                    "PERPLEXITY_API_KEY": "<YOUR_TOKEN>"
-                }
-            }
-        }
-    },
     "remote.defaultExtensionsIfInstalledLocally": [
         "GitHub.copilot",
         "GitHub.copilot-chat",
         "GitHub.vscode-pull-request-github"
     ],
-    "terminal.integrated.suggest.quickSuggestions": {
-        "commands": "on",
-        "arguments": "on",
-        "unknown": "off"
-    },
-    "terminal.integrated.suggest.enabled": true,
-    "terminal.integrated.fontLigatures.enabled": true
+    "mcpServer.startOnActivate": false,
+    "chat.mcp.enabled": false,
+    "chat.mcp.discovery.enabled": true
 }

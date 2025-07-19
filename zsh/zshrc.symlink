@@ -182,6 +182,7 @@ done
 # Command line tool completions
 command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
 command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
+command -v ngrok &>/dev/null && eval "$(ngrok completion)"
 
 _uv_run_mod() {
     if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then

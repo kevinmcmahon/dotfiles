@@ -1,6 +1,21 @@
-## Python
+# Python Development
 
-- I prefer to use uv for everything (uv add, uv run, etc)
-- Do not use old fashioned methods for package management like poetry, pip or easy_install.
+- **Version**: Python 3.11+ with type annotations
+- **Package Management**: Use `uv` exclusively (no poetry, pip, or easy_install)
+- **Project Setup**: Ensure `pyproject.toml` exists (create with `uv init` if missing)
+- **Import Order**: Standard library → Third-party → Local (alphabetically)
+- **Error Handling**: Use custom exceptions with specific types
+- **Naming Conventions**:
+  - `snake_case` for variables and functions
+  - `PascalCase` for classes
+- **Documentation**: Clear docstrings with parameter descriptions
+- **Type Hints**: Extensive typing with TypedDict for structured data
+- **Formatting**:
+  - 4 spaces for indentation
+  - `ruff format` for code formatting
+  - `isort` for import sorting
+- **Linting**:
+  - `ruff check` for linting
+  - `mypy` for type checking
 - Make sure that there is a pyproject.toml file in the root directory.
 - If there isn't a pyproject.toml file, create one using uv by running uv init.

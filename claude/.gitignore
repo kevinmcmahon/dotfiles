@@ -2,5 +2,6 @@ statsig
 local
 todos
 projects
+ide
 
 *.db

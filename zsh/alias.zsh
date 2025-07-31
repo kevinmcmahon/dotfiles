@@ -23,6 +23,7 @@ alias cmdhelp='llm -t cmd'
 
 alias claude='/Users/kevin/.claude/local/claude'
 alias cld='claude'
+alias cldy='claude --dangerously-skip-permissions'
 alias ccusage='npx ccusage@latest'
 
 alias repomix='npx repomix@latest'

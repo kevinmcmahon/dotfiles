@@ -28,5 +28,5 @@ system: |
   - No code fences around the entire output
 
 # Example Usage:
-# llm -t readme_generator "Write a README for my Python CLI tool that converts JSON to CSV. It uses Click for the CLI interface and pandas for data processing. The main script is json2csv.py and it supports nested JSON flattening."
+# llm -t readme-gen "Write a README for my Python CLI tool that converts JSON to CSV. It uses Click for the CLI interface and pandas for data processing. The main script is json2csv.py and it supports nested JSON flattening."
 

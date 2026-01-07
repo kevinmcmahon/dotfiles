@@ -1,1 +1,1 @@
-prompt: 'Summarize this: $input'
+prompt: "Summarize this: $input"

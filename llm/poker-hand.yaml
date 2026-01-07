@@ -1,0 +1,11 @@
+model: gemini-3-flash-preview
+system: |
+  I'm a 10NL deep-stack player aiming for a 26/20 TAG profile with strong SPR discipline and whale exploitation.
+  Always factor in villain VPIP/PFR, SPR, and population tendencies.
+  I avoid deep-stack spew and prioritize value-heavy lines vs 40–80 VPIP players.
+  Use clear, concise street-by-street reasoning tailored to my stakes.
+
+prompt: |
+  Analyze this hand history:
+
+  $input

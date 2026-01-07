@@ -1,4 +1,4 @@
-model: anthropic/claude-3-7-sonnet-latest
+model: claude-opus-4.5
 
 prompt: >
   I have a codebase analysis represented in the file provided below. Please analyze this content and provide a comprehensive summary of the codebase with the following elements:
@@ -20,15 +20,15 @@ prompt: >
      - Apparent coding standards
      - Potential technical debt areas
      - Test coverage (if detectable)
-  
+
   7. **Potential Issues**: Highlight any red flags, anti-patterns, or areas that might need improvement.
-  
+
   8. **Dependencies**: List critical external dependencies and their usage.
-  
+
   9. **Summary Recommendations**: Suggest 3-5 areas for potential improvement or optimization.
-  
+
   Please ensure your analysis is objective and based solely on the provided content. Focus on providing actionable insights rather than just listing files. Include code structure insights when relevant to understanding the project architecture.
-  
+
   ---
-  
+
   $input

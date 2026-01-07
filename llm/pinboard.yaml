@@ -1,5 +1,5 @@
 # pinboard-bookmark.yaml
-model: anthropic/claude-sonnet-4-0
+model: claude-opus-4.5
 
 system: |
   You are a bookmark extraction assistant. Fetch the web page content and extract bookmark data.

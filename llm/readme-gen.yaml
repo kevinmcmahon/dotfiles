@@ -1,4 +1,4 @@
-model: anthropic/claude-sonnet-4-0
+model: claude-opus-4.5
 system: |
   You are a senior product engineer responsible for creating exceptional code, products, and successful companies.
 

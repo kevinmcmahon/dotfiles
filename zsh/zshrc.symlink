@@ -1,5 +1,10 @@
 # ~/.zshrc
 
+# Auto-attach to tmux on SSH/Mosh (must be first - before any heavy initialization)
+if [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" || -n "$MOSH" ]]; then
+    tmux attach -t main 2>/dev/null || tmux new -s main
+fi
+
 # Check if .zshenv ran correctly
 if [[ -z "$ZSHENV_LOADED" ]]; then
   echo "⚠️  Warning: .zshenv was not sourced. Some variables may be missing."

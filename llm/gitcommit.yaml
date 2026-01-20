@@ -1,5 +1,3 @@
-#model: gemini-2.5-pro
-#model: gemini-2.5-flash
 model: anthropic/claude-sonnet-4-0
 prompt: >
   Write a descriptive commit following the Conventional Commits specification describing the changes in the following diff.
@@ -7,7 +5,7 @@ prompt: >
 
   Think carefully before you write your commit message.
 
-  Don't add fluff. No string delimiters wrapping it (like ```), no yapping, no markdown, no fenced code.
+  DO NOT add fluff. No string delimiters wrapping it (like ```), no yapping, no markdown, no fenced code. ONLY OUTPUT THE COMMIT MESSAGE using the template.
 
   <template>
   <type>: <gitmoji> <description>

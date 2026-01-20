@@ -21,8 +21,16 @@ fi
 
 source ~/dotfiles/bash/bash_complete/adb
 source ~/dotfiles/bash/bash_complete/gradle
-source ~/.git_completion.sh
-source ~/.git-prompt.sh
+
+# Git completion and prompt
+[[ -f ~/dotfiles/git/git_completion.sh ]] && source ~/dotfiles/git/git_completion.sh
+[[ -f ~/dotfiles/git/git-prompt.sh ]] && source ~/dotfiles/git/git-prompt.sh
+
+# Git prompt configuration
+export GIT_PS1_SHOWDIRTYSTATE=1        # Show * for unstaged, + for staged
+export GIT_PS1_SHOWSTASHSTATE=1        # Show $ if something is stashed
+export GIT_PS1_SHOWUNTRACKEDFILES=1    # Show % if untracked files exist
+export GIT_PS1_SHOWUPSTREAM="auto"     # Show <, >, <>, = for behind/ahead/diverged/equal
 
 source ~/dotfiles/bash/functions.bash
 

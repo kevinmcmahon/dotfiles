@@ -25,7 +25,7 @@ clone_if_missing() {
 # Check dependencies
 # -----------------------------
 for cmd in git curl zsh; do
-  if ! command -v $cmd &>/dev/null; then
+  if ! command -v "$cmd" &>/dev/null; then
     echo "Error: $cmd is required but not installed."
     exit 1
   fi
@@ -50,7 +50,18 @@ fi
 # -----------------------------
 # Remove stock configs
 # -----------------------------
-rm -f "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.zshenv" "$HOME/.zsh"
+rm -f "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.zshenv"
+
+# Normalize ~/.zsh to be a directory (not a symlink)
+if [[ -L "$HOME/.zsh" ]]; then
+  rm -f "$HOME/.zsh"
+elif [[ -d "$HOME/.zsh" ]]; then
+  # keep directory; we'll refresh ~/.zsh/env inside it
+  true
+else
+  rm -f "$HOME/.zsh" 2>/dev/null || true
+fi
+mkdir -p "$HOME/.zsh"
 
 # -----------------------------
 # Symlinks
@@ -59,13 +70,16 @@ echo "Creating symlinks..."
 ln -sf "$DOTFILES_DIR/zshrc.symlink" "$HOME/.zshrc"
 ln -sf "$DOTFILES_DIR/zprofile.symlink" "$HOME/.zprofile"
 ln -sf "$DOTFILES_DIR/zshenv.symlink" "$HOME/.zshenv"
-ln -sf "$DOTFILES_DIR/env" "$HOME/.zsh"
+
+# macOS-style layout everywhere:
+# ~/.zsh/env -> $DOTFILES_DIR/env
+ln -snf "$DOTFILES_DIR/env" "$HOME/.zsh/env"
 
 echo "Created symlinks:"
-echo "  ~/.zshrc -> $DOTFILES_DIR/zshrc.symlink"
+echo "  ~/.zshrc    -> $DOTFILES_DIR/zshrc.symlink"
 echo "  ~/.zprofile -> $DOTFILES_DIR/zprofile.symlink"
-echo "  ~/.zshenv -> $DOTFILES_DIR/zshenv.symlink"
-echo "  ~/.zsh -> $DOTFILES_DIR/env"
+echo "  ~/.zshenv   -> $DOTFILES_DIR/zshenv.symlink"
+echo "  ~/.zsh/env  -> $DOTFILES_DIR/env"
 
 # -----------------------------
 # Install plugins

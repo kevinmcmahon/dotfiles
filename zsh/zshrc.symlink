@@ -11,18 +11,27 @@ if [[ -z "$ZSHENV_LOADED" ]]; then
 fi
 
 # Load core functions and configurations
-[[ -f "${HOME}/.zsh/core/functions.zsh" ]] && source "${HOME}/.zsh/core/functions.zsh" || echo "Warning: Core functions not found"
-load_env_dir "${HOME}/.zsh/core"
+ZSH_ENV_ROOT="${HOME}/.zsh/env"
+
+CORE_FUNCS="${ZSH_ENV_ROOT}/core/functions.zsh"
+if [[ -f "$CORE_FUNCS" ]]; then
+  source "$CORE_FUNCS"
+else
+  echo "Warning: Core functions not found: $CORE_FUNCS"
+  return 0 2>/dev/null || exit 0
+fi
+
+load_env_dir "${ZSH_ENV_ROOT}/core"
 
 # Load platform-specific configurations
-if [[ $IS_MACOS -eq 1 ]]; then
-    load_env_file "$HOME/.zsh/platform/macos.zsh"
-elif [[ $IS_LINUX -eq 1 ]]; then
-    load_env_file "$HOME/.zsh/platform/linux.zsh"
+if [[ ${IS_MACOS:-0} -eq 1 ]]; then
+  load_env_file "${ZSH_ENV_ROOT}/platform/macos.zsh"
+elif [[ ${IS_LINUX:-0} -eq 1 ]]; then
+  load_env_file "${ZSH_ENV_ROOT}/platform/linux.zsh"
 fi
 
 # Load optional configurations last
-load_env_file "${HOME}/.zsh/optional/private.zsh"
+load_env_file "${ZSH_ENV_ROOT}/optional/private.zsh"
 
 # Path to your oh-my-zsh installation.
 export ZSH="${HOME}/.oh-my-zsh"

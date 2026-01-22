@@ -1,131 +1,262 @@
-# 🛠 Git Configuration
+# Git Configuration
 
-This directory contains a curated set of Git configurations, hooks, secrets, and helper scripts optimized for professional development workflows, LLM-assisted commits, and security hygiene.
-
----
-
-## 🧩 Structure
-
-### Global Git Configs
-
-- **`gitconfig.symlink`** – the primary `.gitconfig`, symlinked to `~/.gitconfig`
-- **Includes conditional user profiles**:
-  - `~/.gituserconfig.work` – work email + GitHub username
-  - `~/.gituserconfig.kmc`, `~/.gituserconfig.nsv` – alternate project-specific identities
-
-### Hook Configuration
-
-- All hooks are stored in:
-
-  ```
-  ~/.git-core/hooks/
-  ```
-
-- This path is configured globally in Git:
-
-  ```ini
-  [core]
-    hooksPath = ~/.git-core/hooks
-  ```
+Cross-platform Git configuration with OS-specific settings, security hooks, and LLM-assisted commits.
 
 ---
 
-## 🔐 Git Hooks
+## Structure
 
-### LFS-Aware Hooks (safe by default)
-
-The following Git hooks are now **LFS-aware**, meaning they:
-
-- Only run if `filter.lfs.required = true` is set in the current repo
-- Quietly skip if `git-lfs` is missing or not needed
-
-| Hook               | Purpose                          |
-|--------------------|----------------------------------|
-| `post-checkout`    | Triggers `git lfs post-checkout` |
-| `post-merge`       | Triggers `git lfs post-merge`    |
-| `post-commit`      | Triggers `git lfs post-commit`   |
-| `pre-push`         | Triggers `git lfs pre-push`      |
-
-Each of these is now idempotent and won't interfere with Homebrew or other non-LFS repos.
+```
+git/
+├── gitconfig.symlink          # Main config → ~/.gitconfig
+├── gitconfig-macos.symlink    # macOS overrides → ~/.gitconfig-macos
+├── gitconfig-linux.symlink    # Linux overrides → ~/.gitconfig-linux
+├── gitignore_global.symlink   # Global ignores → ~/.gitignore_global
+├── gitattributes.symlink      # Diff/merge rules → ~/.gitattributes
+├── gituserconfig.symlink      # Default user identity → ~/.gituserconfig
+├── gituserconfig.*.symlink    # Project-specific identities
+├── git-core.symlink/          # Global hooks & secrets → ~/.git-core/
+│   ├── hooks/
+│   │   ├── pre-commit         # git-secrets scan
+│   │   ├── commit-msg         # git-secrets scan
+│   │   ├── prepare-commit-msg # git-secrets + LLM assist
+│   │   ├── post-checkout      # LFS (if enabled)
+│   │   ├── post-commit        # LFS (if enabled)
+│   │   ├── post-merge         # LFS (if enabled)
+│   │   └── pre-push           # LFS (if enabled)
+│   └── secrets/
+│       ├── patterns           # Blocked patterns (AWS, GitHub tokens)
+│       └── allowed            # Exceptions
+└── git-templates.symlink/     # Template for new repos
+```
 
 ---
+
+## Cross-Platform Setup
+
+The config auto-detects OS using `includeIf` based on home directory path:
+
+```ini
+[includeIf "gitdir:/Users/"]
+    path = ~/.gitconfig-macos
+
+[includeIf "gitdir:/home/"]
+    path = ~/.gitconfig-linux
+```
+
+### macOS Settings (`gitconfig-macos.symlink`)
+
+| Setting | Value |
+|---------|-------|
+| Diff tool | Kaleidoscope |
+| Merge tool | Kaleidoscope |
+| Credential helper | osxkeychain |
+| Plist diffs | plutil textconv |
+| fsmonitor | enabled |
+
+### Linux Settings (`gitconfig-linux.symlink`)
+
+| Setting | Value |
+|---------|-------|
+| Pager | delta (side-by-side, syntax highlighted) |
+| Diff tool | nvimdiff |
+| Merge tool | nvimdiff |
+| Credential helper | cache (24hr timeout) |
+| fsmonitor | enabled |
+
+---
+
+## Installation
+
+### macOS
+
+Symlinks are typically created by your dotfiles bootstrap. Manually:
+
+```bash
+ln -sf ~/dotfiles/git/gitconfig.symlink ~/.gitconfig
+ln -sf ~/dotfiles/git/gitconfig-macos.symlink ~/.gitconfig-macos
+ln -sf ~/dotfiles/git/gitignore_global.symlink ~/.gitignore_global
+ln -sf ~/dotfiles/git/git-core.symlink ~/.git-core
+```
+
+### Linux
+
+The `bootstrap-linux-dev.sh` script handles all symlinks. Manually:
+
+```bash
+ln -sf ~/dotfiles/git/gitconfig.symlink ~/.gitconfig
+ln -sf ~/dotfiles/git/gitconfig-linux.symlink ~/.gitconfig-linux
+ln -sf ~/dotfiles/git/gitignore_global.symlink ~/.gitignore_global
+ln -sf ~/dotfiles/git/git-core.symlink ~/.git-core
+```
+
+Install delta for enhanced diffs:
+
+```bash
+cargo install git-delta
+```
+
+### Verify Setup
+
+```bash
+# Check config loads without errors
+git config --list >/dev/null && echo "Config OK"
+
+# Check OS-specific settings loaded
+git config --get core.pager      # Linux: delta
+git config --get diff.tool       # macOS: Kaleidoscope, Linux: nvimdiff
+git config --get credential.helper
+
+# Check aliases work
+git config --get alias.st
+```
+
+---
+
+## User Identity
+
+Conditional includes set user identity per project directory:
+
+```ini
+[includeIf "gitdir:/Users/kevin/projects/kmc/"]
+    path = ~/.gituserconfig.kmc
+
+[includeIf "gitdir:/Users/kevin/dev/work/"]
+    path = ~/.gituserconfig.work
+```
+
+Create identity files from template:
+
+```bash
+cp gituserconfig.template ~/.gituserconfig.work
+# Edit with your work email/username
+```
+
+---
+
+## Hooks
+
+All hooks are in `~/.git-core/hooks/` (set via `core.hooksPath`).
 
 ### Security Hooks
 
-- **`pre-commit`**, **`commit-msg`**, **`prepare-commit-msg`** all invoke [`git-secrets`](https://github.com/awslabs/git-secrets) to prevent committing:
-  - AWS credentials
-  - Access keys
-  - Project-specific patterns (`secrets/patterns`, `secrets/allowed`)
+`pre-commit`, `commit-msg`, and `prepare-commit-msg` invoke `git-secrets` to block:
+
+- AWS access keys (`AKIA...`)
+- AWS secret keys
+- GitHub tokens (`ghp_`, `gho_`, `ghu_`, `ghs_`, `ghr_`, `github_pat_`)
+
+### LFS Hooks
+
+`post-checkout`, `post-commit`, `post-merge`, `pre-push` handle Git LFS. They:
+
+- Only run if the repo has `filter=lfs` in `.gitattributes`
+- Skip silently if `git-lfs` isn't installed
+- Won't interfere with non-LFS repos
+
+### LLM Commit Assistance
+
+`prepare-commit-msg` can invoke `prepare-commit-msg-llm` to generate commit messages using the `llm` CLI. Set `SKIP_LLM_GITHOOK=1` to disable.
 
 ---
 
-## 🤖 LLM Commit Assistance
+## Secrets Scanning
 
-- `prepare-commit-msg-llm` is invoked via `prepare-commit-msg` unless `SKIP_LLM_GITHOOK` is set
-- It:
-  - Captures the staged diff
-  - Pipes it into the `llm` CLI
-  - Appends the generated commit message (with a separator) to the original message for review
+Patterns in `~/.git-core/secrets/patterns`:
 
----
+```
+# AWS keys
+(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}
 
-## 🧼 Ignore & Diff Customizations
+# GitHub tokens
+ghp_[A-Za-z0-9]{36,}
+gho_[A-Za-z0-9]{36,}
+ghu_[A-Za-z0-9]{36,}
+ghs_[A-Za-z0-9]{36,}
+ghr_[A-Za-z0-9]{36,}
+github_pat_[A-Za-z0-9]{22}_[A-Za-z0-9]{59}
+```
 
-### Global `.gitignore`
+Test scanning:
 
-Configured in `core.excludesfile = ~/.gitignore_global`  
-Includes patterns for:
-
-- macOS artifacts
-- JetBrains and language-specific IDE files
-- Temp files (`~`, `.envrc`, `.mcp.json`)
-
-### `.gitattributes`
-
-Handles:
-
-- UTF-16 diffing
-- Plist binary diffs
-- Binary file handling
-- Cross-platform line endings
+```bash
+git secrets --scan
+git secrets --scan-history
+```
 
 ---
 
-## 🔧 Merge & Diff Tools
+## Aliases
 
-- All diff and merge tools default to [Kaleidoscope](https://www.kaleidoscope.app/):
-
-  ```ini
-  [merge]
-    tool = Kaleidoscope
-  [diff]
-    tool = Kaleidoscope
-  ```
-
-- Includes textconv rules for:
-  - `.strings` → UTF-8 via `iconv`
-  - `.plist` → XML via `plutil`
-
----
-
-## 🧪 Helpful Aliases
-
-Defined in `[alias]` in `gitconfig.symlink`:
-
-| Alias        | Command                                                            |
-|--------------|---------------------------------------------------------------------|
-| `st`         | `status -s`                                                         |
-| `lg`         | Rich commit graph w/ color & history                                |
-| `standup`    | Changes from "yesterday" by Kevin                                   |
-| `releasenotes` | Markdown-formatted changelog from last tag                       |
-| `previoustag` | Retrieves previous tag for diff/release tracking                   |
-| `new`        | Init new repo with `main` as default branch                         |
+| Alias | Command |
+|-------|---------|
+| `st` | `status -s` |
+| `co` | `checkout` |
+| `br` | `branch` |
+| `ci` | `commit -v` |
+| `df` | `diff` |
+| `lg` | Pretty log graph with colors |
+| `aa` | `add --all` |
+| `amend` | Amend last commit, reuse message |
+| `undo` | `reset --hard` (use with caution) |
+| `standup` | Yesterday's commits by author |
+| `releasenotes` | Markdown changelog from last tag |
+| `new` | Init repo with `main` branch |
 
 ---
 
-## 📎 Notes
+## Troubleshooting
 
-- Global Git setup is workspace-aware via `includeIf "gitdir:"` blocks
-- The system is optimized for project switching, safe key handling, and LLM usage
-- `git-lfs` integration is *opt-in*, hook-aware, and non-intrusive in non-LFS repos
+### Config parse error
 
+Check for merge conflict markers or invalid syntax:
+
+```bash
+git config --list
+```
+
+If broken, bypass with:
+
+```bash
+GIT_CONFIG_GLOBAL=/dev/null git status
+```
+
+### Hooks not running
+
+```bash
+git config --get core.hooksPath  # Should be ~/.git-core/hooks
+ls -la ~/.git-core/hooks/
+```
+
+### Delta not working (Linux)
+
+```bash
+which delta  # Should return a path
+git config --get core.pager  # Should be "delta"
+```
+
+### fsmonitor issues
+
+Disable in your local config:
+
+```bash
+git config --global core.fsmonitor false
+```
+
+---
+
+## Shell Integration (Bash Only)
+
+For Zsh, use oh-my-zsh git plugin or starship prompt instead.
+
+### Bash Setup
+
+```bash
+[[ -f ~/dotfiles/git/git_completion.sh ]] && source ~/dotfiles/git/git_completion.sh
+[[ -f ~/dotfiles/git/git-prompt.sh ]] && source ~/dotfiles/git/git-prompt.sh
+
+export GIT_PS1_SHOWDIRTYSTATE=1
+export GIT_PS1_SHOWSTASHSTATE=1
+export GIT_PS1_SHOWUNTRACKEDFILES=1
+export GIT_PS1_SHOWUPSTREAM="auto"
+```

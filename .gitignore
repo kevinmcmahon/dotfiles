@@ -16,3 +16,6 @@ codex/sessions
 **/.local/share/nvim/
 **/.local/state/nvim/
 **/.cache/nvim/
+
+codex/auth.json
+

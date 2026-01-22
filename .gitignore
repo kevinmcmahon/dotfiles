@@ -11,3 +11,8 @@ gituserconfig.*
 claude/claude_desktop_config.json
 claude/mcp.json
 codex/sessions
+
+# Neovim caches (never commit)
+**/.local/share/nvim/
+**/.local/state/nvim/
+**/.cache/nvim/

@@ -1,0 +1,33 @@
+# Linux-specific git configuration
+# Included via: [includeIf "gitdir:/home/"]
+
+[core]
+	pager = delta
+	fsmonitor = true
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true
+	line-numbers = true
+	side-by-side = true
+	syntax-theme = Dracula
+
+[diff]
+	tool = nvimdiff
+	colorMoved = default
+
+[difftool "nvimdiff"]
+	cmd = nvim -d \"$LOCAL\" \"$REMOTE\"
+
+[merge]
+	tool = nvimdiff
+	conflictstyle = zdiff3
+
+[mergetool "nvimdiff"]
+	cmd = nvim -d \"$LOCAL\" \"$MERGED\" \"$REMOTE\" -c 'wincmd J'
+	trustExitCode = true
+
+[credential]
+	helper = cache --timeout=86400

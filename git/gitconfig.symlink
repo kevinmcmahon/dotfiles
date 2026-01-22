@@ -4,8 +4,16 @@
 [include]
 	path = .gituserconfig
 
+# OS-specific configuration (auto-detected by home directory path)
+[includeIf "gitdir:/Users/"]
+	path = ~/.gitconfig-macos
+
+[includeIf "gitdir:/home/"]
+	path = ~/.gitconfig-linux
+
+# Project-specific user identity (macOS paths)
 [includeIf "gitdir:/Users/kevin/projects/kmc/"]
-  path = ~/.gituserconfig.kmc
+	path = ~/.gituserconfig.kmc
 
 [includeIf "gitdir:/Users/kevin/sync/projects/kmc/"]
   path = ~/.gituserconfig.kmc
@@ -75,8 +83,7 @@
 	editor = vim
 	excludesfile = ~/.gitignore_global
 	hooksPath = ~/.git-core/hooks
-  untrackedCache = true
-  fsmonitor = true
+	untrackedCache = true
 
 [push]
 	default = simple
@@ -92,35 +99,23 @@
 	updateRefs = true
 
 [diff]
-	tool = Kaleidoscope
-  algorithm = histogram 
-  colorMoved = plain
-  mnemonicPrefix = true
-  renames = true
+	algorithm = histogram
+	colorMoved = plain
+	mnemonicPrefix = true
+	renames = true
 
 [difftool]
 	prompt = false
 
-[difftool "Kaleidoscope"]
-	cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
-	
-[diff "plist"]
-	textconv = plutil -convert xml1 -o -
-	
 [diff "localizablestrings"]
 	textconv = "iconv -f utf-16 -t utf-8"
 
 [merge]
-	tool = Kaleidoscope
 	ff = only
 
 [mergetool]
 	prompt = false
 	keepBackup = false
-
-[mergetool "Kaleidoscope"]
-	cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
-	trustExitCode = true
 
 [filter "media"]
 	clean = git media clean %f
@@ -145,9 +140,6 @@
 	patterns = ghr_[A-Za-z0-9]{36,}
 	patterns = github_pat_[A-Za-z0-9]{22}_[A-Za-z0-9]{59}
 
-[credential]
-	helper = osxkeychain
-
 [credential "https://huggingface.co"]
 	provider = generic
 
@@ -156,3 +148,5 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[maintenance]
+	repo = /Users/kevin/dotfiles

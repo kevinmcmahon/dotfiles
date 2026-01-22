@@ -83,6 +83,7 @@ symlink_dotfiles_symlink_pattern() {
   [ -d "$DOTFILES_DIR" ] || die "DOTFILES_DIR not found: $DOTFILES_DIR"
 
   shopt -s nullglob
+  # Symlink root-level *.symlink files
   for f in "$DOTFILES_DIR"/*.symlink; do
     base="$(basename "$f" .symlink)"
     target="$HOME/.${base}"
@@ -99,6 +100,35 @@ symlink_dotfiles_symlink_pattern() {
     ln -sf "$f" "$target"
     log "Linked $target -> $f"
   done
+
+  # Symlink git/*.symlink files (gitconfig, gitignore_global, etc.)
+  for f in "$DOTFILES_DIR"/git/*.symlink; do
+    base="$(basename "$f" .symlink)"
+    target="$HOME/.${base}"
+    if [ -L "$target" ] || [ -e "$target" ]; then
+      if [ -L "$target" ] && [ "$(readlink "$target")" = "$f" ]; then
+        continue
+      fi
+      backup="${target}.bak.$(date +%Y%m%d-%H%M%S)"
+      warn "Backing up existing $target -> $backup"
+      mv "$target" "$backup"
+    fi
+    ln -sf "$f" "$target"
+    log "Linked $target -> $f"
+  done
+
+  # Symlink git-core directory for hooks and secrets
+  git_core_src="$DOTFILES_DIR/git/git-core.symlink"
+  git_core_dst="$HOME/.git-core"
+  if [ -d "$git_core_src" ]; then
+    if [ -e "$git_core_dst" ] && [ ! -L "$git_core_dst" ]; then
+      backup="${git_core_dst}.bak.$(date +%Y%m%d-%H%M%S)"
+      warn "Backing up existing $git_core_dst -> $backup"
+      mv "$git_core_dst" "$backup"
+    fi
+    ln -snf "$git_core_src" "$git_core_dst"
+    log "Linked $git_core_dst -> $git_core_src"
+  fi
   shopt -u nullglob
 }
 

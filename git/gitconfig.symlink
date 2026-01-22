@@ -113,19 +113,19 @@
 [merge]
 	tool = Kaleidoscope
 	ff = only
-		keepBackup = false
 
 [mergetool]
-		prompt = false
+	prompt = false
+	keepBackup = false
 
 [mergetool "Kaleidoscope"]
 	cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
-		trustExitCode = true
+	trustExitCode = true
 
 [filter "media"]
 	clean = git media clean %f
 	smudge = git media smudge %f
-		required = true
+	required = true
 
 [fetch]
 	prune = true
@@ -134,8 +134,16 @@
 
 [secrets]
 	providers = git secrets --aws-provider
-	patterns = @~/.git-core/secrets/patterns
 	allowed = @~/.git-core/secrets/allowed
+	# AWS key patterns
+	patterns = (A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}
+	# GitHub tokens (classic and fine-grained)
+	patterns = ghp_[A-Za-z0-9]{36,}
+	patterns = gho_[A-Za-z0-9]{36,}
+	patterns = ghu_[A-Za-z0-9]{36,}
+	patterns = ghs_[A-Za-z0-9]{36,}
+	patterns = ghr_[A-Za-z0-9]{36,}
+	patterns = github_pat_[A-Za-z0-9]{22}_[A-Za-z0-9]{59}
 
 [credential]
 	helper = osxkeychain

@@ -1,9 +1,11 @@
 # ~/.zshrc
 
 # Auto-attach to tmux on SSH/Mosh (must be first - before any heavy initialization)
-if [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" || -n "$MOSH" ]]; then
+if command -v tmux >/dev/null 2>&1; then
+  if [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" || -n "$MOSH" ]]; then
     tmux attach -t main 2>/dev/null || tmux new -s main
-fi
+  fi
+fi 
 
 # Check if .zshenv ran correctly
 if [[ -z "$ZSHENV_LOADED" ]]; then
@@ -12,6 +14,12 @@ fi
 
 # Load core functions and configurations
 ZSH_ENV_ROOT="${HOME}/.zsh/env"
+
+# Sanity check: expected layout
+if [[ ! -d "$ZSH_ENV_ROOT" ]]; then
+  echo "⚠️  Warning: expected $ZSH_ENV_ROOT to exist"
+  return 0 2>/dev/null || exit 0
+fi 
 
 CORE_FUNCS="${ZSH_ENV_ROOT}/core/functions.zsh"
 if [[ -f "$CORE_FUNCS" ]]; then
@@ -32,6 +40,8 @@ fi
 
 # Load optional configurations last
 load_env_file "${ZSH_ENV_ROOT}/optional/private.zsh"
+
+unset ZSH_ENV_ROOT CORE_FUNCS
 
 # Path to your oh-my-zsh installation.
 export ZSH="${HOME}/.oh-my-zsh"

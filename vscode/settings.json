@@ -116,22 +116,16 @@
     "terminal.integrated.profiles.osx": {
         "bash": {
             "path": "bash",
-            "args": [
-                "-l"
-            ],
+            "args": ["-l"],
             "icon": "terminal-bash"
         },
         "zsh": {
             "path": "zsh",
-            "args": [
-                "-l"
-            ]
+            "args": ["-l"]
         },
         "fish": {
             "path": "fish",
-            "args": [
-                "-l"
-            ]
+            "args": ["-l"]
         },
         "tmux": {
             "path": "tmux",
@@ -207,9 +201,7 @@
     "[dart]": {
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
-        "editor.rulers": [
-            80
-        ],
+        "editor.rulers": [80],
         "editor.selectionHighlight": false,
         "editor.suggest.snippetsPreventQuickSuggestions": false,
         "editor.suggestSelection": "recentlyUsedByPrefix",
@@ -248,11 +240,7 @@
             "attr_quotes": "single"
         }
     },
-    "eslint.validate": [
-        "javascript",
-        "javascriptreact",
-        "vue"
-    ],
+    "eslint.validate": ["javascript", "javascriptreact", "vue"],
     "eslint.workingDirectories": [
         {
             "mode": "auto"
@@ -322,9 +310,7 @@
     "npm.packageManager": "yarn",
     "redhat.telemetry.enabled": false,
     "versionlens.suggestions.showOnStartup": true,
-    "settingsSync.ignoredSettings": [
-        "-sonarlint.pathToNodeExecutable"
-    ],
+    "settingsSync.ignoredSettings": ["-sonarlint.pathToNodeExecutable"],
     // -------------------------------------------------------------------------
     // GIT & VERSION CONTROL
     // -------------------------------------------------------------------------
@@ -334,9 +320,7 @@
     // -------------------------------------------------------------------------
     // REMOTE DEVELOPMENT & CONTAINERS
     // -------------------------------------------------------------------------
-    "remote.SSH.defaultExtensions": [
-        "gitpod.gitpod-remote-ssh"
-    ],
+    "remote.SSH.defaultExtensions": ["gitpod.gitpod-remote-ssh"],
     "remote.SSH.remotePlatform": {
         "*.gitpod.io": "linux"
     },
@@ -459,6 +443,16 @@
         "GitHub.vscode-pull-request-github"
     ],
     "mcpServer.startOnActivate": false,
-    "chat.mcp.enabled": false,
-    "chat.mcp.discovery.enabled": true
+    "chat.mcp.discovery.enabled": {
+        "claude-desktop": true,
+        "windsurf": true,
+        "cursor-global": true,
+        "cursor-workspace": true
+    },
+    "chat.mcp.access": "none",
+    "workbench.secondarySideBar.defaultVisibility": "visible",
+    "claudeCode.preferredLocation": "panel",
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "gitlens.ai.model": "vscode",
+    "gitlens.ai.vscode.model": "copilot:gpt-4.1"
 }

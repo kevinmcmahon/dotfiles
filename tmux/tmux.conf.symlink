@@ -1,0 +1,72 @@
+##### Prefix / basic ergonomics #####
+
+# Change prefix to Ctrl-a (easier on some keyboards)
+unbind C-b
+set -g prefix C-a
+bind-key C-a send-prefix
+
+# Faster key repetition / snappy ESC (important for Vim/Neovim)
+# (Your checkhealth complained about 500ms; this fixes it.)
+set -sg escape-time 10
+
+# Start windows/panes at 1
+set -g base-index 1
+setw -g pane-base-index 1
+
+# Enable mouse (scrollback + pane selection)
+set -g mouse on
+
+# Increase scrollback
+set -g history-limit 50000
+
+##### Terminal / colors (tmux 3.4 + Kitty truecolor) #####
+
+# Stable terminfo inside tmux
+set -g default-terminal "tmux-256color"
+
+# Tell tmux which outer terminals support RGB so it advertises it to apps
+set -sa terminal-features ",xterm-kitty:RGB"
+set -sa terminal-features ",xterm-256color:RGB"
+set -sa terminal-features ",tmux-256color:RGB"
+
+# Make Neovim happier: allow focus events so autoread etc works
+set -g focus-events on
+
+
+##### Splits / bindings #####
+
+# Split panes with | and -
+unbind '"'
+unbind %
+bind | split-window -h
+bind - split-window -v
+
+# (Optional) Vim-like pane navigation with Alt-h/j/k/l
+bind -n M-h select-pane -L
+bind -n M-j select-pane -D
+bind -n M-k select-pane -U
+bind -n M-l select-pane -R
+
+# Reload config
+bind r source-file ~/.tmux.conf \; display "Reloaded!"
+
+
+##### Window title / status #####
+
+# Set terminal title
+set -g set-titles on
+set -g set-titles-string "#S / #W"
+
+# Status bar (keep your simple styling)
+set -g status-style "bg=#333333 fg=#ffffff"
+set -g status-left " #[fg=green]#S "
+set -g status-right " #[fg=yellow]%H:%M "
+
+# Current window highlight
+setw -g window-status-current-style "fg=black bg=green"
+
+
+##### Activity alerts #####
+
+setw -g monitor-activity on
+set -g visual-activity off

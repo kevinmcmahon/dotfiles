@@ -152,11 +152,10 @@ symlink_xdg_dirs() {
     fi
   done
 
-  # tmux expects ~/.tmux.conf by default; if you keep tmux config in dotfiles/tmux,
-  # you can link ~/.tmux.conf to a file inside it.
-  if [ -f "$DOTFILES_DIR/tmux/tmux.conf" ]; then
-    ln -sf "$DOTFILES_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
-    log "Linked ~/.tmux.conf -> $DOTFILES_DIR/tmux/tmux.conf"
+  # tmux expects ~/.tmux.conf by default; follow your *.symlink convention.
+  if [ -f "$DOTFILES_DIR/tmux/tmux.conf.symlink" ]; then
+    ln -sf "$DOTFILES_DIR/tmux/tmux.conf.symlink" "$HOME/.tmux.conf"
+    log "Linked ~/.tmux.conf -> $DOTFILES_DIR/tmux/tmux.conf.symlink"
   fi
 }
 

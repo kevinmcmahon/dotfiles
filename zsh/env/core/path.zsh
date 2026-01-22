@@ -4,7 +4,13 @@ PATH=""
 # Highest priority first
 [[ -d "$HOME/.local/bin" ]] && PATH="$HOME/.local/bin"
 [[ -d "$HOME/.fzf/bin" ]] && PATH="$PATH:$HOME/.fzf/bin"
+
+# Rust (rustup) - make it win over asdf shims
+[[ -d "$HOME/.cargo/bin" ]] && PATH="$PATH:$HOME/.cargo/bin"
+
+# asdf shims (still used for other languages)
 [[ -d "${ASDF_DATA_DIR:-$HOME/.asdf}/shims" ]] && PATH="$PATH:${ASDF_DATA_DIR:-$HOME/.asdf}/shims"
+
 [[ -d "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" ]] && PATH="$PATH:$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
 [[ -d "$HOME/tools" ]] && PATH="$PATH:$HOME/tools"
 [[ -d "/Library/TeX/texbin" ]] && PATH="${PATH}:/Library/TeX/texbin"

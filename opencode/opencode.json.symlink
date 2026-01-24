@@ -3,14 +3,5 @@
   "plugin": [
     "opencode-gemini-auth@latest"
   ],
-  "model": "gemini-3.5-pro",
-  "provider": {
-    "google": {
-      "models": {
-        "gemini-3.5-pro": {
-          "name": "Gemini 3.5 Pro"
-        }
-      }
-    }
-  }
+  "model": "google/gemini-3-flash-preview"
 }

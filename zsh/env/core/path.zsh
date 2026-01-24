@@ -31,6 +31,9 @@ fi
 # Cross-platform custom tools
 [[ -d "$HOME/tools" ]] && PATH="$PATH:$HOME/tools"
 
+# Bun
+[[ -d "$HOME/.bun/bin" ]] && PATH="$PATH:$HOME/.bun/bin"
+
 # System paths
 PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 

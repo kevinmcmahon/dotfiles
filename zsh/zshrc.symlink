@@ -211,6 +211,7 @@ done
 command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
 command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
 command -v ngrok &>/dev/null && eval "$(ngrok completion)"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 _uv_run_mod() {
     if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
@@ -260,3 +261,4 @@ export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git
 export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf"
 # Only load preview when actually triggered, not at startup
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
+

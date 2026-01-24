@@ -1,0 +1,46 @@
+system: |
+  You are a recipe extraction assistant. Extract recipes into Schema.org JSON-LD format.
+  Output ONLY valid JSON, no markdown fences, no explanation.
+
+prompt: |
+  Extract the recipe from the provided content and output it as Schema.org JSON-LD.
+
+  Required fields:
+  - @context: always "https://schema.org"
+  - @type: always "Recipe"
+  - name: recipe title
+  - recipeIngredient: array of ingredient strings (e.g., ["2 cups flour", "1 tsp salt"])
+  - recipeInstructions: array of HowToStep objects
+
+  Optional fields (include if present in source):
+  - description: recipe description/headnotes
+  - recipeYield: servings (e.g., "4 servings")
+  - prepTime, cookTime, totalTime: ISO 8601 duration (e.g., "PT30M" for 30 min, "PT1H" for 1 hour)
+  - keywords: array of tags
+  - author: {"@type": "Person", "name": "..."}
+  - url: source URL if mentioned
+
+  For grouped instructions (e.g., "For the dough", "For the filling"), use HowToSection:
+  {
+    "@type": "HowToSection",
+    "name": "Section Name",
+    "itemListElement": [
+      {"@type": "HowToStep", "text": "..."}
+    ]
+  }
+
+  Example output:
+  {
+    "@context": "https://schema.org",
+    "@type": "Recipe",
+    "name": "Example Recipe",
+    "recipeYield": "4 servings",
+    "recipeIngredient": [
+      "2 cups all-purpose flour",
+      "1 teaspoon salt"
+    ],
+    "recipeInstructions": [
+      {"@type": "HowToStep", "text": "First step..."},
+      {"@type": "HowToStep", "text": "Second step..."}
+    ]
+  }

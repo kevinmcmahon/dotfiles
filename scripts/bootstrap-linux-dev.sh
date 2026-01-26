@@ -3,13 +3,17 @@ set -euo pipefail
 
 # ------------------------------------------------------------------------------
 # Linux Dev Bootstrap (Ubuntu/Debian)
-# - Installs baseline packages
+# - Installs baseline packages (Python/Node via asdf, not apt)
+# - Installs Python build dependencies for asdf
 # - Ensures ~/.local/bin on PATH
 # - Symlinks dotfiles (XDG configs + *.symlink)
 # - Installs Neovim AppImage into ~/.local/bin/nvim
 # - Installs lazygit (arm64/x64) into ~/.local/bin
-# - Installs yazi (via cargo if available; otherwise you can add apt/curl path)
-# - Sets up asdf, but uses rustup for Rust
+# - Installs starship prompt
+# - Installs yazi (via cargo)
+# - Installs uv (Python package manager)
+# - Installs llm (Simon Willison's CLI tool)
+# - Uses rustup for Rust (not asdf)
 #
 # Safe to re-run. It should be idempotent.
 # ------------------------------------------------------------------------------
@@ -72,9 +76,18 @@ install_extras_optional() {
   log "Installing optional quality-of-life tools (apt)"
   sudo apt-get install -y \
     eza zoxide \
-    python3 python3-pip python3-venv \
     tree \
     neofetch || true
+}
+
+install_python_build_deps() {
+  # Dependencies required by asdf-python (pyenv) to build Python from source
+  log "Installing Python build dependencies for asdf"
+  sudo apt-get install -y \
+    build-essential libssl-dev zlib1g-dev \
+    libbz2-dev libreadline-dev libsqlite3-dev \
+    libncursesw5-dev xz-utils tk-dev libxml2-dev \
+    libxmlsec1-dev libffi-dev liblzma-dev
 }
 
 symlink_dotfiles_symlink_pattern() {
@@ -137,8 +150,8 @@ symlink_xdg_dirs() {
 
   mkdir -p "$CONFIG_DIR"
 
-  # Add more here as needed
-  for d in nvim yazi tmux zsh kitty starship git; do
+  # Add more here as needed (kitty omitted - no GUI on Linux server)
+  for d in nvim yazi tmux zsh starship git; do
     src="$DOTFILES_DIR/$d"
     dst="$CONFIG_DIR/$d"
     if [ -d "$src" ]; then
@@ -257,11 +270,51 @@ install_yazi_via_cargo() {
   log "yazi installed: $(yazi --version | head -n 1)"
 }
 
-install_node_for_neovim_optional() {
-  # Optional: only needed for some plugins/providers.
-  # You prefer asdf for runtimes; this function just reminds rather than force.
-  log "Node runtime for Neovim (optional, recommended via asdf)"
-  warn "Use asdf to install nodejs, then: npm i -g neovim"
+install_starship() {
+  log "Installing starship prompt"
+  if need_cmd starship; then
+    log "starship already installed: $(starship --version | head -n 1)"
+    return 0
+  fi
+
+  curl -fsSL https://starship.rs/install.sh | sh -s -- -y -b "$LOCAL_BIN"
+
+  log "starship installed: $("$LOCAL_BIN/starship" --version | head -n 1)"
+}
+
+install_uv() {
+  log "Installing uv (Python package manager)"
+  if need_cmd uv; then
+    log "uv already installed: $(uv --version | head -n 1)"
+    return 0
+  fi
+
+  curl -fsSL https://astral.sh/uv/install.sh | sh
+
+  log "uv installed: $(uv --version 2>/dev/null || echo 'restart shell to verify')"
+}
+
+install_llm() {
+  log "Installing Simon Willison's llm tool"
+  if need_cmd llm; then
+    log "llm already installed: $(llm --version | head -n 1)"
+    return 0
+  fi
+
+  # uv is the preferred install method; fall back to pipx if uv unavailable
+  if need_cmd uv; then
+    uv tool install llm
+  elif need_cmd pipx; then
+    pipx install llm
+  else
+    warn "Neither uv nor pipx found; installing llm via uv after uv install"
+    install_uv
+    # Source uv env if needed
+    export PATH="$HOME/.local/bin:$PATH"
+    uv tool install llm
+  fi
+
+  log "llm installed: $(llm --version 2>/dev/null || echo 'restart shell to verify')"
 }
 
 install_pbcopy_wrappers_optional() {
@@ -303,12 +356,14 @@ main() {
 
   apt_install_base
   install_extras_optional
+  install_python_build_deps
 
   symlink_dotfiles_symlink_pattern
   symlink_xdg_dirs
 
   install_neovim_appimage
   install_lazygit
+  install_starship
 
   # Rust via rustup (not asdf)
   install_rustup
@@ -316,14 +371,18 @@ main() {
   # yazi via cargo (comment out if you prefer other install method)
   install_yazi_via_cargo
 
+  # Python tooling (use asdf for Python itself)
+  install_uv
+  install_llm
+
   # Optional niceties
   install_pbcopy_wrappers_optional
-  install_node_for_neovim_optional
 
   post_checks
 
   log "Bootstrap complete."
   log "Next: open a new shell (or source your zsh config) so PATH updates apply."
+  log "Then use asdf to install python and nodejs runtimes."
 }
 
 main "$@"

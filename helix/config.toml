@@ -1,0 +1,124 @@
+theme = "sonokai_default"
+
+[editor]
+mouse = true
+rulers = [120]
+true-color = true
+completion-replace = true
+trim-trailing-whitespace = true
+end-of-line-diagnostics = "hint"
+color-modes = true
+line-number = "relative"
+cursorline = true
+scrolloff = 8
+bufferline = "multiple"
+idle-timeout = 50
+popup-border = "all"
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor.inline-diagnostics]
+cursor-line = "warning"
+
+[editor.file-picker]
+hidden = false
+
+[editor.indent-guides]
+render = true
+character = "╎"
+skip-levels = 0
+rainbow-option = "normal"
+
+[editor.soft-wrap]
+enable = false
+
+[editor.auto-save]
+focus-lost = true
+after-delay.enable = true
+after-delay.timeout = 300000
+
+[editor.lsp]
+display-messages = true
+display-inlay-hints = true
+display-signature-help-docs = true
+
+[editor.gutters]
+layout = ["diagnostics", "spacer", "line-numbers", "spacer", "diff"]
+
+[editor.gutters.line-numbers]
+min-width = 3
+
+[editor.statusline]
+left = [
+  "mode",
+  "spinner",
+  "version-control",
+  "spacer",
+  "separator",
+  "file-name",
+  "read-only-indicator",
+  "file-modification-indicator",
+]
+center = []
+right = [
+  "diagnostics",
+  "workspace-diagnostics",
+  "separator",
+  "position",
+  "total-line-numbers",
+  "position-percentage",
+  "separator",
+  "file-encoding",
+  "file-line-ending",
+  "file-type",
+  "register",
+  "selections",
+]
+separator = "│"
+mode.normal = "NOR"
+mode.insert = "INS"
+mode.select = "SEL"
+
+# --- Keybindings ---
+
+[keys.normal]
+D = ["ensure_selections_forward", "extend_to_line_end", "delete_selection"]
+C = ["ensure_selections_forward", "extend_to_line_end", "change_selection"]
+0 = "goto_line_start"
+"$" = "goto_line_end"
+"^" = "goto_first_nonwhitespace"
+G = "goto_file_end"
+V = ["select_mode", "extend_to_line_bounds"]
+x = "delete_char_forward"
+X = "delete_char_backward"
+esc = ["collapse_selection", "keep_primary_selection"]
+H = "goto_previous_buffer"
+L = "goto_next_buffer"
+J = [
+  "select_mode",
+  "extend_line_below",
+  "join_selections",
+  "normal_mode",
+  "collapse_selection",
+]
+
+# Space-mode extensions
+[keys.normal.space]
+q = ":buffer-close"
+Q = ":buffer-close!"
+W = ":write-all"
+
+[keys.select]
+0 = "goto_line_start"
+"$" = "goto_line_end"
+"^" = "goto_first_nonwhitespace"
+G = "goto_file_end"
+D = ["extend_to_line_bounds", "delete_selection", "normal_mode"]
+k = ["extend_line_up", "extend_to_line_bounds"]
+j = ["extend_line_down", "extend_to_line_bounds"]
+
+[keys.insert]
+j = { k = "normal_mode" }

@@ -15,9 +15,7 @@ alias rmrepomix="find . -name 'repomix-output*' -type f -ls -delete"
 alias rmorig='find . -name "*.orig" -print0 | xargs -0 rm -rf'
  
 # llm and agents
-#alias llmg='llm -m gemini-2.5-flash'
-#alias llmg='llm -m gemini-2.5-pro'
-alias llmg='llm -m gemini-2.5-pro'
+alias llmg='llm -m gemini-3-flash-preview'
 alias l32='llm -m mlx-community/Llama-3.2-3B-Instruct-4bit'
 alias cmdhelp='llm -t cmd'
 

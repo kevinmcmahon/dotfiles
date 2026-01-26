@@ -262,3 +262,5 @@ export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4
 # Only load preview when actually triggered, not at startup
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
 
+
+fpath+=~/.zfunc; autoload -Uz compinit; compinit

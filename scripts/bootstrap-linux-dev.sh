@@ -80,6 +80,49 @@ install_extras_optional() {
     neofetch || true
 }
 
+install_go_official() {
+  log "Installing Go (official tarball)"
+
+  # If you ever want to pin, set GO_VERSION (e.g. go1.22.5)
+  if [[ -n "${GO_VERSION:-}" ]]; then
+    version="$GO_VERSION"
+  else
+    # Pull latest stable from go.dev JSON
+    version="$(curl -fsSL 'https://go.dev/dl/?mode=json' | jq -r '.[] | select(.stable==true) | .version' | head -n 1)"
+  fi
+
+  if [[ -z "$version" || "$version" == "null" ]]; then
+    die "Could not determine latest stable Go version"
+  fi
+
+  arch="$(uname -m)"
+  case "$arch" in
+    aarch64|arm64) go_arch="arm64" ;;
+    x86_64|amd64)  go_arch="amd64" ;;
+    *) die "Unsupported architecture for Go: $arch" ;;
+  esac
+
+  # Find the correct tarball filename from the same JSON.
+  filename="$(curl -fsSL 'https://go.dev/dl/?mode=json' | jq -r --arg v "$version" --arg a "$go_arch" '.[] | select(.version==$v) | .files[] | select(.os=="linux" and .arch==$a and .kind=="archive") | .filename' | head -n 1)"
+  if [[ -z "$filename" || "$filename" == "null" ]]; then
+    die "Could not find linux-$go_arch archive for $version"
+  fi
+
+  url="https://go.dev/dl/${filename}"
+
+  tmpdir="$(mktemp -d)"
+  trap 'rm -rf "$tmpdir"' EXIT
+
+  log "Downloading $url"
+  curl -fL "$url" -o "$tmpdir/$filename"
+
+  # Install to /usr/local/go (system-wide)
+  sudo rm -rf /usr/local/go
+  sudo tar -C /usr/local -xzf "$tmpdir/$filename"
+
+  log "Go installed: $(/usr/local/go/bin/go version)"
+}
+
 install_python_build_deps() {
   # Dependencies required by asdf-python (pyenv) to build Python from source
   log "Installing Python build dependencies for asdf"
@@ -358,6 +401,9 @@ main() {
   apt_install_base
   install_extras_optional
   install_python_build_deps
+
+  # Go via official tarball (system-wide)
+  install_go_official
 
   symlink_dotfiles_symlink_pattern
   symlink_xdg_dirs

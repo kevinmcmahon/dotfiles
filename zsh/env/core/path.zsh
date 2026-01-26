@@ -34,6 +34,9 @@ fi
 # Bun
 [[ -d "$HOME/.bun/bin" ]] && PATH="$PATH:$HOME/.bun/bin"
 
+# Go (official install)
+[[ -d "/usr/local/go/bin" ]] && PATH="$PATH:/usr/local/go/bin"
+
 # System paths
 PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 

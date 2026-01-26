@@ -157,6 +157,8 @@ All hooks are in `~/.git-core/hooks/` (set via `core.hooksPath`).
 - AWS access keys (`AKIA...`)
 - AWS secret keys
 - GitHub tokens (`ghp_`, `gho_`, `ghu_`, `ghs_`, `ghr_`, `github_pat_`)
+- OpenAI API keys (`sk-...`, `sk-proj-...`)
+- Google API keys (`AIza...`)
 
 ### LFS Hooks
 

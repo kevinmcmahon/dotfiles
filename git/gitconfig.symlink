@@ -140,6 +140,14 @@
 	patterns = ghr_[A-Za-z0-9]{36,}
 	patterns = github_pat_[A-Za-z0-9]{22}_[A-Za-z0-9]{59}
 
+	# OpenAI API keys (new project-scoped keys commonly start with sk-proj-)
+	patterns = sk-proj-[A-Za-z0-9_-]{20,}
+	# OpenAI-style keys (legacy/general)
+	patterns = sk-[A-Za-z0-9]{20,}
+
+	# Google API keys (common format)
+	patterns = AIza[0-9A-Za-z_-]{35}
+
 [credential "https://huggingface.co"]
 	provider = generic
 

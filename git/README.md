@@ -68,6 +68,18 @@ The config auto-detects OS using `includeIf` based on home directory path:
 
 ## Installation
 
+### Prerequisite: git-secrets
+
+This setup expects **git-secrets** to be installed because the global hooks in `~/.git-core/hooks/`
+invoke `git secrets`.
+
+Ubuntu/Debian:
+
+```bash
+sudo apt-get update -y
+sudo apt-get install -y git-secrets
+```
+
 ### macOS
 
 Symlinks are typically created by your dotfiles bootstrap. Manually:

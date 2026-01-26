@@ -9,6 +9,7 @@ Cross-platform Git configuration with OS-specific settings, security hooks, and 
 ```
 git/
 ├── gitconfig.symlink          # Main config → ~/.gitconfig
+├── gitconfig-secrets.symlink  # git-secrets patterns → ~/.gitconfig-secrets
 ├── gitconfig-macos.symlink    # macOS overrides → ~/.gitconfig-macos
 ├── gitconfig-linux.symlink    # Linux overrides → ~/.gitconfig-linux
 ├── gitignore_global.symlink   # Global ignores → ~/.gitignore_global
@@ -86,6 +87,7 @@ Symlinks are typically created by your dotfiles bootstrap. Manually:
 
 ```bash
 ln -sf ~/dotfiles/git/gitconfig.symlink ~/.gitconfig
+ln -sf ~/dotfiles/git/gitconfig-secrets.symlink ~/.gitconfig-secrets
 ln -sf ~/dotfiles/git/gitconfig-macos.symlink ~/.gitconfig-macos
 ln -sf ~/dotfiles/git/gitignore_global.symlink ~/.gitignore_global
 ln -sf ~/dotfiles/git/git-core.symlink ~/.git-core
@@ -97,6 +99,7 @@ The `bootstrap-linux-dev.sh` script handles all symlinks. Manually:
 
 ```bash
 ln -sf ~/dotfiles/git/gitconfig.symlink ~/.gitconfig
+ln -sf ~/dotfiles/git/gitconfig-secrets.symlink ~/.gitconfig-secrets
 ln -sf ~/dotfiles/git/gitconfig-linux.symlink ~/.gitconfig-linux
 ln -sf ~/dotfiles/git/gitignore_global.symlink ~/.gitignore_global
 ln -sf ~/dotfiles/git/git-core.symlink ~/.git-core

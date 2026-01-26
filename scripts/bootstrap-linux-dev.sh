@@ -115,6 +115,7 @@ symlink_dotfiles_symlink_pattern() {
   done
 
   # Symlink git/*.symlink files (gitconfig, gitignore_global, etc.)
+  # Note: includes gitconfig-secrets.symlink -> ~/.gitconfig-secrets
   for f in "$DOTFILES_DIR"/git/*.symlink; do
     base="$(basename "$f" .symlink)"
     target="$HOME/.${base}"

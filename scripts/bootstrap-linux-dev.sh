@@ -54,7 +54,7 @@ apt_install_base() {
   sudo apt-get update -y
   sudo apt-get install -y \
     ca-certificates curl wget unzip xz-utils tar \
-    git jq make gcc g++ pkg-config \
+    git git-secrets jq make gcc g++ pkg-config \
     zsh tmux \
     ripgrep fd-find fzf bat \
     xclip \

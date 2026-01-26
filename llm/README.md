@@ -15,7 +15,7 @@ ln -s /path/to/dotfiles/llm/templates.symlink ~/Library/Application\ Support/io.
 ### Linux
 
 ```bash
-ln -s /path/to/dotfiles/llm/templates.symlink ~/.local/share/llm/templates
+ln -s /path/to/dotfiles/llm/templates.symlink ~/.config/io.datasette.llm/templates
 ```
 
 ### Windows

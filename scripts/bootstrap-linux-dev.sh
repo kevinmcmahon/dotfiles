@@ -395,6 +395,10 @@ post_checks() {
 }
 
 main() {
+  if [[ "${EUID:-$(id -u)}" -eq 0 ]]; then
+    die "Do not run this bootstrap with sudo. Run as your user; the script uses sudo internally."
+  fi
+
   ensure_dirs
   ensure_local_bin_in_path
 

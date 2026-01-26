@@ -39,7 +39,10 @@ elif [[ ${IS_LINUX:-0} -eq 1 ]]; then
 fi
 
 # Load optional configurations last
+# - private.zsh: secrets / unversioned
+# - local.zsh: machine-local config (non-secret) / unversioned
 load_env_file "${ZSH_ENV_ROOT}/optional/private.zsh"
+load_env_file "${ZSH_ENV_ROOT}/optional/local.zsh"
 
 unset ZSH_ENV_ROOT CORE_FUNCS
 

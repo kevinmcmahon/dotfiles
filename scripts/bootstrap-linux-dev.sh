@@ -361,6 +361,29 @@ install_llm() {
   log "llm installed: $(llm --version 2>/dev/null || echo 'restart shell to verify')"
 }
 
+symlink_llm_templates() {
+  log "Symlinking llm templates"
+
+  # llm uses ~/.config/io.datasette.llm/templates
+  src="$DOTFILES_DIR/llm/templates.symlink"
+  dst="$HOME/.config/io.datasette.llm/templates"
+
+  if [[ ! -d "$src" ]]; then
+    warn "No llm templates found at $src (skipping)"
+    return 0
+  fi
+
+  mkdir -p "$HOME/.config/io.datasette.llm"
+
+  # Important: llm does NOT recurse. The templates dir must contain the YAML files directly.
+  if [[ -e "$dst" && ! -L "$dst" ]]; then
+    warn "Removing existing templates path (not a symlink): $dst"
+    rm -rf "$dst"
+  fi
+
+  ln -snf "$src" "$dst"
+}
+
 install_pbcopy_wrappers_optional() {
   # This gives you pbcopy/pbpaste on Linux when $DISPLAY is available.
   # (You already got it working, but this makes it reproducible.)
@@ -425,6 +448,7 @@ main() {
   # Python tooling (use asdf for Python itself)
   install_uv
   install_llm
+  symlink_llm_templates
 
   # Optional niceties
   install_pbcopy_wrappers_optional

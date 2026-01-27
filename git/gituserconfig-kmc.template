@@ -1,0 +1,6 @@
+# ~/.gituserconfig.kmc
+# KMC identity (NOT checked in).
+
+[user]
+  name = YOUR NAME
+  email = you@example.com

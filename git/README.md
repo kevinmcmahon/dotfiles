@@ -130,21 +130,113 @@ git config --get alias.st
 
 ## User Identity
 
-Conditional includes set user identity per project directory:
+### Why identity routing is tricky across machines
+
+Git's `includeIf gitdir:` matching is done against the repo's **absolute path** and **does not expand** `~` or `$HOME`.
+That makes it hard to keep a single version-controlled `~/.gitconfig` that works across machines with different usernames
+(e.g. `/Users/kevin` vs `/home/ubuntu` vs `/home/clawdbot`).
+
+This dotfiles setup solves that by splitting identity routing into two layers:
+
+- **Version-controlled**: the identity files *templates* and the include that loads `~/.gitconfig-local`
+- **Machine-local (unversioned)**: `~/.gitconfig-local`, which contains absolute paths for *this* machine
+
+### Machine-local routing: `~/.gitconfig-local`
+
+The main config includes a local file:
 
 ```ini
-[includeIf "gitdir:/Users/kevin/projects/kmc/"]
-    path = ~/.gituserconfig.kmc
-
-[includeIf "gitdir:/Users/kevin/dev/work/"]
-    path = ~/.gituserconfig.work
+[include]
+  path = ~/.gitconfig-local
 ```
 
-Create identity files from template:
+On each machine, create `~/.gitconfig-local` from the template and substitute your absolute home path:
 
 ```bash
-cp gituserconfig.template ~/.gituserconfig.work
-# Edit with your work email/username
+cp ~/dotfiles/git/gitconfig-local.template ~/.gitconfig-local
+$EDITOR ~/.gitconfig-local
+```
+
+The template uses a placeholder:
+
+```ini
+[includeIf "gitdir:__HOME__/projects/kmc/**"]
+  path = ~/.gituserconfig.kmc
+
+[includeIf "gitdir:__HOME__/projects/fete/**"]
+  path = ~/.gituserconfig.fete
+```
+
+Replace `__HOME__` with your actual home directory, e.g.
+
+- macOS: `/Users/kevin`
+- Linux: `/home/ubuntu`
+
+### Identity templates (NOT checked in)
+
+Create local identity files from templates:
+
+```bash
+cp ~/dotfiles/git/gituserconfig-kmc.template ~/.gituserconfig.kmc
+cp ~/dotfiles/git/gituserconfig-fete.template ~/.gituserconfig.fete
+$EDITOR ~/.gituserconfig.kmc ~/.gituserconfig.fete
+```
+
+These local files should contain **only** your `user.name` and `user.email` for that identity.
+
+### Bootstrap integration (Linux)
+
+`bootstrap-linux-dev.sh` can generate the local files if they are missing:
+
+- `~/.gitconfig-local` (with `__HOME__` substituted)
+- `~/.gituserconfig.kmc` and `~/.gituserconfig.fete` (copied from templates)
+
+It will **never overwrite** existing local files.
+
+### Verify Identity Routing
+
+After setup, verify the correct identity loads in each directory:
+
+```bash
+# Check current identity (run from any repo)
+git config user.name
+git config user.email
+
+# See which file provides the identity
+git config --show-origin user.name
+git config --show-origin user.email
+```
+
+Test routing by checking identity in different directories:
+
+```bash
+# Default identity (outside project directories)
+cd ~/some-random-repo
+git config user.name  # Should show default from ~/.gituserconfig
+
+# Project-specific identity
+cd ~/projects/kmc/some-repo
+git config user.name  # Should show KMC identity
+
+cd ~/projects/fete/some-repo
+git config user.name  # Should show Fete identity
+```
+
+If the wrong identity appears, check:
+
+1. **`includeIf` paths are absolute** — `~` won't work, use `/home/username/...`
+2. **Trailing `/**` on directory patterns** — required to match repos inside
+3. **File exists** — `ls -la ~/.gituserconfig.kmc`
+4. **No typos in path** — `git config --list --show-origin | grep -i include`
+
+Debug the full config resolution:
+
+```bash
+# Show all config with source files
+git config --list --show-origin
+
+# Filter to see which includes are active
+git config --list --show-origin | grep -E "(includeIf|user\.(name|email))"
 ```
 
 ---

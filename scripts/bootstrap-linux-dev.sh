@@ -133,6 +133,37 @@ install_python_build_deps() {
     libxmlsec1-dev libffi-dev liblzma-dev
 }
 
+ensure_git_identity_templates() {
+  log "Ensuring local git identity templates exist (no personal data)"
+
+  # Only create these if missing; never overwrite.
+  # gitconfig-local is required for includeIf gitdir: routing because it must
+  # contain absolute paths (Git does not expand ~ or $HOME in includeIf).
+  local home_abs="$HOME"
+
+  if [[ ! -f "$HOME/.gitconfig-local" ]]; then
+    if [[ -f "$DOTFILES_DIR/git/gitconfig-local.template" ]]; then
+      sed "s|__HOME__|$home_abs|g" "$DOTFILES_DIR/git/gitconfig-local.template" >"$HOME/.gitconfig-local"
+      chmod 600 "$HOME/.gitconfig-local"
+      log "Created $HOME/.gitconfig-local (edit as needed)"
+    else
+      warn "Missing template: $DOTFILES_DIR/git/gitconfig-local.template"
+    fi
+  fi
+
+  if [[ ! -f "$HOME/.gituserconfig.kmc" && -f "$DOTFILES_DIR/git/gituserconfig-kmc.template" ]]; then
+    cp "$DOTFILES_DIR/git/gituserconfig-kmc.template" "$HOME/.gituserconfig.kmc"
+    chmod 600 "$HOME/.gituserconfig.kmc"
+    warn "Created $HOME/.gituserconfig.kmc (EDIT THIS: set name/email)"
+  fi
+
+  if [[ ! -f "$HOME/.gituserconfig.fete" && -f "$DOTFILES_DIR/git/gituserconfig-fete.template" ]]; then
+    cp "$DOTFILES_DIR/git/gituserconfig-fete.template" "$HOME/.gituserconfig.fete"
+    chmod 600 "$HOME/.gituserconfig.fete"
+    warn "Created $HOME/.gituserconfig.fete (EDIT THIS: set name/email)"
+  fi
+}
+
 symlink_dotfiles_symlink_pattern() {
   log "Symlinking *.symlink dotfiles into \$HOME"
 
@@ -433,6 +464,7 @@ main() {
   install_go_official
 
   symlink_dotfiles_symlink_pattern
+  ensure_git_identity_templates
   symlink_xdg_dirs
 
   install_neovim_appimage

@@ -1,0 +1,19 @@
+# ~/.gitconfig-local
+# Machine-local Git config (NOT checked in).
+#
+# Purpose:
+# - Route Git identity based on repo location (projects/kmc vs projects/fete)
+# - Avoid hard-coding usernames/home paths in version-controlled dotfiles
+#
+# Setup:
+#   cp ~/dotfiles/git/gitconfig-local.template ~/.gitconfig-local
+#   # Replace __HOME__ with your absolute home dir, e.g.
+#   #   macOS: /Users/kevin
+#   #   Linux: /home/ubuntu
+#   $EDITOR ~/.gitconfig-local
+
+[includeIf "gitdir:__HOME__/projects/kmc/**"]
+  path = ~/.gituserconfig.kmc
+
+[includeIf "gitdir:__HOME__/projects/fete/**"]
+  path = ~/.gituserconfig.fete

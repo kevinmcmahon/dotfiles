@@ -58,6 +58,7 @@ apt_install_base() {
     zsh tmux \
     ripgrep fd-find fzf bat \
     xclip \
+    keychain \
     locales
 
   # Ubuntu calls it fdfind; provide fd symlink in ~/.local/bin

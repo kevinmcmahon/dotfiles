@@ -8,29 +8,6 @@
 [include]
   path = ~/.gitconfig-local
 
-# OS-specific configuration (auto-detected by home directory path)
-[includeIf "gitdir:/Users/"]
-	path = ~/.gitconfig-macos
-
-[includeIf "gitdir:/home/"]
-	path = ~/.gitconfig-linux
-
-# Project-specific user identity (macOS paths)
-[includeIf "gitdir:/Users/kevin/projects/kmc/"]
-	path = ~/.gituserconfig.kmc
-
-[includeIf "gitdir:/Users/kevin/sync/projects/kmc/"]
-  path = ~/.gituserconfig.kmc
-
-[includeIf "gitdir:/Users/kevin/projects/nsv/"]
-  path = ~/.gituserconfig.nsv
-
-[includeIf "gitdir:/Users/kevin/projects/fete/"]
-  path = ~/.gituserconfig.nsv
-
-[includeIf "gitdir:/Users/kevin/dev/work/"]
-  path = ~/.gituserconfig.work
-
 [column]
 	ui = auto
 
@@ -142,5 +119,3 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[maintenance]
-	repo = /Users/kevin/dotfiles

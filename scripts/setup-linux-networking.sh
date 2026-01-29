@@ -199,7 +199,8 @@ check_ssh_lockout_risk() {
     fi
 
     # Get the SSH client IP if we're in an SSH session
-    local ssh_client_ip="${SSH_CLIENT%% *}"
+    local ssh_client="${SSH_CLIENT:-}"
+    local ssh_client_ip="${ssh_client%% *}"
 
     if [[ -z "$ssh_client_ip" ]]; then
         # Not an SSH session, no risk

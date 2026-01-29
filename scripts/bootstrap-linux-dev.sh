@@ -227,7 +227,8 @@ symlink_xdg_dirs() {
   mkdir -p "$CONFIG_DIR"
 
   # Add more here as needed (kitty omitted - no GUI on Linux server)
-  for d in nvim yazi tmux zsh starship git; do
+  # Note: zsh is handled separately by zsh/install.sh (uses ~/.zsh/env layout)
+  for d in nvim yazi tmux starship git; do
     src="$DOTFILES_DIR/$d"
     dst="$CONFIG_DIR/$d"
     if [ -d "$src" ]; then
@@ -440,6 +441,25 @@ EOF
   log "Installed pbcopy/pbpaste wrappers into ~/.local/bin"
 }
 
+install_zsh_environment() {
+  log "Installing zsh environment (oh-my-zsh, plugins, symlinks)"
+
+  if [[ ! -f "$DOTFILES_DIR/zsh/install.sh" ]]; then
+    warn "zsh/install.sh not found, skipping zsh setup"
+    return 0
+  fi
+
+  # The zsh installer handles:
+  # - oh-my-zsh installation
+  # - ~/.zshrc, ~/.zshenv, ~/.zprofile symlinks
+  # - ~/.zsh/env symlink
+  # - oh-my-zsh plugins
+  # Run in subshell to prevent 'exec zsh' at end from terminating bootstrap
+  (bash "$DOTFILES_DIR/zsh/install.sh")
+
+  log "zsh environment installed"
+}
+
 post_checks() {
   log "Quick sanity checks"
   need_cmd git || die "git missing"
@@ -468,6 +488,7 @@ main() {
   symlink_dotfiles_symlink_pattern
   ensure_git_identity_templates
   symlink_xdg_dirs
+  install_zsh_environment
 
   install_neovim_appimage
   install_lazygit

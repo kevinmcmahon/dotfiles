@@ -150,6 +150,9 @@ zstyle :omz:plugins:ssh-agent quiet yes
 
 [[ -f $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh || echo "Warning: oh-my-zsh not found"
 
+# Re-apply PATH after oh-my-zsh (it may reset PATH)
+[[ -f "$HOME/.zsh/env/core/path.zsh" ]] && source "$HOME/.zsh/env/core/path.zsh"
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"

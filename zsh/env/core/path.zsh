@@ -35,7 +35,12 @@ fi
 [[ -d "$HOME/.bun/bin" ]] && PATH="$PATH:$HOME/.bun/bin"
 
 # Go (official install)
-[[ -d "/usr/local/go/bin" ]] && PATH="$PATH:/usr/local/go/bin"
+if [[ -d "/usr/local/go/bin" ]]; then
+  PATH="$PATH:/usr/local/go/bin"
+  export GOPATH="$HOME/go"
+  export GOBIN="$GOPATH/bin"
+  [[ -d "$GOBIN" ]] && PATH="$PATH:$GOBIN"
+fi
 
 # System paths
 PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"

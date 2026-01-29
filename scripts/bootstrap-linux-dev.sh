@@ -96,6 +96,12 @@ install_go_official() {
     die "Could not determine latest stable Go version"
   fi
 
+  # Skip if already installed at desired version
+  if need_cmd go && [[ "$(go version 2>/dev/null)" == *"$version"* ]]; then
+    log "Go $version already installed"
+    return 0
+  fi
+
   arch="$(uname -m)"
   case "$arch" in
     aarch64|arm64) go_arch="arm64" ;;
@@ -103,10 +109,18 @@ install_go_official() {
     *) die "Unsupported architecture for Go: $arch" ;;
   esac
 
-  # Find the correct tarball filename from the same JSON.
-  filename="$(curl -fsSL 'https://go.dev/dl/?mode=json' | jq -r --arg v "$version" --arg a "$go_arch" '.[] | select(.version==$v) | .files[] | select(.os=="linux" and .arch==$a and .kind=="archive") | .filename' | head -n 1)"
+  # Fetch metadata for the target version (filename + checksum)
+  go_meta="$(curl -fsSL 'https://go.dev/dl/?mode=json' | jq -r --arg v "$version" --arg a "$go_arch" \
+    '.[] | select(.version==$v) | .files[] | select(.os=="linux" and .arch==$a and .kind=="archive")')"
+
+  filename="$(echo "$go_meta" | jq -r '.filename')"
+  checksum="$(echo "$go_meta" | jq -r '.sha256')"
+
   if [[ -z "$filename" || "$filename" == "null" ]]; then
     die "Could not find linux-$go_arch archive for $version"
+  fi
+  if [[ -z "$checksum" || "$checksum" == "null" ]]; then
+    die "Could not find checksum for $filename"
   fi
 
   url="https://go.dev/dl/${filename}"
@@ -116,6 +130,10 @@ install_go_official() {
 
   log "Downloading $url"
   curl -fL "$url" -o "$tmpdir/$filename"
+
+  # Verify checksum before extracting
+  log "Verifying checksum"
+  echo "$checksum  $tmpdir/$filename" | sha256sum -c - || die "Checksum verification failed for $filename"
 
   # Install to /usr/local/go (system-wide)
   sudo rm -rf /usr/local/go

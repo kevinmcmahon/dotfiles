@@ -337,11 +337,12 @@ install_yazi_via_cargo() {
   if ! need_cmd cargo; then
     warn "cargo not found; installing rustup first"
     install_rustup
-    # shellcheck disable=SC1090
     source "$HOME/.cargo/env" || true
   fi
 
-  cargo install --locked yazi-fm yazi-cli
+  # New build method required by yazi
+  cargo install --force yazi-build
+  yazi-build
 
   log "yazi installed: $(yazi --version | head -n 1)"
 }

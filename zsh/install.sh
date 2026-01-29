@@ -99,6 +99,23 @@ ln -sf "$DOTFILES_DIR/alias.zsh" "$ZSH_CUSTOM/alias.zsh"
 echo "Linked alias.zsh to $ZSH_CUSTOM/alias.zsh"
 
 # -----------------------------
+# Set zsh as default shell
+# -----------------------------
+current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+zsh_path="$(which zsh)"
+
+if [[ "$current_shell" != "$zsh_path" ]]; then
+  echo "Setting zsh as default login shell..."
+  if chsh -s "$zsh_path"; then
+    echo "Default shell changed to zsh"
+  else
+    echo "Warning: Could not change default shell. Run manually: chsh -s $zsh_path"
+  fi
+else
+  echo "zsh is already the default shell"
+fi
+
+# -----------------------------
 # Done
 # -----------------------------
 echo ""

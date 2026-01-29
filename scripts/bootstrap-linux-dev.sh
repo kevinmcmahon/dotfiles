@@ -13,6 +13,7 @@ set -euo pipefail
 # - Installs yazi (via cargo)
 # - Installs uv (Python package manager)
 # - Installs llm (Simon Willison's CLI tool)
+# - Installs Claude Code (Anthropic CLI)
 # - Uses rustup for Rust (not asdf)
 #
 # Safe to re-run. It should be idempotent.
@@ -411,25 +412,43 @@ install_uv() {
 
 install_llm() {
   log "Installing Simon Willison's llm tool"
-  if need_cmd llm; then
-    log "llm already installed: $(llm --version | head -n 1)"
-    return 0
-  fi
 
-  # uv is the preferred install method; fall back to pipx if uv unavailable
-  if need_cmd uv; then
-    uv tool install llm
-  elif need_cmd pipx; then
-    pipx install llm
-  else
-    warn "Neither uv nor pipx found; installing llm via uv after uv install"
-    install_uv
-    # Source uv env if needed
-    export PATH="$HOME/.local/bin:$PATH"
-    uv tool install llm
+  if ! need_cmd llm; then
+    # uv is the preferred install method; fall back to pipx if uv unavailable
+    if need_cmd uv; then
+      uv tool install llm
+    elif need_cmd pipx; then
+      pipx install llm
+    else
+      warn "Neither uv nor pipx found; installing llm via uv after uv install"
+      install_uv
+      # Source uv env if needed
+      export PATH="$HOME/.local/bin:$PATH"
+      uv tool install llm
+    fi
   fi
 
   log "llm installed: $(llm --version 2>/dev/null || echo 'restart shell to verify')"
+
+  # Install/upgrade llm plugins
+  log "Installing llm plugins"
+  llm install -U llm-anthropic
+  llm install -U llm-gemini
+  llm install -U llm-openai-plugin
+  llm install -U llm-mlx
+  llm install -U llm-mistral
+}
+
+install_claude_code() {
+  log "Installing Claude Code (Anthropic CLI)"
+  if need_cmd claude; then
+    log "claude already installed: $(claude --version | head -n 1)"
+    return 0
+  fi
+
+  curl -fsSL https://claude.ai/install.sh | bash
+
+  log "claude installed: $(claude --version 2>/dev/null || echo 'restart shell to verify')"
 }
 
 symlink_llm_templates() {
@@ -542,6 +561,9 @@ main() {
   install_uv
   install_llm
   symlink_llm_templates
+
+  # Claude Code CLI
+  install_claude_code
 
   # Optional niceties
   install_pbcopy_wrappers_optional

@@ -66,6 +66,10 @@ set -g status-right " #[fg=yellow]%H:%M "
 setw -g window-status-current-style "fg=black bg=green"
 
 set -g allow-passthrough on
+
+##### Clipboard
+set -g set-clipboard on
+
 ##### Activity alerts #####
 
 setw -g monitor-activity on

@@ -14,6 +14,7 @@ set -euo pipefail
 # - Installs uv (Python package manager)
 # - Installs llm (Simon Willison's CLI tool)
 # - Installs Claude Code (Anthropic CLI)
+# - Installs OpenCode CLI
 # - Uses rustup for Rust (not asdf)
 #
 # Safe to re-run. It should be idempotent.
@@ -451,6 +452,38 @@ install_claude_code() {
   log "claude installed: $(claude --version 2>/dev/null || echo 'restart shell to verify')"
 }
 
+install_opencode() {
+  log "Installing OpenCode"
+  if need_cmd opencode; then
+    log "opencode already installed: $(opencode --version | head -n 1)"
+  else
+    curl -fsSL https://opencode.ai/install | bash
+
+    # The installer adds a PATH line to ~/.zshrc; remove it (we manage PATH in path.zsh)
+    if [[ -f "$HOME/.zshrc" ]]; then
+      sed -i '/^# opencode$/d' "$HOME/.zshrc"
+      sed -i '/\.opencode\/bin/d' "$HOME/.zshrc"
+    fi
+
+    log "opencode installed: $(opencode --version 2>/dev/null || echo 'restart shell to verify')"
+  fi
+
+  # Symlink config
+  local src="$DOTFILES_DIR/opencode/opencode.json.symlink"
+  local dst="$CONFIG_DIR/opencode/opencode.json"
+
+  if [[ -f "$src" ]]; then
+    mkdir -p "$CONFIG_DIR/opencode"
+    if [[ -e "$dst" && ! -L "$dst" ]]; then
+      backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
+      warn "Backing up existing $dst -> $backup"
+      mv "$dst" "$backup"
+    fi
+    ln -sf "$src" "$dst"
+    log "Linked $dst -> $src"
+  fi
+}
+
 symlink_llm_templates() {
   log "Symlinking llm templates"
 
@@ -564,6 +597,9 @@ main() {
 
   # Claude Code CLI
   install_claude_code
+
+  # OpenCode CLI
+  install_opencode
 
   # Optional niceties
   install_pbcopy_wrappers_optional

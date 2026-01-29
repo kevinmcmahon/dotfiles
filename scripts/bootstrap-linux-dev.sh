@@ -54,9 +54,9 @@ apt_install_base() {
   sudo apt-get update -y
   sudo apt-get install -y \
     ca-certificates curl wget unzip xz-utils tar \
-    git git-secrets jq make gcc g++ pkg-config \
+    git git-lfs git-secrets jq make gcc g++ pkg-config \
     zsh tmux \
-    ripgrep fd-find fzf bat \
+    ripgrep fd-find bat \
     xclip \
     keychain \
     locales
@@ -360,6 +360,25 @@ install_starship() {
   log "starship installed: $("$LOCAL_BIN/starship" --version | head -n 1)"
 }
 
+install_fzf() {
+  log "Installing fzf (fuzzy finder)"
+  if need_cmd fzf; then
+    log "fzf already installed: $(fzf --version | head -n 1)"
+    return 0
+  fi
+
+  if [[ -d "$HOME/.fzf" ]]; then
+    log "Updating existing ~/.fzf"
+    git -C "$HOME/.fzf" pull
+  else
+    git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+  fi
+
+  "$HOME/.fzf/install" --key-bindings --completion --no-update-rc
+
+  log "fzf installed: $("$HOME/.fzf/bin/fzf" --version | head -n 1)"
+}
+
 install_uv() {
   log "Installing uv (Python package manager)"
   if need_cmd uv; then
@@ -493,6 +512,7 @@ main() {
   install_neovim_appimage
   install_lazygit
   install_starship
+  install_fzf
 
   # Rust via rustup (not asdf)
   install_rustup

@@ -250,9 +250,12 @@ source "${HOME}/dotfiles/zsh/functions/completions.zsh"
 [[ -f "$HOME/.config/op/plugins.sh" ]] && source "$HOME/.config/op/plugins.sh"
 
 # For direnv (independent of starship)
-zsh-defer eval "$(direnv hook zsh)"
-zsh-defer eval "$(zoxide init --cmd cd zsh)"
-zsh-defer eval "$(fzf --zsh)"
+command -v direnv >/dev/null && zsh-defer eval "$(direnv hook zsh)"
+command -v zoxide >/dev/null && zsh-defer eval "$(zoxide init --cmd cd zsh)"
+# fzf --zsh requires fzf 0.48+; fall back to sourcing ~/.fzf.zsh
+if command -v fzf >/dev/null && fzf --zsh &>/dev/null; then
+  zsh-defer eval "$(fzf --zsh)"
+fi
 
 # Load starship prompt if available
 command -v starship >/dev/null && eval "$(starship init zsh)"

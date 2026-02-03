@@ -13,8 +13,10 @@ PATH=""
 # Rust (rustup) — authoritative for Rust toolchains
 [[ -d "$HOME/.cargo/bin" ]] && PATH="$PATH:$HOME/.cargo/bin"
 
-# asdf shims — everything except Rust
-[[ -d "${ASDF_DATA_DIR:-$HOME/.asdf}/shims" ]] && PATH="$PATH:${ASDF_DATA_DIR:-$HOME/.asdf}/shims"
+# fnm (Fast Node Manager) — Node.js version management
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd)"
+fi
 
 # Homebrew (macOS Apple Silicon only) — add explicitly to preserve ordering
 if $_is_macos; then

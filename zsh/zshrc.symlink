@@ -122,7 +122,6 @@ fi
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
 	git
-	ssh-agent
 	aws
 	dotenv
 	vscode
@@ -134,6 +133,12 @@ plugins=(
   you-should-use
   fzf-tab
 )
+
+# Only load ssh-agent if not in bootstrap mode
+# (Set SKIP_SSH_AGENT=1 during bootstrap to prevent passphrase prompts)
+if [[ "${SKIP_SSH_AGENT:-0}" != "1" ]]; then
+  plugins+=(ssh-agent)
+fi
 
 mac_plugins=(
   brew
@@ -273,3 +278,6 @@ export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
 
 
 fpath+=~/.zfunc; autoload -Uz compinit; compinit
+
+# OpenClaw Completion
+source <(openclaw completion --shell zsh)

@@ -3,19 +3,20 @@ set -euo pipefail
 
 # ------------------------------------------------------------------------------
 # Linux Dev Bootstrap (Ubuntu/Debian)
-# - Installs baseline packages (Python/Node via asdf, not apt)
-# - Installs Python build dependencies for asdf
+# - Installs baseline packages (not Python/Node - those via uv/fnm)
 # - Ensures ~/.local/bin on PATH
 # - Symlinks dotfiles (XDG configs + *.symlink)
 # - Installs Neovim AppImage into ~/.local/bin/nvim
 # - Installs lazygit (arm64/x64) into ~/.local/bin
 # - Installs starship prompt
 # - Installs yazi (via cargo)
-# - Installs uv (Python package manager)
+# - Installs uv (Python version & package manager)
+# - Installs fnm (Fast Node Manager)
 # - Installs llm (Simon Willison's CLI tool)
 # - Installs Claude Code (Anthropic CLI)
 # - Installs OpenCode CLI
-# - Uses rustup for Rust (not asdf)
+# - Uses rustup for Rust
+# - Uses Go official tarball
 #
 # Safe to re-run. It should be idempotent.
 # ------------------------------------------------------------------------------
@@ -41,13 +42,12 @@ ensure_dirs() {
 }
 
 ensure_local_bin_in_path() {
-  # We won't mutate your zshrc aggressively—just ensure a drop-in exists
-  # and let your dotfiles source it.
   log "Ensuring ~/.local/bin is in PATH"
   if ! echo "$PATH" | tr ':' '\n' | grep -qx "$LOCAL_BIN"; then
     warn "$HOME/.local/bin not currently on PATH for this shell session."
-    warn "Make sure your zsh config exports it. Example:"
-    warn '  export PATH="$HOME/.local/bin:$PATH"'
+    warn "Adding it for bootstrap; make sure your zsh config exports it permanently."
+    # Add to PATH for the current bootstrap session
+    export PATH="$LOCAL_BIN:$PATH"
   fi
 }
 
@@ -60,8 +60,10 @@ apt_install_base() {
     zsh tmux \
     ripgrep fd-find bat \
     xclip \
-    keychain \
+    dirmngr gpg gawk \
     locales
+
+  # Note: dirmngr, gpg, gawk are useful for GPG key management and general scripting
 
   # Ubuntu calls it fdfind; provide fd symlink in ~/.local/bin
   if need_cmd fdfind && ! need_cmd fd; then
@@ -81,6 +83,33 @@ install_extras_optional() {
     eza zoxide \
     tree \
     neofetch || true
+
+  # keychain is optional because it may prompt for SSH passphrase during bootstrap
+  # Uncomment if you want it installed automatically:
+  # sudo apt-get install -y keychain
+}
+
+install_fnm() {
+  log "Installing fnm (Fast Node Manager)"
+
+  if need_cmd fnm; then
+    log "fnm already installed: $(fnm --version | head -n 1)"
+    return 0
+  fi
+
+  # Install fnm via official installer
+  # --install-dir puts binary in ~/.local/bin (managed by path.zsh)
+  # --skip-shell prevents installer from modifying shell configs (we manage PATH centrally)
+  curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$LOCAL_BIN" --skip-shell
+
+  # Ensure ~/.local/bin is in PATH for current session
+  export PATH="$LOCAL_BIN:$PATH"
+
+  if need_cmd fnm; then
+    log "fnm installed: $(fnm --version)"
+  else
+    warn "fnm command not found after installation"
+  fi
 }
 
 install_go_official() {
@@ -145,13 +174,10 @@ install_go_official() {
 }
 
 install_python_build_deps() {
-  # Dependencies required by asdf-python (pyenv) to build Python from source
-  log "Installing Python build dependencies for asdf"
-  sudo apt-get install -y \
-    build-essential libssl-dev zlib1g-dev \
-    libbz2-dev libreadline-dev libsqlite3-dev \
-    libncursesw5-dev xz-utils tk-dev libxml2-dev \
-    libxmlsec1-dev libffi-dev liblzma-dev
+  # DEPRECATED: Not needed with uv (uses pre-built Python binaries)
+  # Keeping function for backwards compatibility but skipping install
+  log "Skipping Python build dependencies (uv uses pre-built binaries)"
+  return 0
 }
 
 ensure_git_identity_templates() {
@@ -408,7 +434,10 @@ install_uv() {
 
   curl -fsSL https://astral.sh/uv/install.sh | sh
 
-  log "uv installed: $(uv --version 2>/dev/null || echo 'restart shell to verify')"
+  # uv installs to ~/.cargo/bin or ~/.local/bin; update PATH for current session
+  export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+
+  log "uv installed: $(uv --version 2>/dev/null || echo 'WARN: uv not found in PATH')"
 }
 
 install_llm() {
@@ -423,13 +452,19 @@ install_llm() {
     else
       warn "Neither uv nor pipx found; installing llm via uv after uv install"
       install_uv
-      # Source uv env if needed
-      export PATH="$HOME/.local/bin:$PATH"
       uv tool install llm
     fi
+
+    # uv tool install puts binaries in ~/.local/bin; update PATH for current session
+    export PATH="$HOME/.local/bin:$PATH"
   fi
 
-  log "llm installed: $(llm --version 2>/dev/null || echo 'restart shell to verify')"
+  if ! need_cmd llm; then
+    warn "llm command not found after installation - skipping plugin install"
+    return 0
+  fi
+
+  log "llm installed: $(llm --version)"
 
   # Install/upgrade llm plugins
   log "Installing llm plugins"
@@ -449,7 +484,10 @@ install_claude_code() {
 
   curl -fsSL https://claude.ai/install.sh | bash
 
-  log "claude installed: $(claude --version 2>/dev/null || echo 'restart shell to verify')"
+  # Claude Code installer adds to ~/.local/bin; update PATH for current session
+  export PATH="$HOME/.local/bin:$PATH"
+
+  log "claude installed: $(claude --version 2>/dev/null || echo 'WARN: claude not found in PATH')"
 }
 
 install_opencode() {
@@ -465,7 +503,10 @@ install_opencode() {
       sed -i '/\.opencode\/bin/d' "$HOME/.zshrc"
     fi
 
-    log "opencode installed: $(opencode --version 2>/dev/null || echo 'restart shell to verify')"
+    # OpenCode installer adds to ~/.opencode/bin; update PATH for current session
+    export PATH="$HOME/.opencode/bin:$PATH"
+
+    log "opencode installed: $(opencode --version 2>/dev/null || echo 'WARN: opencode not found in PATH')"
   fi
 
   # Symlink config
@@ -530,6 +571,36 @@ EOF
   log "Installed pbcopy/pbpaste wrappers into ~/.local/bin"
 }
 
+change_shell_to_zsh() {
+  log "Checking default shell"
+
+  # Check if zsh is already the default shell
+  if [[ "$SHELL" == */zsh ]]; then
+    log "Default shell is already zsh"
+    return 0
+  fi
+
+  # Find zsh path
+  local zsh_path
+  zsh_path="$(command -v zsh)" || {
+    warn "zsh not found in PATH, cannot change default shell"
+    return 1
+  }
+
+  # Check if zsh is in /etc/shells
+  if ! grep -qx "$zsh_path" /etc/shells; then
+    warn "Adding $zsh_path to /etc/shells"
+    echo "$zsh_path" | sudo tee -a /etc/shells
+  fi
+
+  log "Changing default shell to zsh (will prompt for password)"
+  if chsh -s "$zsh_path"; then
+    log "Default shell changed to zsh. Log out and back in for it to take effect."
+  else
+    warn "Failed to change default shell. You can do it manually with: chsh -s $zsh_path"
+  fi
+}
+
 install_zsh_environment() {
   log "Installing zsh environment (oh-my-zsh, plugins, symlinks)"
 
@@ -544,7 +615,10 @@ install_zsh_environment() {
   # - ~/.zsh/env symlink
   # - oh-my-zsh plugins
   # Run in subshell to prevent 'exec zsh' at end from terminating bootstrap
-  (bash "$DOTFILES_DIR/zsh/install.sh")
+  # Skip ssh-agent to prevent passphrase prompts during bootstrap
+  if ! (SKIP_SSH_AGENT=1 bash "$DOTFILES_DIR/zsh/install.sh"); then
+    warn "zsh/install.sh reported errors (may still be partially successful)"
+  fi
 
   log "zsh environment installed"
 }
@@ -574,10 +648,14 @@ main() {
   # Go via official tarball (system-wide)
   install_go_official
 
+  # fnm for Node.js version management (uv handles Python)
+  install_fnm
+
   symlink_dotfiles_symlink_pattern
   ensure_git_identity_templates
   symlink_xdg_dirs
   install_zsh_environment
+  change_shell_to_zsh
 
   install_neovim_appimage
   install_lazygit
@@ -607,8 +685,20 @@ main() {
   post_checks
 
   log "Bootstrap complete."
-  log "Next: open a new shell (or source your zsh config) so PATH updates apply."
-  log "Then use asdf to install python and nodejs runtimes."
+  log ""
+  log "Next steps:"
+  log "  1. Open a new shell (or exec zsh) so PATH updates apply"
+  log "  2. Install Python versions with uv:"
+  log "     uv python install 3.12"
+  log "     uv python install 3.11"
+  log "  3. Install Node.js versions with fnm:"
+  log "     fnm install --lts"
+  log "     fnm use lts-latest"
+  log "     fnm default lts-latest"
+  log ""
+  log "NOTE: If you saw any warnings above, review them before proceeding."
+  log "Optional: Install keychain manually if you need SSH key management:"
+  log "  sudo apt-get install -y keychain"
 }
 
 main "$@"

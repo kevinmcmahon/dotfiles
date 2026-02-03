@@ -1,5 +1,10 @@
 ##### Prefix / basic ergonomics #####
 
+# Change prefix to Ctrl-a (easier on some keyboards)
+unbind C-b
+set -g prefix C-a
+bind-key C-a send-prefix
+
 # Faster key repetition / snappy ESC (important for Vim/Neovim)
 # (Your checkhealth complained about 500ms; this fixes it.)
 set -sg escape-time 10

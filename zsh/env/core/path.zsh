@@ -15,7 +15,7 @@ PATH=""
 
 # fnm (Fast Node Manager) — Node.js version management
 if command -v fnm >/dev/null 2>&1; then
-  eval "$(fnm env --use-on-cd)"
+  eval "$(fnm env --use-on-cd --shell zsh)"
 fi
 
 # Homebrew (macOS Apple Silicon only) — add explicitly to preserve ordering

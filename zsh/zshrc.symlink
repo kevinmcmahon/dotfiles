@@ -279,5 +279,5 @@ export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
 
 fpath+=~/.zfunc; autoload -Uz compinit; compinit
 
-# OpenClaw Completion
-source <(openclaw completion --shell zsh)
+# OpenClaw Completion (only if openclaw is installed)
+command -v openclaw >/dev/null && source <(openclaw completion --shell zsh)

@@ -185,13 +185,25 @@ echo ""
 echo "[7/7] Restoring .ssh directory..."
 if [[ -d "$BACKUP_DIR/ssh-backup" ]]; then
   cp -a "$BACKUP_DIR/ssh-backup" "$NEW_HOME/.ssh"
+
+  # Fix ownership first
   chown -R "$USERNAME:$USERNAME" "$NEW_HOME/.ssh"
-  chmod 700 "$NEW_HOME/.ssh"
-  chmod 600 "$NEW_HOME/.ssh"/* 2>/dev/null || true
-  chmod 644 "$NEW_HOME/.ssh"/*.pub 2>/dev/null || true
+
+  # Fix permissions properly:
+  # - All directories: 700 (rwx------)
+  # - Private keys: 600 (rw-------)
+  # - Public keys: 644 (rw-r--r--)
+  # - config/known_hosts: 600 (rw-------)
+  find "$NEW_HOME/.ssh" -type d -exec chmod 700 {} \;
+  find "$NEW_HOME/.ssh" -type f -exec chmod 600 {} \;
+  find "$NEW_HOME/.ssh" -type f -name "*.pub" -exec chmod 644 {} \;
+
   echo "      ✓ Restored .ssh directory"
-  echo "      ✓ Fixed permissions (700 dir, 600 keys, 644 pub)"
   echo "      ✓ Fixed ownership ($USERNAME:$USERNAME)"
+  echo "      ✓ Fixed permissions:"
+  echo "        - Directories: 700 (rwx------)"
+  echo "        - Private keys: 600 (rw-------)"
+  echo "        - Public keys: 644 (rw-r--r--)"
 else
   echo "      ℹ No .ssh backup to restore"
 fi

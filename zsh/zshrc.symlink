@@ -134,9 +134,9 @@ plugins=(
   fzf-tab
 )
 
-# Only load ssh-agent if not in bootstrap mode
-# (Set SKIP_SSH_AGENT=1 during bootstrap to prevent passphrase prompts)
-if [[ "${SKIP_SSH_AGENT:-0}" != "1" ]]; then
+# Only load ssh-agent plugin on macOS (Linux uses keychain instead)
+# Skip during bootstrap (SKIP_SSH_AGENT=1) to prevent passphrase prompts
+if [[ "${SKIP_SSH_AGENT:-0}" != "1" && ${IS_MACOS:-0} -eq 1 ]]; then
   plugins+=(ssh-agent)
 fi
 

@@ -645,10 +645,9 @@ main() {
   install_extras_optional
   install_python_build_deps
 
-  # Go via official tarball (system-wide)
+  # Language runtimes and version managers (install before dotfiles/shell setup)
   install_go_official
-
-  # fnm for Node.js version management (uv handles Python)
+  install_rustup  # Install early - shell config expects ~/.cargo/env
   install_fnm
 
   symlink_dotfiles_symlink_pattern
@@ -662,10 +661,7 @@ main() {
   install_starship
   install_fzf
 
-  # Rust via rustup (not asdf)
-  install_rustup
-
-  # yazi via cargo (comment out if you prefer other install method)
+  # yazi via cargo (rustup already installed earlier)
   install_yazi_via_cargo
 
   # Python tooling (use asdf for Python itself)

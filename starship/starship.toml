@@ -8,6 +8,7 @@ command_timeout = 2000
 add_newline = true
 
 format = """
+${custom.hostbadge}\
 $directory\
 $git_branch\
 $git_status\
@@ -103,6 +104,14 @@ detect_files = ["Dockerfile", "docker-compose.yml"]
 symbol = "\ue7ad "
 format = '[$symbol($profile )(\($region\) )]($style)'
 style = "bold bright-blue"
+
+# ── Host Badge ────────────────
+[custom.hostbadge]
+command = 'if [ -n "$SSH_CONNECTION" ]; then echo "$(hostname -s)"; else echo ""; fi'
+when = "true"
+format = "[$output]($style) "
+style = "bold yellow"
+
 # ── Battery via Custom Module ─
 [custom.battery]
 command = "/Users/kevin/.config/starship/battery-status.sh"

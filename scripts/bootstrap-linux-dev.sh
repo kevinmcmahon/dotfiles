@@ -9,7 +9,7 @@ set -euo pipefail
 # - Installs Neovim AppImage into ~/.local/bin/nvim
 # - Installs lazygit (arm64/x64) into ~/.local/bin
 # - Installs starship prompt
-# - Installs yazi (via cargo)
+# - Installs cargo tools: yazi, viu, tectonic
 # - Installs uv (Python version & package manager)
 # - Installs fnm (Fast Node Manager)
 # - Installs llm (Simon Willison's CLI tool)
@@ -374,40 +374,54 @@ install_lazygit() {
   log "lazygit installed: $("$LOCAL_BIN/lazygit" --version | head -n 1)"
 }
 
-install_rustup() {
-  log "Installing rustup (Rust toolchain manager)"
-  if need_cmd rustup; then
-    log "rustup already installed"
-    return 0
-  fi
+install_rust_and_cargo_tools() {
+  log "Installing Rust toolchain and cargo tools"
 
-  curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs |
-    sh -s -- -y
+  # Install rustup if needed
+  if ! need_cmd rustup; then
+    log "Installing rustup (Rust toolchain manager)"
+    curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs |
+      sh -s -- -y
+  else
+    log "rustup already installed"
+  fi
 
   # shellcheck disable=SC1090
   source "$HOME/.cargo/env" || true
 
-  log "rustup installed: $(rustup --version || true)"
-}
+  if ! need_cmd cargo; then
+    die "cargo not available after rustup install"
+  fi
 
-install_yazi_via_cargo() {
-  log "Installing yazi via cargo (requires rustup)"
+  log "rustup: $(rustup --version 2>/dev/null || echo 'unknown')"
+
+  # --- yazi (file manager) ---
   if need_cmd yazi && need_cmd ya; then
     log "yazi already installed: $(yazi --version | head -n 1)"
-    return 0
+  else
+    log "Installing yazi..."
+    cargo install --force yazi-build
+    yazi-build
+    log "yazi installed: $(yazi --version | head -n 1)"
   fi
 
-  if ! need_cmd cargo; then
-    warn "cargo not found; installing rustup first"
-    install_rustup
-    source "$HOME/.cargo/env" || true
+  # --- viu (terminal image viewer) ---
+  if need_cmd viu; then
+    log "viu already installed: $(viu --version | head -n 1)"
+  else
+    log "Installing viu..."
+    cargo install viu
+    log "viu installed: $(viu --version | head -n 1)"
   fi
 
-  # New build method required by yazi
-  cargo install --force yazi-build
-  yazi-build
-
-  log "yazi installed: $(yazi --version | head -n 1)"
+  # --- tectonic (LaTeX compiler) ---
+  if need_cmd tectonic; then
+    log "tectonic already installed: $(tectonic --version | head -n 1)"
+  else
+    log "Installing tectonic..."
+    cargo install tectonic
+    log "tectonic installed: $(tectonic --version | head -n 1)"
+  fi
 }
 
 install_starship() {
@@ -706,7 +720,6 @@ main() {
 
   # Language runtimes and version managers (install before dotfiles/shell setup)
   install_go_official
-  install_rustup  # Install early - shell config expects ~/.cargo/env
   install_fnm
 
   symlink_dotfiles_symlink_pattern
@@ -720,8 +733,8 @@ main() {
   install_starship
   install_fzf
 
-  # yazi via cargo (rustup already installed earlier)
-  install_yazi_via_cargo
+  # Rust toolchain and cargo tools
+  install_rust_and_cargo_tools
 
   # Python tooling (uv for packages, venvs, and tools)
   install_uv

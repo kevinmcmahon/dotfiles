@@ -514,9 +514,12 @@ install_opencode() {
     curl -fsSL https://opencode.ai/install | bash
 
     # The installer adds a PATH line to ~/.zshrc; remove it (we manage PATH in path.zsh)
-    if [[ -f "$HOME/.zshrc" ]]; then
-      sed -i '/^# opencode$/d' "$HOME/.zshrc"
-      sed -i '/\.opencode\/bin/d' "$HOME/.zshrc"
+    # Use readlink to resolve symlinks — sed -i replaces symlinks with regular files
+    local zshrc_real
+    zshrc_real="$(readlink -f "$HOME/.zshrc" 2>/dev/null || echo "$HOME/.zshrc")"
+    if [[ -f "$zshrc_real" ]]; then
+      sed -i '/^# opencode$/d' "$zshrc_real"
+      sed -i '/\.opencode\/bin/d' "$zshrc_real"
     fi
 
     # OpenCode installer adds to ~/.opencode/bin; update PATH for current session

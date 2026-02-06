@@ -456,6 +456,46 @@ install_uv() {
   log "uv installed: $(uv --version 2>/dev/null || echo 'WARN: uv not found in PATH')"
 }
 
+install_nvim_python_venv_uv() {
+  log "Setting up Neovim Python venv (uv)"
+
+  local NVIM_VENV_DIR="$HOME/.local/share/nvim/venv"
+  local NVIM_VENV_PY="$NVIM_VENV_DIR/bin/python"
+
+  # Create venv only if it doesn't already exist
+  if [[ ! -x "$NVIM_VENV_PY" ]]; then
+    mkdir -p "$(dirname "$NVIM_VENV_DIR")"
+    uv venv "$NVIM_VENV_DIR" --seed
+  fi
+
+  # Install/upgrade pynvim
+  uv pip install --python "$NVIM_VENV_PY" -U pynvim
+
+  # Verify (non-fatal)
+  if "$NVIM_VENV_PY" -c "import pynvim" 2>/dev/null; then
+    log "pynvim OK: $("$NVIM_VENV_PY" -c "import pynvim; print(pynvim.__version__)")"
+  else
+    warn "pynvim import check failed — Neovim :checkhealth may report issues"
+  fi
+}
+
+install_ruff_uv() {
+  log "Installing ruff via uv"
+
+  if need_cmd ruff; then
+    log "ruff already installed: $(ruff --version)"
+    return 0
+  fi
+
+  uv tool install ruff
+
+  if need_cmd ruff; then
+    log "ruff installed: $(ruff --version)"
+  else
+    warn "ruff not found in PATH after install"
+  fi
+}
+
 install_llm() {
   log "Installing Simon Willison's llm tool"
 
@@ -683,8 +723,10 @@ main() {
   # yazi via cargo (rustup already installed earlier)
   install_yazi_via_cargo
 
-  # Python tooling (use asdf for Python itself)
+  # Python tooling (uv for packages, venvs, and tools)
   install_uv
+  install_nvim_python_venv_uv
+  install_ruff_uv
   install_llm
   symlink_llm_templates
 

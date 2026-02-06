@@ -188,6 +188,22 @@ ensure_git_identity_templates() {
   # contain absolute paths (Git does not expand ~ or $HOME in includeIf).
   local home_abs="$HOME"
 
+  # Create default ~/.gituserconfig (included by ~/.gitconfig for default identity)
+  if [[ ! -f "$HOME/.gituserconfig" ]]; then
+    cat > "$HOME/.gituserconfig" <<'EOF'
+# ~/.gituserconfig
+# Default Git identity (NOT checked in).
+# This is your fallback identity for repos that don't match
+# any includeIf patterns in ~/.gitconfig-local.
+
+[user]
+  # name = Your Name
+  # email = you@example.com
+EOF
+    chmod 600 "$HOME/.gituserconfig"
+    warn "Created $HOME/.gituserconfig (EDIT THIS: uncomment and set name/email)"
+  fi
+
   if [[ ! -f "$HOME/.gitconfig-local" ]]; then
     if [[ -f "$DOTFILES_DIR/git/gitconfig-local.template" ]]; then
       sed "s|__HOME__|$home_abs|g" "$DOTFILES_DIR/git/gitconfig-local.template" >"$HOME/.gitconfig-local"
@@ -684,10 +700,14 @@ main() {
   log ""
   log "Next steps:"
   log "  1. Open a new shell (or exec zsh) so PATH updates apply"
-  log "  2. Install Python versions with uv:"
+  log "  2. Configure your Git identity (REQUIRED for commits):"
+  log "     Edit ~/.gituserconfig and uncomment/set your name and email"
+  log "     (Optional) Edit ~/.gituserconfig.kmc and ~/.gituserconfig.fete"
+  log "     for project-specific identities"
+  log "  3. Install Python versions with uv:"
   log "     uv python install 3.12"
   log "     uv python install 3.11"
-  log "  3. Install Node.js with fnm and enable corepack (for yarn/pnpm):"
+  log "  4. Install Node.js with fnm and enable corepack (for yarn/pnpm):"
   log "     fnm install --lts"
   log "     fnm use lts-latest"
   log "     fnm default lts-latest"

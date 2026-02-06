@@ -222,6 +222,7 @@ done
 command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
 command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
 command -v ngrok &>/dev/null && eval "$(ngrok completion)"
+command -v openclaw >/dev/null && source <(openclaw completion --shell zsh)
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 _uv_run_mod() {
@@ -278,6 +279,3 @@ export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
 
 
 fpath+=~/.zfunc; autoload -Uz compinit; compinit
-
-# OpenClaw Completion (only if openclaw is installed)
-command -v openclaw >/dev/null && source <(openclaw completion --shell zsh)

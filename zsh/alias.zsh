@@ -42,6 +42,7 @@ alias ip="echo Your ip is; dig +short myip.opendns.com @resolver1.opendns.com;"
 
 # bat!
 alias cat='bat'
+alias bcat='/bin/cat'
 
 # Applications
 alias marked='open -a Marked\ 2'

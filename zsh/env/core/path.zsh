@@ -36,9 +36,6 @@ fi
 # Bun
 [[ -d "$HOME/.bun/bin" ]] && PATH="$PATH:$HOME/.bun/bin"
 
-# OpenCode
-[[ -d "$HOME/.opencode/bin" ]] && PATH="$PATH:$HOME/.opencode/bin"
-
 # Go (official install)
 if [[ -d "/usr/local/go/bin" ]]; then
   PATH="$PATH:/usr/local/go/bin"

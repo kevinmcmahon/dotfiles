@@ -222,8 +222,10 @@ done
 command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
 command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
 command -v ngrok &>/dev/null && eval "$(ngrok completion)"
-command -v openclaw >/dev/null && source <(openclaw completion --shell zsh)
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# Machine-local completions (not versioned)
+[[ -f "$HOME/.zsh/env/optional/local_completions.zsh" ]] && source "$HOME/.zsh/env/optional/local_completions.zsh"
 
 _uv_run_mod() {
     if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
@@ -278,4 +280,5 @@ export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
 
 
-fpath+=~/.zfunc; autoload -Uz compinit; compinit
+# NOTE: compinit already called above (line 202) and by oh-my-zsh — no need to repeat
+fpath+=~/.zfunc

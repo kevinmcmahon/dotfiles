@@ -12,6 +12,7 @@ set -euo pipefail
 # - Installs cargo tools: yazi, viu, tectonic
 # - Installs uv (Python version & package manager)
 # - Installs fnm (Fast Node Manager)
+# - Installs ruby-install + chruby (Ruby version manager)
 # - Installs llm (Simon Willison's CLI tool)
 # - Installs Claude Code (Anthropic CLI)
 # - Installs OpenCode CLI
@@ -644,6 +645,86 @@ EOF
   log "Installed pbcopy/pbpaste wrappers into ~/.local/bin"
 }
 
+install_ruby_build_deps() {
+  log "Installing Ruby build dependencies"
+  sudo apt-get update -y
+  sudo apt-get install -y \
+    build-essential curl git \
+    libssl-dev libreadline-dev zlib1g-dev libyaml-dev \
+    libffi-dev libgdbm-dev libncurses5-dev \
+    libtool bison autoconf
+}
+
+install_ruby_install() {
+  log "Installing ruby-install"
+
+  if need_cmd ruby-install; then
+    log "ruby-install already installed: $(ruby-install --version | head -n 1)"
+    return 0
+  fi
+
+  RUBY_INSTALL_VERSION="${RUBY_INSTALL_VERSION:-0.9.3}"
+
+  local tmpdir
+  tmpdir="$(mktemp -d)"
+  trap 'rm -rf "$tmpdir"' RETURN
+
+  local url="https://github.com/postmodern/ruby-install/releases/download/v${RUBY_INSTALL_VERSION}/ruby-install-${RUBY_INSTALL_VERSION}.tar.gz"
+  log "Downloading ruby-install v${RUBY_INSTALL_VERSION}"
+  curl -fsSL "$url" -o "$tmpdir/ruby-install.tar.gz"
+  tar -xzf "$tmpdir/ruby-install.tar.gz" -C "$tmpdir"
+  cd "$tmpdir/ruby-install-${RUBY_INSTALL_VERSION}"
+  sudo make install
+
+  if need_cmd ruby-install; then
+    log "ruby-install installed: $(ruby-install --version | head -n 1)"
+  else
+    warn "ruby-install command not found after installation"
+  fi
+}
+
+install_chruby() {
+  log "Installing chruby"
+
+  if [[ -f /usr/local/share/chruby/chruby.sh ]] || [[ -f /usr/share/chruby/chruby.sh ]]; then
+    log "chruby already installed"
+    return 0
+  fi
+
+  CHRUBY_VERSION="${CHRUBY_VERSION:-0.3.9}"
+
+  local tmpdir
+  tmpdir="$(mktemp -d)"
+  trap 'rm -rf "$tmpdir"' RETURN
+
+  local url="https://github.com/postmodern/chruby/releases/download/v${CHRUBY_VERSION}/chruby-${CHRUBY_VERSION}.tar.gz"
+  log "Downloading chruby v${CHRUBY_VERSION}"
+  curl -fsSL "$url" -o "$tmpdir/chruby.tar.gz"
+  tar -xzf "$tmpdir/chruby.tar.gz" -C "$tmpdir"
+  cd "$tmpdir/chruby-${CHRUBY_VERSION}"
+  sudo make install
+
+  if [[ -f /usr/local/share/chruby/chruby.sh ]]; then
+    log "chruby installed: /usr/local/share/chruby/chruby.sh"
+  else
+    warn "chruby.sh not found after installation"
+  fi
+}
+
+install_ruby_optional() {
+  if [[ -z "${RUBY_VERSION:-}" ]]; then
+    log "RUBY_VERSION not set, skipping Ruby install (install later with ruby-install)"
+    return 0
+  fi
+
+  log "Installing Ruby $RUBY_VERSION via ruby-install"
+  ruby-install ruby "$RUBY_VERSION" || warn "Ruby $RUBY_VERSION install failed (non-fatal)"
+
+  if [[ -d "$HOME/.rubies" ]]; then
+    log "Rubies installed: $(ls "$HOME/.rubies")"
+  fi
+}
+
 change_shell_to_zsh() {
   log "Checking default shell"
 
@@ -743,6 +824,12 @@ main() {
   install_llm
   symlink_llm_templates
 
+  # Ruby tooling (chruby + ruby-install)
+  install_ruby_build_deps
+  install_ruby_install
+  install_chruby
+  install_ruby_optional
+
   # Claude Code CLI
   install_claude_code
 
@@ -770,6 +857,9 @@ main() {
   log "     fnm use lts-latest"
   log "     fnm default lts-latest"
   log "     corepack enable"
+  log "  5. Install Ruby with ruby-install:"
+  log "     ruby-install ruby 3.3.6"
+  log "     (or set RUBY_VERSION=3.3.6 before bootstrap)"
   log ""
   log "NOTE: If you saw any warnings above, review them before proceeding."
   log "Optional: Install keychain manually if you need SSH key management:"

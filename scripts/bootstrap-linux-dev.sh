@@ -14,6 +14,7 @@ set -euo pipefail
 # - Installs fnm (Fast Node Manager)
 # - Installs ruby-install + chruby (Ruby version manager)
 # - Installs llm (Simon Willison's CLI tool)
+# - Installs Deno runtime
 # - Installs Claude Code (Anthropic CLI)
 # - Installs OpenCode CLI
 # - Uses rustup for Rust
@@ -561,6 +562,22 @@ install_claude_code() {
   log "claude installed: $(claude --version 2>/dev/null || echo 'WARN: claude not found in PATH')"
 }
 
+install_deno() {
+  log "Installing Deno"
+  if need_cmd deno; then
+    log "deno already installed: $(deno --version | head -n 1)"
+    return 0
+  fi
+
+  # --no-modify-path: we manage PATH in path.zsh
+  curl -fsSL https://deno.land/install.sh | sh -s -- --no-modify-path
+
+  # Deno installs to ~/.deno/bin; update PATH for current session
+  export PATH="$HOME/.deno/bin:$PATH"
+
+  log "deno installed: $(deno --version 2>/dev/null | head -n 1 || echo 'WARN: deno not found in PATH')"
+}
+
 install_opencode() {
   log "Installing OpenCode"
   if need_cmd opencode; then
@@ -829,6 +846,9 @@ main() {
   install_ruby_install
   install_chruby
   install_ruby_optional
+
+  # Deno
+  install_deno
 
   # Claude Code CLI
   install_claude_code

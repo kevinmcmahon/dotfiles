@@ -36,6 +36,9 @@ fi
 # Bun
 [[ -d "$HOME/.bun/bin" ]] && PATH="$PATH:$HOME/.bun/bin"
 
+# Deno
+[[ -d "$HOME/.deno/bin" ]] && PATH="$PATH:$HOME/.deno/bin"
+
 # Go (official install)
 if [[ -d "/usr/local/go/bin" ]]; then
   PATH="$PATH:/usr/local/go/bin"

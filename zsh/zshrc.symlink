@@ -222,6 +222,7 @@ done
 command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
 command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
 command -v ngrok &>/dev/null && eval "$(ngrok completion)"
+command -v deno >/dev/null && eval "$(deno completions zsh)"
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # Machine-local completions (not versioned)

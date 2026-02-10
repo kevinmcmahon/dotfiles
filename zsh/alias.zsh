@@ -86,3 +86,7 @@ alias cpwd='pwd|tr -d "\n"|pbcopy'
 
 alias ded='rm -rf ~/Library/Developer/Xcode/DerivedData/'
 
+# tmux
+
+# If tmux feels hung: detach all other clients and reattach cleanly
+alias tfix='tmux detach-client -a 2>/dev/null; tmux switch-client -t main 2>/dev/null || tmux attach -t main 2>/dev/null || tmux new -s main'

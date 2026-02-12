@@ -209,11 +209,23 @@ This section contains the contents of the repository's files.
 </file>
 
 <file path="env/core/runtime.zsh">
-1: # Node.js via fnm
-2: if command -v fnm >/dev/null 2>&1; then
-3:   eval "$(fnm env --use-on-cd --shell zsh)"
-4:   fnm use --install-if-missing default >/dev/null 2>&1
-5: fi
+ 1: # Node.js via fnm
+ 2: if command -v fnm >/dev/null 2>&1; then
+ 3:   eval "$(fnm env --use-on-cd --shell zsh)"
+ 4:   fnm use --install-if-missing default >/dev/null 2>&1
+ 5: fi
+ 6: 
+ 7: # Python via uv (always available)
+ 8: if command -v uv >/dev/null 2>&1; then
+ 9:   python()  { uv run python "$@"; }
+10:   python3() { uv run python "$@"; }
+11:   pip()     { uv run pip "$@"; }
+12:   pip3()    { uv run pip "$@"; }
+13: fi
+14: 
+15: [[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
+16: 
+17: export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 </file>
 
 <file path="env/optional/private.zsh.placeholder">
@@ -975,9 +987,6 @@ This section contains the contents of the repository's files.
 29: 
 30: # Don't let interactive Zsh config re-run this stuff
 31: export ZSHENV_LOADED=1
-32: 
-33: # Load Rust/Cargo environment if installed
-34: [[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
 </file>
 
 <file path="zshrc.symlink">
@@ -1169,106 +1178,105 @@ This section contains the contents of the repository's files.
 186: 
 187: # Add completion paths
 188: fpath=(
-189:     "${ASDF_DATA_DIR:-$HOME/.asdf}/completions"
-190:     "${HOME}/dotfiles/zsh/functions"
-191:     "${HOME}/.zfunc"
-192:     "${fpath[@]}"
-193: )
-194: 
-195: # Add brew completions on macOS
-196: if [[ $IS_MACOS -eq 1 ]] && command -v brew >/dev/null; then
-197:     fpath=("$(brew --prefix)/share/zsh/site-functions" "${fpath[@]}")
-198: fi
-199: 
-200: # Completion styling
-201: zstyle ':completion:*' menu select
-202: 
-203: autoload -Uz compinit && compinit
-204: 
-205: # Enable bash completion compatibility
-206: autoload -U +X bashcompinit && bashcompinit
-207: 
-208: # Package manager completions
-209: [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . "${HOME}/.config/tabtab/zsh/__tabtab.zsh" || true
-210: 
-211: # Cloud tool completions
-212: # Check multiple potential locations for Google Cloud SDK
-213: for gcloud_path in "$HOME/tools/google-cloud-sdk" "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk" "/opt/google-cloud-sdk"; do
-214:   if [[ -d "$gcloud_path" ]]; then
-215:     [[ -f "$gcloud_path/completion.zsh.inc" ]] && source "$gcloud_path/completion.zsh.inc"
-216:     [[ -f "$gcloud_path/path.zsh.inc" ]] && source "$gcloud_path/path.zsh.inc"
-217:     break
-218:   fi
-219: done
+189:     "${HOME}/dotfiles/zsh/functions"
+190:     "${HOME}/.zfunc"
+191:     "${fpath[@]}"
+192: )
+193: 
+194: # Add brew completions on macOS
+195: if [[ $IS_MACOS -eq 1 ]] && command -v brew >/dev/null; then
+196:     fpath=("$(brew --prefix)/share/zsh/site-functions" "${fpath[@]}")
+197: fi
+198: 
+199: # Completion styling
+200: zstyle ':completion:*' menu select
+201: 
+202: autoload -Uz compinit && compinit
+203: 
+204: # Enable bash completion compatibility
+205: autoload -U +X bashcompinit && bashcompinit
+206: 
+207: # Package manager completions
+208: [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . "${HOME}/.config/tabtab/zsh/__tabtab.zsh" || true
+209: 
+210: # Cloud tool completions
+211: # Check multiple potential locations for Google Cloud SDK
+212: for gcloud_path in "$HOME/tools/google-cloud-sdk" "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk" "/opt/google-cloud-sdk"; do
+213:   if [[ -d "$gcloud_path" ]]; then
+214:     [[ -f "$gcloud_path/completion.zsh.inc" ]] && source "$gcloud_path/completion.zsh.inc"
+215:     [[ -f "$gcloud_path/path.zsh.inc" ]] && source "$gcloud_path/path.zsh.inc"
+216:     break
+217:   fi
+218: done
+219: 
 220: 
-221: 
-222: # Command line tool completions
-223: command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
-224: command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
-225: command -v ngrok &>/dev/null && eval "$(ngrok completion)"
-226: command -v deno >/dev/null && eval "$(deno completions zsh)"
-227: [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-228: 
-229: # Machine-local completions (not versioned)
-230: [[ -f "$HOME/.zsh/env/optional/local_completions.zsh" ]] && source "$HOME/.zsh/env/optional/local_completions.zsh"
-231: 
-232: _uv_run_mod() {
-233:     if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
-234:         _arguments '*:filename:_files'
-235:     else
-236:         _uv "$@"
-237:     fi
-238: }
-239: compdef _uv_run_mod uv
+221: # Command line tool completions
+222: command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
+223: command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
+224: command -v ngrok &>/dev/null && eval "$(ngrok completion)"
+225: command -v deno >/dev/null && eval "$(deno completions zsh)"
+226: [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+227: 
+228: # Machine-local completions (not versioned)
+229: [[ -f "$HOME/.zsh/env/optional/local_completions.zsh" ]] && source "$HOME/.zsh/env/optional/local_completions.zsh"
+230: 
+231: _uv_run_mod() {
+232:     if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
+233:         _arguments '*:filename:_files'
+234:     else
+235:         _uv "$@"
+236:     fi
+237: }
+238: compdef _uv_run_mod uv
+239: 
 240: 
-241: 
-242: ### functions
-243: 
-244: autoload -Uz ssh-info
-245: autoload -Uz ssh-test
-246: autoload -Uz ssh-switch
-247: autoload -Uz ssh-git-id
-248: autoload -Uz recent-ssh-keys
-249: autoload -Uz ssh-autoload
-250: autoload -Uz listening
-251: autoload -Uz h
-252: autoload -Uz mdview
-253: autoload -Uz kitty-themes-fzf
-254: autoload -Uz add-zsh-hook
-255: autoload -Uz python
-256: #autoload -Uz terraform
-257: #autoload -Uz aws
-258: #autoload -Uz direnv
-259: add-zsh-hook precmd update_kitty_tab_title
+241: ### functions
+242: 
+243: autoload -Uz ssh-info
+244: autoload -Uz ssh-test
+245: autoload -Uz ssh-switch
+246: autoload -Uz ssh-git-id
+247: autoload -Uz recent-ssh-keys
+248: autoload -Uz ssh-autoload
+249: autoload -Uz listening
+250: autoload -Uz h
+251: autoload -Uz mdview
+252: autoload -Uz kitty-themes-fzf
+253: autoload -Uz add-zsh-hook
+254: autoload -Uz python
+255: #autoload -Uz terraform
+256: #autoload -Uz aws
+257: #autoload -Uz direnv
+258: add-zsh-hook precmd update_kitty_tab_title
+259: 
 260: 
-261: 
-262: source "${HOME}/dotfiles/zsh/functions/completions.zsh"
-263: 
-264: # 1Password
-265: [[ -f "$HOME/.config/op/plugins.sh" ]] && source "$HOME/.config/op/plugins.sh"
-266: 
-267: # For direnv (independent of starship)
-268: command -v direnv >/dev/null && zsh-defer eval "$(direnv hook zsh)"
-269: command -v zoxide >/dev/null && zsh-defer eval "$(zoxide init --cmd cd zsh)"
-270: # fzf --zsh requires fzf 0.48+; fall back to sourcing ~/.fzf.zsh
-271: if command -v fzf >/dev/null && fzf --zsh &>/dev/null; then
-272:   zsh-defer eval "$(fzf --zsh)"
-273: fi
-274: 
-275: # Load starship prompt if available
-276: command -v starship >/dev/null && eval "$(starship init zsh)"
-277: 
-278: [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-279: export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
-280: export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-281: export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
-282: export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf"
-283: # Only load preview when actually triggered, not at startup
-284: export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
+261: source "${HOME}/dotfiles/zsh/functions/completions.zsh"
+262: 
+263: # 1Password
+264: [[ -f "$HOME/.config/op/plugins.sh" ]] && source "$HOME/.config/op/plugins.sh"
+265: 
+266: # For direnv (independent of starship)
+267: command -v direnv >/dev/null && zsh-defer eval "$(direnv hook zsh)"
+268: command -v zoxide >/dev/null && zsh-defer eval "$(zoxide init --cmd cd zsh)"
+269: # fzf --zsh requires fzf 0.48+; fall back to sourcing ~/.fzf.zsh
+270: if command -v fzf >/dev/null && fzf --zsh &>/dev/null; then
+271:   zsh-defer eval "$(fzf --zsh)"
+272: fi
+273: 
+274: # Load starship prompt if available
+275: command -v starship >/dev/null && eval "$(starship init zsh)"
+276: 
+277: [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+278: export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+279: export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+280: export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+281: export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf"
+282: # Only load preview when actually triggered, not at startup
+283: export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
+284: 
 285: 
-286: 
-287: # NOTE: compinit already called above (line 202) and by oh-my-zsh — no need to repeat
-288: fpath+=~/.zfunc
+286: # NOTE: compinit already called above (line 202) and by oh-my-zsh — no need to repeat
+287: fpath+=~/.zfunc
 </file>
 
 </files>

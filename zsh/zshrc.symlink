@@ -13,7 +13,7 @@ if [[ -z "$ZSHENV_LOADED" ]]; then
 fi
 
 # Load core functions and configurations
-ZSH_ENV_ROOT="${HOME}/.zsh/env"
+export ZSH_ENV_ROOT="${HOME}/.zsh/env"
 
 # Sanity check: expected layout
 if [[ ! -d "$ZSH_ENV_ROOT" ]]; then
@@ -44,7 +44,7 @@ fi
 load_env_file "${ZSH_ENV_ROOT}/optional/private.zsh"
 load_env_file "${ZSH_ENV_ROOT}/optional/local.zsh"
 
-unset ZSH_ENV_ROOT CORE_FUNCS
+unset CORE_FUNCS
 
 # Path to your oh-my-zsh installation.
 export ZSH="${HOME}/.oh-my-zsh"
@@ -186,7 +186,6 @@ export EDITOR='nvim'
 
 # Add completion paths
 fpath=(
-    "${ASDF_DATA_DIR:-$HOME/.asdf}/completions"
     "${HOME}/dotfiles/zsh/functions"
     "${HOME}/.zfunc"
     "${fpath[@]}"

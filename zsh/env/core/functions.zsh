@@ -6,10 +6,17 @@ load_env_file() {
 
 # Optional: Add more helper functions
 load_env_dir() {
-    local dir=$1
-    for file in "$dir"/*.zsh; do
-        load_env_file "$file"
-    done
+  local dir=$1
+  if [[ ! -d "$dir" ]]; then
+    echo "⚠️  load_env_dir: missing dir: $dir" >&2
+    return 1
+  fi
+
+  local file
+  for file in "$dir"/*.zsh; do
+    [[ -f "$file" ]] || continue
+    load_env_file "$file"
+  done
 }
 
 function virtualenv_info {

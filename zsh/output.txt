@@ -1,0 +1,1274 @@
+This file is a merged representation of a subset of the codebase, containing specifically included files and files not matching ignore patterns, combined into a single document by Repomix.
+The content has been processed where empty lines have been removed, line numbers have been added.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of a subset of the repository's contents that is considered the most important context.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Only files matching these patterns are included: **/*
+- Files matching these patterns are excluded: **/*.log, **/uv.lock, **/package-lock.json, **/.env, **/Cargo.lock, **/node_modules, **/target, **/dist, **/build, **/output.txt, **/yarn.lock
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Empty lines have been removed from all files
+- Line numbers have been added to the beginning of each line
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+env/
+  core/
+    functions.zsh
+    history.zsh
+    language.zsh
+    path.zsh
+    ruby.zsh
+    runtime.zsh
+  optional/
+    private.zsh.placeholder
+  platform/
+    linux.zsh
+    macos.zsh
+functions/
+  aws
+  completions.zsh
+  direnv
+  h
+  kitty-themes-fzf
+  listening
+  mdview
+  python
+  recent-ssh-keys
+  ssh-auto-load
+  ssh-autoload
+  ssh-git-id
+  ssh-info
+  ssh-switch
+  ssh-test
+  ssh-use
+  terraform
+  update_kitty_tab_title
+alias.zsh
+install.sh
+README.md
+zprofile.symlink
+zshenv.symlink
+zshrc.symlink
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="env/core/functions.zsh">
+ 1: # Utility functions for environment management
+ 2: load_env_file() {
+ 3:     local file=$1
+ 4:     [[ -f $file ]] && source $file
+ 5: }
+ 6: 
+ 7: # Optional: Add more helper functions
+ 8: load_env_dir() {
+ 9:     local dir=$1
+10:     for file in "$dir"/*.zsh; do
+11:         load_env_file "$file"
+12:     done
+13: }
+14: 
+15: function virtualenv_info {
+16:     if [[ -n "$VIRTUAL_ENV" ]]; then
+17:         echo "(${VIRTUAL_ENV:t})"
+18:     fi
+19: }
+</file>
+
+<file path="env/core/history.zsh">
+ 1: HISTSIZE=100000
+ 2: SAVEHIST=$HISTSIZE
+ 3: HISTFILE=~/.zsh_history
+ 4: 
+ 5: # History options
+ 6: setopt appendhistory             # Don't overwrite history file
+ 7: setopt sharehistory              # Share history across all sessions
+ 8: setopt hist_ignore_all_dups      # Remove all previous duplicates in history
+ 9: setopt hist_save_no_dups         # Avoid writing duplicates to file
+10: setopt hist_ignore_space         # Ignore commands starting with a space
+11: setopt hist_verify               # Show before executing from history
+</file>
+
+<file path="env/core/language.zsh">
+1: export LC_ALL=en_US.UTF-8
+2: export LANG=en_US.UTF-8
+3: export LANGUAGE=en_US.UTF-8
+</file>
+
+<file path="env/core/path.zsh">
+ 1: # Build PATH from scratch with priorities clearly visible
+ 2: # Detect platform once
+ 3: _is_macos=false
+ 4: [[ "$(uname -s)" == "Darwin" ]] && _is_macos=true
+ 5: 
+ 6: # Build PATH from scratch with priorities clearly visible
+ 7: PATH=""
+ 8: 
+ 9: # Highest priority first
+10: [[ -d "$HOME/.local/bin" ]] && PATH="$HOME/.local/bin"
+11: [[ -d "$HOME/.fzf/bin" ]] && PATH="$PATH:$HOME/.fzf/bin"
+12: 
+13: # Rust (rustup) — authoritative for Rust toolchains
+14: [[ -d "$HOME/.cargo/bin" ]] && PATH="$PATH:$HOME/.cargo/bin"
+15: 
+16: # Homebrew (macOS Apple Silicon only) — add explicitly to preserve ordering
+17: if $_is_macos; then
+18:   [[ -d "/opt/homebrew/bin"  ]] && PATH="$PATH:/opt/homebrew/bin"
+19:   [[ -d "/opt/homebrew/sbin" ]] && PATH="$PATH:/opt/homebrew/sbin"
+20: fi
+21: 
+22: # macOS-specific tool paths
+23: if $_is_macos; then
+24:   [[ -d "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" ]] && PATH="$PATH:$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
+25:   [[ -d "/Library/TeX/texbin" ]] && PATH="$PATH:/Library/TeX/texbin"
+26: fi
+27: 
+28: # Cross-platform custom tools
+29: [[ -d "$HOME/tools" ]] && PATH="$PATH:$HOME/tools"
+30: 
+31: # Bun
+32: [[ -d "$HOME/.bun/bin" ]] && PATH="$PATH:$HOME/.bun/bin"
+33: 
+34: # Deno
+35: [[ -d "$HOME/.deno/bin" ]] && PATH="$PATH:$HOME/.deno/bin"
+36: 
+37: # Go (official install)
+38: if [[ -d "/usr/local/go/bin" ]]; then
+39:   PATH="$PATH:/usr/local/go/bin"
+40:   export GOPATH="$HOME/go"
+41:   export GOBIN="$GOPATH/bin"
+42:   [[ -d "$GOBIN" ]] && PATH="$PATH:$GOBIN"
+43: fi
+44: 
+45: # System paths
+46: PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+47: 
+48: export PATH
+49: unset _is_macos
+</file>
+
+<file path="env/core/ruby.zsh">
+ 1: # chruby — Ruby version manager
+ 2: # Sourced automatically by load_env_dir in zshrc
+ 3: 
+ 4: # Find chruby.sh (Linux: make install → /usr/local/share; macOS: Homebrew)
+ 5: local _chruby_sh=""
+ 6: for _candidate in \
+ 7:   /usr/local/share/chruby/chruby.sh \
+ 8:   /usr/share/chruby/chruby.sh \
+ 9:   /opt/homebrew/opt/chruby/share/chruby/chruby.sh \
+10:   /usr/local/opt/chruby/share/chruby/chruby.sh; do
+11:   if [[ -f "$_candidate" ]]; then
+12:     _chruby_sh="$_candidate"
+13:     break
+14:   fi
+15: done
+16: 
+17: if [[ -n "$_chruby_sh" ]]; then
+18:   source "$_chruby_sh"
+19:   # auto.sh enables .ruby-version detection
+20:   source "${_chruby_sh%chruby.sh}auto.sh"
+21: fi
+22: 
+23: unset _chruby_sh _candidate
+</file>
+
+<file path="env/core/runtime.zsh">
+1: # Node.js via fnm
+2: if command -v fnm >/dev/null 2>&1; then
+3:   eval "$(fnm env --use-on-cd --shell zsh)"
+4:   fnm use --install-if-missing default >/dev/null 2>&1
+5: fi
+</file>
+
+<file path="env/optional/private.zsh.placeholder">
+1: # PUT private ENV vars here
+</file>
+
+<file path="env/platform/linux.zsh">
+ 1: # Linux specific environment variables
+ 2: export DISPLAY=:0
+ 3: 
+ 4: # keychain: SSH/GPG agent manager - reuses agents across shell sessions
+ 5: # Only run if keychain is installed and we have SSH identities
+ 6: if command -v keychain &>/dev/null && [[ -d "$HOME/.ssh/identities" ]]; then
+ 7:   local ssh_keys=()
+ 8:   for key in "$HOME/.ssh/identities"/*; do
+ 9:     [[ -f "$key" && "$key" != *.pub ]] && ssh_keys+=("$key")
+10:   done
+11: 
+12:   if (( ${#ssh_keys[@]} )); then
+13:     eval "$(keychain --eval --quiet --agents ssh "${ssh_keys[@]}")"
+14:   fi
+15: fi
+</file>
+
+<file path="env/platform/macos.zsh">
+1: # MacOS specific environment variables
+2: export HOMEBREW_NO_AUTO_UPDATE=1
+3: 
+4: # Source deno environment if it exists
+5: if [ -f "/Users/kevin/.deno/env" ]; then
+6:   source "/Users/kevin/.deno/env"
+7: fi
+</file>
+
+<file path="functions/aws">
+1: aws() {
+2:   unfunction aws
+3:   # Load completions
+4:   if [ -x "$(command -v aws_completer)" ]; then
+5:     complete -C "$(command -v aws_completer)" aws
+6:   fi
+7:   aws "$@"
+8: }
+</file>
+
+<file path="functions/completions.zsh">
+ 1: # ~/dotfiles/zsh/functions/completions.zsh
+ 2: # Adds tab-completion for SSH-related utilities
+ 3: 
+ 4: # --- ssh-use: Complete with keys in ~/.ssh/identities (non-pub) ---
+ 5: # ~/.zsh/functions/completions.zsh or inline near ssh-use
+ 6: 
+ 7: # --- ssh-test: Complete with host aliases from ~/.ssh/config.d ---
+ 8: _ssh_test_complete() {
+ 9:   local -a aliases
+10:   aliases=(${(f)"$(grep -h '^Host ' ~/.ssh/config.d/* 2>/dev/null | awk '{print $2}' | sort -u)"})
+11:   compadd -- $aliases
+12: }
+13: compdef _ssh_test_complete ssh-test
+14: 
+15: # --- ssh-git-id: Only has a single optional flag
+16: _ssh_git_id_complete() {
+17:   _arguments '--fix[Apply the suggested fix to the Git remote URL]'
+18: }
+19: compdef _ssh_git_id_complete ssh-git-id
+20: 
+21: _ssh_use_complete() {
+22:   local keys
+23:   keys=(${(f)"$(find ~/.ssh/identities -type f ! -name '*.pub' -exec basename {} \; 2>/dev/null)"})
+24:   compadd -- "${keys[@]}"
+25: }
+26: compdef _ssh_use_complete ssh-use
+</file>
+
+<file path="functions/direnv">
+1: direnv() {
+2:   unfunction direnv
+3:   eval "$(direnv hook zsh)"
+4:   direnv "$@"
+5: }
+</file>
+
+<file path="functions/h">
+1: function h() {
+2:     history 0 | rg "${@:-}"
+3: }
+</file>
+
+<file path="functions/kitty-themes-fzf">
+ 1: function kitty-themes-fzf() {
+ 2:   local theme_dir="$HOME/.config/kitty/themes/themes"
+ 3:   local current_symlink="$HOME/.config/kitty/current-theme.conf"
+ 4: 
+ 5:   if [[ ! -d "$theme_dir" ]]; then
+ 6:     echo "❌ Theme directory not found: $theme_dir"
+ 7:     return 1
+ 8:   fi
+ 9: 
+10:   local selected
+11:   selected=$(ls "$theme_dir" | fzf --prompt="🎨 Select Kitty Theme: " --preview="bat --style=plain --color=always $theme_dir/{}" --height=40%)
+12: 
+13:   if [[ -n "$selected" ]]; then
+14:     ln -sf "$theme_dir/$selected" "$current_symlink"
+15:     kitty @ set-colors --all "$current_symlink"
+16:     echo "✅ Theme applied: $selected"
+17:   else
+18:     echo "⚠️ No theme selected."
+19:   fi
+20: }
+</file>
+
+<file path="functions/listening">
+ 1: # zsh function to list all listening ports
+ 2: # Usage: listening [pattern]
+ 3: function listening() {
+ 4:     if [ $# -eq 0 ]; then
+ 5:         sudo lsof -iTCP -sTCP:LISTEN -n -P
+ 6:     elif [ $# -eq 1 ]; then
+ 7:         sudo lsof -iTCP -sTCP:LISTEN -n -P | grep -i --color $1
+ 8:     else
+ 9:         echo "Usage: listening [pattern]"
+10:     fi
+11: }
+</file>
+
+<file path="functions/mdview">
+ 1: function mdview() {
+ 2:   if [ -p /dev/stdin ]; then
+ 3:     # Create a unique temporary file with random suffix
+ 4:     TMP_FILE=$(mktemp /tmp/marked-preview-XXXXXX).md
+ 5:     # Ensure the file doesn't exist already
+ 6:     rm -f "$TMP_FILE"
+ 7:     # Use tee to capture stdin (handles broken pipes better)
+ 8:     tee "$TMP_FILE" > /dev/null
+ 9:     # Check if file was created successfully
+10:     if [ -f "$TMP_FILE" ]; then
+11:       open -a "Marked 2" "$TMP_FILE"
+12:     else
+13:       echo "Error: Failed to create temporary file" >&2
+14:       return 1
+15:     fi
+16:   else
+17:     # If there's a file argument, check if it exists
+18:     if [ -f "$1" ]; then
+19:       open -a "Marked 2" "$1"
+20:     else
+21:       echo "Error: File '$1' not found" >&2
+22:       return 1
+23:     fi
+24:   fi
+25: }
+</file>
+
+<file path="functions/python">
+1: python() { uv run python "$@"; }
+2: pip()    { uv run pip "$@"; }
+3: python3() { uv run python "$@"; }
+4: pip3()    { uv run pip "$@"; }
+</file>
+
+<file path="functions/recent-ssh-keys">
+ 1: # Usage: recent-ssh-keys
+ 2: # Shows the most recently used SSH keys with timestamps
+ 3: function recent-ssh-keys() {
+ 4:   local logfile="$HOME/.ssh/.ssh_use_history"
+ 5:   if [[ ! -f "$logfile" ]]; then
+ 6:     echo "No recent SSH key usage found."
+ 7:     return
+ 8:   fi
+ 9:   echo "🕒 Recent SSH key usage:"
+10:   tail -n 20 "$logfile" | tac
+11: }
+</file>
+
+<file path="functions/ssh-auto-load">
+ 1: # Auto-load SSH identity when entering a Git repo dir (used by .project-identities)
+ 2: 
+ 3: function _ssh_auto_load_on_cd() {
+ 4:   local repo_root key identities_dir="$HOME/.ssh/identities"
+ 5:   local identities_file="$HOME/.ssh/.project-identities"
+ 6: 
+ 7:   if ! command -v git >/dev/null; then return; fi
+ 8:   repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || return
+ 9: 
+10:   if [[ -f "$identities_file" ]]; then
+11:     while IFS= read -r line; do
+12:       local path match_key
+13:       path="${line%% *}"
+14:       match_key="${line#* }"
+15:       if [[ "$repo_root" == "$path" ]]; then
+16:         local full_key_path="$identities_dir/$match_key"
+17:         if ! ssh-add -l 2>/dev/null | grep -q "$full_key_path"; then
+18:           echo "🔐 Loading SSH identity: $match_key"
+19:           ssh-add "$full_key_path" >/dev/null 2>&1 && echo "✅ Key loaded"
+20:         fi
+21:         return
+22:       fi
+23:     done < "$identities_file"
+24:   fi
+25: }
+</file>
+
+<file path="functions/ssh-autoload">
+ 1: # Usage: Auto-load SSH identity on cd into a Git repo
+ 2: # - Uses ~/.ssh/.project-identities if defined
+ 3: # - Falls back to parsing remote for alias
+ 4: # - Optionally writes back inferred mapping
+ 5: 
+ 6: function _ssh_auto_load_identity() {
+ 7:   local repo_keymap="$HOME/.ssh/.project-identities"
+ 8:   local gitdir key host remote alias suggested_key
+ 9: 
+10:   gitdir=$(git rev-parse --show-toplevel 2>/dev/null) || return
+11: 
+12:   # Check if already defined in project-identities
+13:   key=$(grep "^$gitdir " "$repo_keymap" 2>/dev/null | awk '{print $2}')
+14:   if [[ -n "$key" ]]; then
+15:     if ! ssh-add -l | grep -q "$key"; then
+16:       echo "🔁 Loading identity for $(basename "$gitdir"): $key"
+17:       ssh-add -D
+18:       ssh-add "$HOME/.ssh/identities/$key"
+19:     fi
+20:     return
+21:   fi
+22: 
+23:   # Fallback: try to infer from git remote
+24:   remote=$(git remote get-url origin 2>/dev/null) || return
+25:   alias=$(echo "$remote" | sed -E 's/.*@(.*):.*/\1/' | cut -d'.' -f1-2)
+26: 
+27:   # Validate alias exists in config.d
+28:   if grep -q "Host $alias" ~/.ssh/config.d/* 2>/dev/null; then
+29:     suggested_key="$alias.id_ed25519"
+30:     echo "🤖 Suggesting key based on remote: $suggested_key"
+31:     echo "🔁 Loading identity: $suggested_key"
+32:     ssh-add -D
+33:     ssh-add "$HOME/.ssh/identities/$suggested_key"
+34: 
+35:     # Prompt to remember
+36:     read -k 1 "save?💾 Save this mapping to .project-identities? [y/N] "
+37:     echo
+38:     if [[ "$save" == [yY] ]]; then
+39:       echo "$gitdir $suggested_key" >> "$repo_keymap"
+40:       echo "✅ Mapping saved: $gitdir $suggested_key"
+41:     fi
+42:   fi
+43: }
+44: 
+45: # Hook on directory change
+46: autoload -Uz add-zsh-hook
+47: add-zsh-hook chpwd _ssh_auto_load_identity
+48: # Trigger on shell load
+49: _ssh_auto_load_identity
+</file>
+
+<file path="functions/ssh-git-id">
+  1: # Usage: ssh-git-id [--fix]
+  2: # Suggests or fixes the SSH alias in a Git remote using your ~/.ssh/config.d aliases
+  3: function ssh-git-id() {
+  4:   local fix=false
+  5:   [[ "$1" == "--fix" ]] && fix=true
+  6: 
+  7:   local remote host_alias repo_suffix new_url suggested_alias repo_path gitdir mapping
+  8:   local config_dir="$HOME/.ssh/config.d"
+  9:   local project_identities="$HOME/.ssh/.project-identities"
+ 10: 
+ 11:   # Step 1: Parse current git remote
+ 12:   remote=$(git remote get-url origin 2>/dev/null) || {
+ 13:     echo "❌ Not a Git repo or no origin remote found"
+ 14:     return 1
+ 15:   }
+ 16: 
+ 17:   host_alias=${remote#git@}
+ 18:   host_alias=${host_alias%%:*}
+ 19:   repo_suffix=${remote#*:}
+ 20: 
+ 21:   echo "🔗 Git remote host: $host_alias"
+ 22:   echo "📦 Repo path: $repo_suffix"
+ 23: 
+ 24:   # Step 2: Load known SSH aliases from ~/.ssh/config.d
+ 25:   local known_aliases=()
+ 26:   for file in "$config_dir"/*; do
+ 27:     [[ -f "$file" ]] || continue
+ 28:     while IFS= read -r line; do
+ 29:       [[ "$line" == Host\ * ]] && known_aliases+=("${line#Host }")
+ 30:     done < "$file"
+ 31:   done
+ 32: 
+ 33:   known_aliases=($(printf '%s\n' "${known_aliases[@]}" | sort -u))
+ 34: 
+ 35:   if [[ ${#known_aliases[@]} -eq 0 ]]; then
+ 36:     echo "❌ No SSH aliases found in $config_dir"
+ 37:     return 1
+ 38:   fi
+ 39: 
+ 40:   # Step 3: If host_alias is not found, prompt to tailor
+ 41:   local alias_found=false
+ 42:   for alias in "${known_aliases[@]}"; do
+ 43:     [[ "$alias" == "$host_alias" ]] && alias_found=true && break
+ 44:   done
+ 45: 
+ 46:   if $alias_found; then
+ 47:     echo "✅ Host alias '$host_alias' is already valid in ~/.ssh/config.d"
+ 48:     return 0
+ 49:   fi
+ 50: 
+ 51:   echo "❌ Host alias '$host_alias' not found in SSH config"
+ 52:   echo "🔍 Searching for suggestions..."
+ 53: 
+ 54:   local github_aliases=()
+ 55:   for alias in "${known_aliases[@]}"; do
+ 56:     [[ "$alias" == github.* ]] && github_aliases+=("$alias")
+ 57:   done
+ 58: 
+ 59:   if [[ ${#github_aliases[@]} -eq 0 ]]; then
+ 60:     echo "❌ No GitHub-style aliases found in SSH config"
+ 61:     return 1
+ 62:   fi
+ 63: 
+ 64:   # Step 4: Prompt with fzf or manual fallback
+ 65:   if command -v fzf >/dev/null; then
+ 66:     suggested_alias=$(printf '%s\n' "${github_aliases[@]}" | fzf --prompt="❓ Select SSH alias for '$host_alias': ")
+ 67:   else
+ 68:     echo "📋 GitHub aliases: ${github_aliases[*]}"
+ 69:     echo -n "🔧 Enter the alias to use for this Git remote: "
+ 70:     read suggested_alias
+ 71:   fi
+ 72: 
+ 73:   if [[ -z "$suggested_alias" ]]; then
+ 74:     echo "⚠️ Cancelled. No alias selected."
+ 75:     return 1
+ 76:   fi
+ 77: 
+ 78:   echo "✅ Selected alias: $suggested_alias"
+ 79: 
+ 80:   # Step 5: Rewrite the remote and update .project-identities
+ 81:   new_url="git@${suggested_alias}:${repo_suffix}"
+ 82:   echo "💡 Suggested remote URL: $new_url"
+ 83: 
+ 84:   if $fix; then
+ 85:     echo "🔁 Updating git remote origin..."
+ 86:     git remote set-url origin "$new_url" || {
+ 87:       echo "❌ Failed to update remote"
+ 88:       return 1
+ 89:     }
+ 90: 
+ 91:     gitdir=$(git rev-parse --show-toplevel)
+ 92:     repo_path="$gitdir"
+ 93:     mapping="$repo_path $suggested_alias"
+ 94: 
+ 95:     mkdir -p "$(dirname "$project_identities")"
+ 96:     touch "$project_identities"
+ 97: 
+ 98:     if grep -qxF "$mapping" "$project_identities"; then
+ 99:       echo "📄 Mapping already exists in .project-identities:"
+100:     else
+101:       echo "$mapping" >> "$project_identities"
+102:       echo "📝 Added to .project-identities:"
+103:     fi
+104: 
+105:     echo "    $mapping"
+106: 
+107:     echo "🔌 Testing SSH connection..."
+108:     ssh -T -o IdentitiesOnly=yes -o ConnectTimeout=5 "git@$suggested_alias" 2>&1 | head -n 2
+109:   else
+110:     echo "💡 To apply: run \`ssh-git-id --fix\`"
+111:   fi
+112: }
+</file>
+
+<file path="functions/ssh-info">
+1: # Usage: ssh-info
+2: # Lists all SSH private keys in ~/.ssh/identities
+3: function ssh-info() {
+4:   echo "📁 Available SSH identities in ~/.ssh/identities:"
+5:   ls -1 ~/.ssh/identities | grep -v '\.pub$' | sort
+6: }
+7: compdef _files ssh-info
+</file>
+
+<file path="functions/ssh-switch">
+ 1: function ssh-switch() {
+ 2:   local key_list key
+ 3:   key_list=$(find ~/.ssh/identities -maxdepth 1 \( -type f -o -type l \) ! -name "*.pub" -exec basename {} \; | sort)
+ 4: 
+ 5:   if [[ -z "$key_list" ]]; then
+ 6:     echo "⚠️  No SSH identities found in ~/.ssh/identities"
+ 7:     return 1
+ 8:   fi
+ 9: 
+10:   key=$(echo "$key_list" | fzf --prompt="🔐 Choose an SSH identity: " --height=40% --reverse \
+11:     --preview="echo {} | sed 's/\\.id.*//'" )
+12: 
+13:   if [[ -n "$key" ]]; then
+14:     ssh-add -D
+15:     ssh-add "$HOME/.ssh/identities/$key" && echo "✅ Now using: $key"
+16:     echo "$(date +%Y-%m-%dT%H:%M:%S) $key" >> "$HOME/.ssh/.ssh_use_history"
+17:   else
+18:     echo "❌ Cancelled."
+19:   fi
+20: }
+</file>
+
+<file path="functions/ssh-test">
+ 1: # Usage: ssh-test [alias]
+ 2: # Tests the currently loaded SSH identity against a host alias from ~/.ssh/config.d/*
+ 3: function ssh-test() {
+ 4:   local host="${1:-github.com}"
+ 5:   ssh -T git@"$host"
+ 6: }
+ 7: _ssh_test_complete() {
+ 8:   local aliases
+ 9:   aliases=($(grep -h '^Host ' ~/.ssh/config.d/* 2>/dev/null | awk '{print $2}' | sort -u))
+10:   compadd $aliases
+11: }
+12: compdef _ssh_test_complete ssh-test
+</file>
+
+<file path="functions/ssh-use">
+ 1: # Usage: ssh-use <key>
+ 2: # Loads a specific SSH key into the agent and logs usage
+ 3: function ssh-use() {
+ 4:   local key="$1"
+ 5:   local logfile="$HOME/.ssh/.ssh_use_history"
+ 6:   if [[ -z "$key" ]]; then
+ 7:     echo "Usage: ssh-use <key-filename> (e.g., github.kmcdev.id_ed25519)"
+ 8:     return 1
+ 9:   fi
+10:   ssh-add -D
+11:   ssh-add "$HOME/.ssh/identities/$key" && echo "✅ Now using: $key"
+12:   echo "$(date +%Y-%m-%dT%H:%M:%S) $key" >> "$logfile"
+13: }
+</file>
+
+<file path="functions/terraform">
+1: function terraform() {
+2:   unfunction terraform
+3:   complete -o nospace -C /opt/homebrew/bin/terraform terraform
+4:   terraform "$@"
+5: }
+</file>
+
+<file path="functions/update_kitty_tab_title">
+ 1: function update_kitty_tab_title {
+ 2:   local dir="${PWD##*/}"
+ 3:   local branch=""
+ 4:   local venv=""
+ 5: 
+ 6:   # Git branch
+ 7:   if git rev-parse --is-inside-work-tree &>/dev/null; then
+ 8:     branch="$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --exact-match 2>/dev/null)"
+ 9:   fi
+10: 
+11:   # Python virtualenv
+12:   [[ -n "$VIRTUAL_ENV" ]] && venv="${VIRTUAL_ENV:t}"
+13: 
+14:   # Use emoji + ASCII-safe fallback glyphs
+15:   local title="📁 $dir"
+16:   [[ -n "$branch" ]] && title+="  ⎇ $branch"
+17:   [[ -n "$venv" ]] && title+="  🐍 $venv"
+18: 
+19:   echo -ne "\033]2;${title}\a"
+20: }
+</file>
+
+<file path="alias.zsh">
+ 1: alias vim='nvim'
+ 2: alias vi='nvim'
+ 3: alias zshconfig="vi ~/.zshrc"
+ 4: alias ohmyzsh="vi ~/.oh-my-zsh"
+ 5: 
+ 6: alias reload='exec zsh'
+ 7: 
+ 8: # Recursively delete `.DS_Store` files
+ 9: alias cleanup="find . -name '*.DS_Store' -type f -ls -delete"
+10: #
+11: # cleanup repomix outputs 
+12: alias rmrepomix="find . -name 'repomix-output*' -type f -ls -delete"
+13: 
+14: # more tidying up scripts
+15: alias rmorig='find . -name "*.orig" -print0 | xargs -0 rm -rf'
+16:  
+17: # llm and agents
+18: alias llmg='llm -m gemini-3-flash-preview'
+19: alias l32='llm -m mlx-community/Llama-3.2-3B-Instruct-4bit'
+20: alias cmdhelp='llm -t cmd'
+21: 
+22: alias claude='~/.local/bin/claude'
+23: alias cld='claude'
+24: alias cldy='claude --dangerously-skip-permissions'
+25: alias ccusage='npx ccusage@latest'
+26: 
+27: alias repomix='npx repomix@latest'
+28: alias cdk='npx aws-cdk@latest'
+29: alias eslint='npx eslint@latest'
+30: 
+31: # Shortcuts
+32: alias cls="clear"
+33: alias dl='cd ~/Downloads'
+34: alias p='cd ~/projects'
+35: alias o='open .'
+36: alias work='cd ~/work'
+37: alias blog='cd ~/projects/blog'
+38: alias f='fzf'
+39: alias y='yazi'
+40: 
+41: alias ip="echo Your ip is; dig +short myip.opendns.com @resolver1.opendns.com;"
+42: 
+43: # bat!
+44: alias cat='bat'
+45: alias bcat='/bin/cat'
+46: 
+47: # Applications
+48: alias marked='open -a Marked\ 2'
+49: 
+50: # In VS Code do `Cmd+Shift+P` then `Shell Command: Install 'code' command in PATH`
+51: alias ci='/usr/local/bin/code-insiders'
+52: alias code='/usr/local/bin/code-insiders'
+53: 
+54: # Hide/show all desktop icons (useful when presenting)
+55: alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+56: alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+57: 
+58: alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
+59: 
+60: # remove any existing la/ll
+61: unalias la ll 2>/dev/null
+62: 
+63: # long listing, human-readable sizes, “almost all” entries, with colors & icons
+64: alias ll='eza --long --color=always --icons=always --no-user'
+65: 
+66: # git aliases
+67: alias g='git'
+68: alias gp='git pull --rebase'
+69: alias gm='git merge --no-ff'
+70: alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+71: alias gs='git st'
+72: alias ga='git add'
+73: alias stash='git stash'
+74: alias pop='git stash pop'
+75: alias gldk='git lgdk'
+76: alias gdiff='g difftool'
+77: 
+78: # Toggle wifi (add on or off after command)
+79: alias wifi="networksetup -setairportpower en0"
+80: 
+81: # Get current external IP
+82: alias ip="curl icanhazip.com"
+83: 
+84: # copy the working directory path
+85: alias cpwd='pwd|tr -d "\n"|pbcopy'
+86: 
+87: alias ded='rm -rf ~/Library/Developer/Xcode/DerivedData/'
+</file>
+
+<file path="install.sh">
+  1: #!/usr/bin/env bash
+  2: set -eo pipefail
+  3: # -----------------------------
+  4: # Configuration
+  5: # -----------------------------
+  6: DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  7: ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+  8: # -----------------------------
+  9: # Utilities
+ 10: # -----------------------------
+ 11: clone_if_missing() {
+ 12:   local repo=$1
+ 13:   local dest=$2
+ 14:   if [ ! -d "$dest" ]; then
+ 15:     echo "Installing $(basename "$dest") plugin..."
+ 16:     git clone --depth 1 "$repo" "$dest"
+ 17:   else
+ 18:     echo "$(basename "$dest") already installed. Skipping."
+ 19:   fi
+ 20: }
+ 21: # -----------------------------
+ 22: # Check dependencies
+ 23: # -----------------------------
+ 24: for cmd in git curl zsh; do
+ 25:   if ! command -v "$cmd" &>/dev/null; then
+ 26:     echo "Error: $cmd is required but not installed."
+ 27:     exit 1
+ 28:   fi
+ 29: done
+ 30: # -----------------------------
+ 31: # Install Homebrew (macOS only)
+ 32: # -----------------------------
+ 33: if [[ "$OSTYPE" == "darwin"* ]] && ! command -v brew &>/dev/null; then
+ 34:   echo "Installing Homebrew..."
+ 35:   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+ 36: fi
+ 37: # -----------------------------
+ 38: # Install oh-my-zsh
+ 39: # -----------------------------
+ 40: if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+ 41:   echo "Installing oh-my-zsh..."
+ 42:   sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+ 43: fi
+ 44: # -----------------------------
+ 45: # Remove stock configs
+ 46: # -----------------------------
+ 47: rm -f "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.zshenv"
+ 48: # Normalize ~/.zsh to be a directory (not a symlink)
+ 49: if [[ -L "$HOME/.zsh" ]]; then
+ 50:   rm -f "$HOME/.zsh"
+ 51: elif [[ -d "$HOME/.zsh" ]]; then
+ 52:   # keep directory; we'll refresh ~/.zsh/env inside it
+ 53:   true
+ 54: else
+ 55:   rm -f "$HOME/.zsh" 2>/dev/null || true
+ 56: fi
+ 57: mkdir -p "$HOME/.zsh"
+ 58: # -----------------------------
+ 59: # Symlinks
+ 60: # -----------------------------
+ 61: echo "Creating symlinks..."
+ 62: ln -sf "$DOTFILES_DIR/zshrc.symlink" "$HOME/.zshrc"
+ 63: ln -sf "$DOTFILES_DIR/zprofile.symlink" "$HOME/.zprofile"
+ 64: ln -sf "$DOTFILES_DIR/zshenv.symlink" "$HOME/.zshenv"
+ 65: # macOS-style layout everywhere:
+ 66: # ~/.zsh/env -> $DOTFILES_DIR/env
+ 67: ln -snf "$DOTFILES_DIR/env" "$HOME/.zsh/env"
+ 68: echo "Created symlinks:"
+ 69: echo "  ~/.zshrc    -> $DOTFILES_DIR/zshrc.symlink"
+ 70: echo "  ~/.zprofile -> $DOTFILES_DIR/zprofile.symlink"
+ 71: echo "  ~/.zshenv   -> $DOTFILES_DIR/zshenv.symlink"
+ 72: echo "  ~/.zsh/env  -> $DOTFILES_DIR/env"
+ 73: # -----------------------------
+ 74: # Install plugins
+ 75: # -----------------------------
+ 76: echo "Installing oh-my-zsh plugins..."
+ 77: clone_if_missing https://github.com/paulirish/git-open.git "$ZSH_CUSTOM/plugins/git-open"
+ 78: clone_if_missing https://github.com/romkatv/zsh-defer.git "$ZSH_CUSTOM/plugins/zsh-defer"
+ 79: clone_if_missing https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+ 80: clone_if_missing https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+ 81: clone_if_missing https://github.com/MichaelAquilina/zsh-you-should-use.git "$ZSH_CUSTOM/plugins/you-should-use"
+ 82: clone_if_missing https://github.com/Aloxaf/fzf-tab "$ZSH_CUSTOM/plugins/fzf-tab"
+ 83: # -----------------------------
+ 84: # Link alias file
+ 85: # -----------------------------
+ 86: ln -sf "$DOTFILES_DIR/alias.zsh" "$ZSH_CUSTOM/alias.zsh"
+ 87: echo "Linked alias.zsh to $ZSH_CUSTOM/alias.zsh"
+ 88: # -----------------------------
+ 89: # Set zsh as default shell
+ 90: # -----------------------------
+ 91: current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+ 92: zsh_path="$(which zsh)"
+ 93: if [[ "$current_shell" != "$zsh_path" ]]; then
+ 94:   echo "Setting zsh as default login shell..."
+ 95:   if chsh -s "$zsh_path"; then
+ 96:     echo "Default shell changed to zsh"
+ 97:   else
+ 98:     echo "Warning: Could not change default shell. Run manually: chsh -s $zsh_path"
+ 99:   fi
+100: else
+101:   echo "zsh is already the default shell"
+102: fi
+103: # -----------------------------
+104: # Done
+105: # -----------------------------
+106: echo ""
+107: echo "Zsh environment installed!"
+108: echo ""
+109: echo "Required tools (install separately):"
+110: echo "  - starship (prompt)"
+111: echo "  - zoxide (cd replacement)"
+112: echo "  - fzf (fuzzy finder)"
+113: echo "  - fd (find replacement)"
+114: echo "  - bat (cat replacement)"
+115: echo "  - eza (ls replacement)"
+116: echo "  - nvim (editor)"
+117: echo "  - direnv (directory environments)"
+118: echo ""
+119: if [[ -t 1 ]]; then
+120:   echo "Launching new shell..."
+121:   exec zsh
+122: else
+123:   echo "Start a new shell to begin using it."
+124: fi
+</file>
+
+<file path="README.md">
+ 1: # ZSH setup
+ 2: 
+ 3: ## Main setup
+ 4: 
+ 5: 1. Install oh-my-zsh
+ 6: ```
+ 7: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+ 8: ```
+ 9: 
+10: 2. Remove stock zprofile and zshrc
+11: ```
+12: rm ~/.zprofile ~/.zshrc ~/.zshenv 2>/dev/null
+13: ```
+14: 
+15: 3. Symlink zsh config files
+16: ```
+17: ln -s ~/dotfiles/zsh/zprofile.symlink ~/.zprofile
+18: ln -s ~/dotfiles/zsh/zshrc.symlink ~/.zshrc
+19: ln -s ~/dotfiles/zsh/zshenv.symlink ~/.zshenv
+20: ln -s ~/dotfiles/zsh/env ~/.zsh
+21: ```
+22: 
+23: 4. Add custom aliases to oh-my-zsh
+24: ```
+25: ln -s ~/dotfiles/zsh/alias.zsh $ZSH_CUSTOM/alias.zsh
+26: ```
+27: 
+28: 5. Install required plugins
+29: ```
+30: git clone https://github.com/paulirish/git-open.git $ZSH_CUSTOM/plugins/git-open
+31: git clone https://github.com/romkatv/zsh-defer.git $ZSH_CUSTOM/plugins/zsh-defer
+32: git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
+33: git clone https://github.com/zsh-users/zsh-syntax-highlighting $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+34: git clone https://github.com/MichaelAquilina/zsh-you-should-use.git $ZSH_CUSTOM/plugins/you-should-use
+35: git clone https://github.com/Aloxaf/fzf-tab $ZSH_CUSTOM/plugins/fzf-tab
+36: ```
+37: 
+38: 6. Reload
+39: ```
+40: omz reload
+41: ```
+</file>
+
+<file path="zprofile.symlink">
+1: 
+</file>
+
+<file path="zshenv.symlink">
+ 1: # ~/.zshenv
+ 2: 
+ 3: # Basic locale setup (safe to always apply)
+ 4: export LANG="en_US.UTF-8"
+ 5: export LC_ALL="en_US.UTF-8"
+ 6: 
+ 7: # Platform detection (used in multiple places)
+ 8: export IS_MACOS=0
+ 9: export IS_LINUX=0
+10: export IS_ARM=0
+11: 
+12: case "$OSTYPE" in
+13:   darwin*)
+14:     export IS_MACOS=1
+15:     [[ "$(arch)" == "arm64" ]] && export IS_ARM=1
+16:     ;;
+17:   linux*)
+18:     export IS_LINUX=1
+19:     [[ "$(uname -m)" =~ ^(arm|aarch) ]] && export IS_ARM=1
+20:     ;;
+21: esac
+22: 
+23: # Editor (useful for scripts too)
+24: export EDITOR="nvim"
+25: 
+26: export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+27: 
+28: export OLLAMA_HOST=http://localhost:11434
+29: 
+30: # Don't let interactive Zsh config re-run this stuff
+31: export ZSHENV_LOADED=1
+32: 
+33: # Load Rust/Cargo environment if installed
+34: [[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
+</file>
+
+<file path="zshrc.symlink">
+  1: # ~/.zshrc
+  2: 
+  3: # Auto-attach to tmux on SSH/Mosh (must be first - before any heavy initialization)
+  4: if command -v tmux >/dev/null 2>&1; then
+  5:   if [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" || -n "$MOSH" ]]; then
+  6:     tmux attach -t main 2>/dev/null || tmux new -s main
+  7:   fi
+  8: fi 
+  9: 
+ 10: # Check if .zshenv ran correctly
+ 11: if [[ -z "$ZSHENV_LOADED" ]]; then
+ 12:   echo "⚠️  Warning: .zshenv was not sourced. Some variables may be missing."
+ 13: fi
+ 14: 
+ 15: # Load core functions and configurations
+ 16: ZSH_ENV_ROOT="${HOME}/.zsh/env"
+ 17: 
+ 18: # Sanity check: expected layout
+ 19: if [[ ! -d "$ZSH_ENV_ROOT" ]]; then
+ 20:   echo "⚠️  Warning: expected $ZSH_ENV_ROOT to exist"
+ 21:   return 0 2>/dev/null || exit 0
+ 22: fi 
+ 23: 
+ 24: CORE_FUNCS="${ZSH_ENV_ROOT}/core/functions.zsh"
+ 25: if [[ -f "$CORE_FUNCS" ]]; then
+ 26:   source "$CORE_FUNCS"
+ 27: else
+ 28:   echo "Warning: Core functions not found: $CORE_FUNCS"
+ 29:   return 0 2>/dev/null || exit 0
+ 30: fi
+ 31: 
+ 32: load_env_dir "${ZSH_ENV_ROOT}/core"
+ 33: 
+ 34: # Load platform-specific configurations
+ 35: if [[ ${IS_MACOS:-0} -eq 1 ]]; then
+ 36:   load_env_file "${ZSH_ENV_ROOT}/platform/macos.zsh"
+ 37: elif [[ ${IS_LINUX:-0} -eq 1 ]]; then
+ 38:   load_env_file "${ZSH_ENV_ROOT}/platform/linux.zsh"
+ 39: fi
+ 40: 
+ 41: # Load optional configurations last
+ 42: # - private.zsh: secrets / unversioned
+ 43: # - local.zsh: machine-local config (non-secret) / unversioned
+ 44: load_env_file "${ZSH_ENV_ROOT}/optional/private.zsh"
+ 45: load_env_file "${ZSH_ENV_ROOT}/optional/local.zsh"
+ 46: 
+ 47: unset ZSH_ENV_ROOT CORE_FUNCS
+ 48: 
+ 49: # Path to your oh-my-zsh installation.
+ 50: export ZSH="${HOME}/.oh-my-zsh"
+ 51: 
+ 52: # Set name of the theme to load --- if set to "random", it will
+ 53: # load a random theme each time oh-my-zsh is loaded, in which case,
+ 54: # to know which specific one was loaded, run: echo $RANDOM_THEME
+ 55: # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+ 56: #ZSH_THEME="robbyrussell"
+ 57: ZSH_THEME="" # using starship
+ 58: 
+ 59: # Set list of themes to pick from when loading at random
+ 60: # Setting this variable when ZSH_THEME=random will cause zsh to load
+ 61: # a theme from this variable instead of looking in $ZSH/themes/
+ 62: # If set to an empty array, this variable will have no effect.
+ 63: # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+ 64: 
+ 65: # Uncomment the following line to use case-sensitive completion.
+ 66: # CASE_SENSITIVE="true"
+ 67: 
+ 68: # Uncomment the following line to use hyphen-insensitive completion.
+ 69: # Case-sensitive completion must be off. _ and - will be interchangeable.
+ 70: # HYPHEN_INSENSITIVE="true"
+ 71: 
+ 72: # Uncomment one of the following lines to change the auto-update behavior
+ 73: # zstyle ':omz:update' mode disabled  # disable automatic updates
+ 74: zstyle ':omz:update' mode auto      # update automatically without asking
+ 75: # zstyle ':omz:update' mode reminder  # just remind me to update when it's time
+ 76: 
+ 77: # Uncomment the following line to change how often to auto-update (in days).
+ 78: # zstyle ':omz:update' frequency 13
+ 79: 
+ 80: if [[ $IS_MACOS -eq 1 ]]; then
+ 81:   zstyle :omz:plugins:ssh-agent ssh-add-args --apple-load-keychain
+ 82: fi
+ 83: 
+ 84: # Uncomment the following line if pasting URLs and other text is messed up.
+ 85: # DISABLE_MAGIC_FUNCTIONS="true"
+ 86: 
+ 87: # Uncomment the following line to disable colors in ls.
+ 88: # DISABLE_LS_COLORS="true"
+ 89: 
+ 90: # Uncomment the following line to disable auto-setting terminal title.
+ 91: # DISABLE_AUTO_TITLE="true"
+ 92: 
+ 93: # Uncomment the following line to enable command auto-correction.
+ 94: # ENABLE_CORRECTION="true"
+ 95: 
+ 96: # Uncomment the following line to display red dots whilst waiting for completion.
+ 97: # You can also set it to another string to have that shown instead of the default red dots.
+ 98: # e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
+ 99: # Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
+100: # COMPLETION_WAITING_DOTS="true"
+101: 
+102: # Uncomment the following line if you want to disable marking untracked files
+103: # under VCS as dirty. This makes repository status check for large repositories
+104: # much, much faster.
+105: # DISABLE_UNTRACKED_FILES_DIRTY="true"
+106: 
+107: # Uncomment the following line if you want to change the command execution time
+108: # stamp shown in the history command output.
+109: # You can set one of the optional three formats:
+110: # "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+111: # or set a custom format using the strftime function format specifications,
+112: # see 'man strftime' for details.
+113: # HIST_STAMPS="mm/dd/yyyy"
+114: 
+115: # Would you like to use another custom folder than $ZSH/custom?
+116: # ZSH_CUSTOM=/path/to/new-custom-folder
+117: 
+118: # Which plugins would you like to load?
+119: # Standard plugins can be found in $ZSH/plugins/
+120: # Custom plugins may be added to $ZSH_CUSTOM/plugins/
+121: # Example format: plugins=(rails git textmate ruby lighthouse)
+122: # Add wisely, as too many plugins slow down shell startup.
+123: plugins=(
+124: 	git
+125: 	aws
+126: 	dotenv
+127: 	vscode
+128: 	git-open
+129: 	gitignore
+130:   zsh-defer
+131:   zsh-autosuggestions
+132:   zsh-syntax-highlighting
+133:   you-should-use
+134:   fzf-tab
+135: )
+136: 
+137: # Only load ssh-agent plugin on macOS (Linux uses keychain instead)
+138: # Skip during bootstrap (SKIP_SSH_AGENT=1) to prevent passphrase prompts
+139: if [[ "${SKIP_SSH_AGENT:-0}" != "1" && ${IS_MACOS:-0} -eq 1 ]]; then
+140:   plugins+=(ssh-agent)
+141: fi
+142: 
+143: mac_plugins=(
+144:   brew
+145:   macos
+146:   iterm2
+147: )
+148: 
+149: if [[ $IS_MACOS -eq 1 ]]; then
+150:   plugins+=("${mac_plugins[@]}")
+151: fi
+152: 
+153: zstyle :omz:plugins:ssh-agent lazy yes
+154: zstyle :omz:plugins:ssh-agent quiet yes
+155: 
+156: [[ -f $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh || echo "Warning: oh-my-zsh not found"
+157: 
+158: # Re-apply PATH after oh-my-zsh (it may reset PATH)
+159: [[ -f "$HOME/.zsh/env/core/path.zsh" ]] && source "$HOME/.zsh/env/core/path.zsh"
+160: [[ -f "$HOME/.zsh/env/core/runtime.zsh" ]] && source "$HOME/.zsh/env/core/runtime.zsh"
+161: 
+162: # User configuration
+163: 
+164: # export MANPATH="/usr/local/man:$MANPATH"
+165: 
+166: # You may need to manually set your language environment
+167: # export LANG=en_US.UTF-8
+168: 
+169: # Preferred editor for local and remote sessions
+170: # if [[ -n $SSH_CONNECTION ]]; then
+171: #   export EDITOR='vim'
+172: # else
+173: #   export EDITOR='mvim'
+174: # fi
+175: export EDITOR='nvim'
+176: 
+177: #export RPROMPT='${virtualenv_info}'
+178: 
+179: # Compilation flags
+180: # export ARCHFLAGS="-arch x86_64"
+181: 
+182: # -----------------------------
+183: # COMPLETIONS
+184: # -----------------------------
+185: # Initialize completion system
+186: 
+187: # Add completion paths
+188: fpath=(
+189:     "${ASDF_DATA_DIR:-$HOME/.asdf}/completions"
+190:     "${HOME}/dotfiles/zsh/functions"
+191:     "${HOME}/.zfunc"
+192:     "${fpath[@]}"
+193: )
+194: 
+195: # Add brew completions on macOS
+196: if [[ $IS_MACOS -eq 1 ]] && command -v brew >/dev/null; then
+197:     fpath=("$(brew --prefix)/share/zsh/site-functions" "${fpath[@]}")
+198: fi
+199: 
+200: # Completion styling
+201: zstyle ':completion:*' menu select
+202: 
+203: autoload -Uz compinit && compinit
+204: 
+205: # Enable bash completion compatibility
+206: autoload -U +X bashcompinit && bashcompinit
+207: 
+208: # Package manager completions
+209: [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . "${HOME}/.config/tabtab/zsh/__tabtab.zsh" || true
+210: 
+211: # Cloud tool completions
+212: # Check multiple potential locations for Google Cloud SDK
+213: for gcloud_path in "$HOME/tools/google-cloud-sdk" "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk" "/opt/google-cloud-sdk"; do
+214:   if [[ -d "$gcloud_path" ]]; then
+215:     [[ -f "$gcloud_path/completion.zsh.inc" ]] && source "$gcloud_path/completion.zsh.inc"
+216:     [[ -f "$gcloud_path/path.zsh.inc" ]] && source "$gcloud_path/path.zsh.inc"
+217:     break
+218:   fi
+219: done
+220: 
+221: 
+222: # Command line tool completions
+223: command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
+224: command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
+225: command -v ngrok &>/dev/null && eval "$(ngrok completion)"
+226: command -v deno >/dev/null && eval "$(deno completions zsh)"
+227: [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+228: 
+229: # Machine-local completions (not versioned)
+230: [[ -f "$HOME/.zsh/env/optional/local_completions.zsh" ]] && source "$HOME/.zsh/env/optional/local_completions.zsh"
+231: 
+232: _uv_run_mod() {
+233:     if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
+234:         _arguments '*:filename:_files'
+235:     else
+236:         _uv "$@"
+237:     fi
+238: }
+239: compdef _uv_run_mod uv
+240: 
+241: 
+242: ### functions
+243: 
+244: autoload -Uz ssh-info
+245: autoload -Uz ssh-test
+246: autoload -Uz ssh-switch
+247: autoload -Uz ssh-git-id
+248: autoload -Uz recent-ssh-keys
+249: autoload -Uz ssh-autoload
+250: autoload -Uz listening
+251: autoload -Uz h
+252: autoload -Uz mdview
+253: autoload -Uz kitty-themes-fzf
+254: autoload -Uz add-zsh-hook
+255: autoload -Uz python
+256: #autoload -Uz terraform
+257: #autoload -Uz aws
+258: #autoload -Uz direnv
+259: add-zsh-hook precmd update_kitty_tab_title
+260: 
+261: 
+262: source "${HOME}/dotfiles/zsh/functions/completions.zsh"
+263: 
+264: # 1Password
+265: [[ -f "$HOME/.config/op/plugins.sh" ]] && source "$HOME/.config/op/plugins.sh"
+266: 
+267: # For direnv (independent of starship)
+268: command -v direnv >/dev/null && zsh-defer eval "$(direnv hook zsh)"
+269: command -v zoxide >/dev/null && zsh-defer eval "$(zoxide init --cmd cd zsh)"
+270: # fzf --zsh requires fzf 0.48+; fall back to sourcing ~/.fzf.zsh
+271: if command -v fzf >/dev/null && fzf --zsh &>/dev/null; then
+272:   zsh-defer eval "$(fzf --zsh)"
+273: fi
+274: 
+275: # Load starship prompt if available
+276: command -v starship >/dev/null && eval "$(starship init zsh)"
+277: 
+278: [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+279: export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+280: export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+281: export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+282: export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf"
+283: # Only load preview when actually triggered, not at startup
+284: export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
+285: 
+286: 
+287: # NOTE: compinit already called above (line 202) and by oh-my-zsh — no need to repeat
+288: fpath+=~/.zfunc
+</file>
+
+</files>

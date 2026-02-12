@@ -23,12 +23,7 @@ esac
 # Editor (useful for scripts too)
 export EDITOR="nvim"
 
-export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
-
 export OLLAMA_HOST=http://localhost:11434
 
 # Don't let interactive Zsh config re-run this stuff
 export ZSHENV_LOADED=1
-
-# Load Rust/Cargo environment if installed
-[[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"

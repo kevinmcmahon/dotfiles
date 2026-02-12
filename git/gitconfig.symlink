@@ -65,6 +65,7 @@
 	excludesfile = ~/.gitignore_global
 	hooksPath = ~/.git-core/hooks
 	untrackedCache = true
+	fsmonitor = true
 
 [push]
 	default = simple
@@ -126,3 +127,5 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[feature]
+	manyFiles = true

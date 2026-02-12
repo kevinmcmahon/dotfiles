@@ -20,3 +20,10 @@ codex/sessions
 
 codex/auth.json
 
+
+# local codex state / secrets
+codex/
+
+# Repomix output (AI context dumps)
+**/output.txt
+**/repomix-output*

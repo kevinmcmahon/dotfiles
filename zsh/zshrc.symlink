@@ -252,6 +252,7 @@ autoload -Uz mdview
 autoload -Uz kitty-themes-fzf
 autoload -Uz add-zsh-hook
 autoload -Uz python
+autoload -Uz reload
 #autoload -Uz terraform
 #autoload -Uz aws
 #autoload -Uz direnv
@@ -269,6 +270,10 @@ command -v zoxide >/dev/null && zsh-defer eval "$(zoxide init --cmd cd zsh)"
 # fzf --zsh requires fzf 0.48+; fall back to sourcing ~/.fzf.zsh
 if command -v fzf >/dev/null && fzf --zsh &>/dev/null; then
   zsh-defer eval "$(fzf --zsh)"
+fi
+
+if [[ -n "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
+  export STARSHIP_CONFIG="$HOME/.config/starship/starship-minimal.toml"
 fi
 
 # Load starship prompt if available

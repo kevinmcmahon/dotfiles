@@ -44,6 +44,7 @@ truncation_length = 3
 truncate_to_repo = true
 read_only = " "
 read_only_style = "red"
+fish_style_pwd_dir_length = 1
 
 # ── Git ───────────────────────
 [git_branch]
@@ -61,9 +62,9 @@ disabled = false
 symbol = "  "
 style = "bold blue"
 format = "[$symbol$version]($style) "
-python_binary = "python3"
-detect_extensions = ["py"]
+python_binary = ["python3", "-S"]
 detect_files = ["pyproject.toml", "requirements.txt", ".python-version"]
+detect_extensions = []
 
 # ── Java ──────────────────────
 [java]
@@ -82,6 +83,8 @@ style = "bold green"
 # ── Go ────────────────────────
 [golang]
 symbol = " "
+detect_files = ["go.mod"]
+detect_extensions = []
 format = "[$symbol$version]($style) "
 style = "bold cyan"
 
@@ -117,7 +120,7 @@ style = "bold yellow"
 command = "/Users/kevin/.config/starship/battery-status.sh"
 format = "[$output]($style) "
 style = "bold green"
-when = true
+when = 'test -z "$SSH_CONNECTION" && pmset -g batt | head -1 | grep -q "Battery Power"'
 
 # ── Command Duration ──────────
 [cmd_duration]

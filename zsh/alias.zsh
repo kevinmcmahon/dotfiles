@@ -3,7 +3,6 @@ alias vi='nvim'
 alias zshconfig="vi ~/.zshrc"
 alias ohmyzsh="vi ~/.oh-my-zsh"
 
-alias reload='exec zsh'
 
 # Recursively delete `.DS_Store` files
 alias cleanup="find . -name '*.DS_Store' -type f -ls -delete"
@@ -87,6 +86,8 @@ alias cpwd='pwd|tr -d "\n"|pbcopy'
 alias ded='rm -rf ~/Library/Developer/Xcode/DerivedData/'
 
 # tmux
+
+alias t='tmux attach -t main 2>/dev/null || tmux new -s main'
 
 # If tmux feels hung: detach all other clients and reattach cleanly
 alias tfix='tmux detach-client -a 2>/dev/null; tmux switch-client -t main 2>/dev/null || tmux attach -t main 2>/dev/null || tmux new -s main'

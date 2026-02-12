@@ -1,0 +1,14 @@
+function reload() {
+  emulate -L zsh
+
+  # 1) source ONLY your personal overlays, not full OMZ init
+  # pick the file you control (example: ~/.zshrc.local)
+  [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+  # 2) refresh starship hooks
+  precmd_functions=(${precmd_functions:#prompt_starship_precmd})
+  preexec_functions=(${preexec_functions:#prompt_starship_preexec})
+  command -v starship >/dev/null && eval "$(starship init zsh)"
+
+  zle && { zle -I; zle reset-prompt; }
+}

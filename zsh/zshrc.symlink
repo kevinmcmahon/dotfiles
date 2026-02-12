@@ -157,6 +157,7 @@ zstyle :omz:plugins:ssh-agent quiet yes
 
 # Re-apply PATH after oh-my-zsh (it may reset PATH)
 [[ -f "$HOME/.zsh/env/core/path.zsh" ]] && source "$HOME/.zsh/env/core/path.zsh"
+[[ -f "$HOME/.zsh/env/core/runtime.zsh" ]] && source "$HOME/.zsh/env/core/runtime.zsh"
 
 # User configuration
 

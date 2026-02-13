@@ -28,7 +28,7 @@ On a fresh Mac, running `git` for the first time triggers the Xcode CLT install 
 
 ```bash
 # 1. Clone dotfiles (may trigger Xcode CLT dialog on fresh Mac)
-git clone https://github.com/yourusername/dotfiles.git ~/dotfiles
+git clone https://github.com/kevinmcmahon/dotfiles.git ~/dotfiles
 
 # 2. Run bootstrap
 cd ~/dotfiles/scripts

@@ -25,7 +25,8 @@ brew "lazygit"
 brew "neovim"
 brew "starship"
 
-# --- Language version managers ---
+# --- Languages & version managers ---
+brew "go"
 brew "fnm"
 brew "chruby"
 brew "ruby-install"
@@ -34,4 +35,6 @@ brew "ruby-install"
 brew "yazi"
 
 # --- Fonts ---
+cask "font-fira-code-nerd-font"
 cask "font-jetbrains-mono-nerd-font"
+cask "font-monaspace"

@@ -288,7 +288,7 @@ brew_bundle() {
   fi
 
   export HOMEBREW_NO_AUTO_UPDATE=1
-  brew bundle --file="$brewfile" --no-lock
+  brew bundle --file="$brewfile"
   unset HOMEBREW_NO_AUTO_UPDATE
 
   log "Brew bundle complete"

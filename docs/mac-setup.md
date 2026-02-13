@@ -10,6 +10,7 @@ The `bootstrap-mac.sh` script configures a complete development environment:
 - **Homebrew** and core CLI packages
 - **Dotfile symlinks** (zsh, git, nvim, tmux, kitty, etc.)
 - **Shell environment** (oh-my-zsh, plugins, starship prompt)
+- **GUI apps**: kitty (terminal) and Tailscale (VPN)
 - **Rust** toolchain and cargo tools (viu, tectonic)
 - **Python** tooling via uv (package manager, ruff, pynvim)
 - **Deno** runtime
@@ -50,6 +51,13 @@ exec zsh
 | File manager | yazi |
 | Fonts | JetBrains Mono Nerd Font |
 
+### Via Homebrew Cask
+
+| App | Purpose |
+|-----|---------|
+| kitty | GPU-accelerated terminal emulator |
+| Tailscale | Zero-config VPN for secure remote access |
+
 ### Via Cargo
 
 | Tool | Purpose |
@@ -81,6 +89,10 @@ exec zsh
 
 ## Post-Install Configuration
 
+### Tailscale
+
+Open Tailscale from Applications and sign in to connect to your tailnet.
+
 ### Git Identity (required)
 
 The bootstrap creates template files that you must edit:
@@ -92,7 +104,7 @@ $EDITOR ~/.gituserconfig
 
 # (Optional) Set project-specific identities
 $EDITOR ~/.gituserconfig.kmc
-$EDITOR ~/.gituserconfig.fete
+$EDITOR ~/.gituserconfig.nsv
 ```
 
 ### Node.js via fnm
@@ -129,6 +141,24 @@ llm keys set anthropic
 llm keys set openai
 llm keys set gemini
 ```
+
+## Optional: Additional Apps
+
+The bootstrap installs a minimal set of packages. For a full development setup, the main Brewfile has additional apps:
+
+```bash
+brew bundle --file=~/.Brewfile
+```
+
+If you later add an Apple ID, Mac App Store apps can be installed via `mas`:
+
+```bash
+brew install mas
+mas install 441258766   # Magnet
+mas install 1179623856  # Pastebot
+```
+
+See `osx/mas-list.txt` for the full list.
 
 ## Environment Variable Flags
 

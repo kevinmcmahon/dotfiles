@@ -21,6 +21,7 @@ DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 LOCAL_BIN="${LOCAL_BIN:-$HOME/.local/bin}"
 CONFIG_DIR="${CONFIG_DIR:-$HOME/.config}"
 SKIP_DEFAULTS="${SKIP_DEFAULTS:-0}"
+ARCH="$(uname -m)"
 
 # ------------------------------------------------------------------------------
 # Utilities
@@ -66,7 +67,6 @@ preflight_checks() {
     die "Do not run this bootstrap with sudo. Run as your user; the script uses sudo internally."
   fi
 
-  ARCH="$(uname -m)"
   case "$ARCH" in
     arm64)  log "Detected Apple Silicon (arm64)" ;;
     x86_64) log "Detected Intel (x86_64)" ;;
@@ -87,8 +87,13 @@ install_xcode_clt() {
 
   # Poll until the installation finishes (the dialog is async)
   log "Waiting for Xcode CLT installation to complete..."
+  local waited=0
   until xcode-select -p &>/dev/null; do
     sleep 5
+    waited=$((waited + 5))
+    if [[ $waited -ge 600 ]]; then
+      die "Timed out waiting for Xcode CLT (10 min). Install manually: xcode-select --install"
+    fi
   done
 
   log "Xcode CLT installed: $(xcode-select -p)"
@@ -236,10 +241,10 @@ EOF
     warn "Created $HOME/.gituserconfig.kmc (EDIT THIS: set name/email)"
   fi
 
-  if [[ ! -f "$HOME/.gituserconfig.fete" && -f "$DOTFILES_DIR/git/gituserconfig-fete.template" ]]; then
-    cp "$DOTFILES_DIR/git/gituserconfig-fete.template" "$HOME/.gituserconfig.fete"
-    chmod 600 "$HOME/.gituserconfig.fete"
-    warn "Created $HOME/.gituserconfig.fete (EDIT THIS: set name/email)"
+  if [[ ! -f "$HOME/.gituserconfig.nsv" && -f "$DOTFILES_DIR/git/gituserconfig-nsv.template" ]]; then
+    cp "$DOTFILES_DIR/git/gituserconfig-nsv.template" "$HOME/.gituserconfig.nsv"
+    chmod 600 "$HOME/.gituserconfig.nsv"
+    warn "Created $HOME/.gituserconfig.nsv (EDIT THIS: set name/email)"
   fi
 }
 
@@ -282,9 +287,31 @@ brew_bundle() {
     return 0
   fi
 
-  brew bundle --file="$brewfile"
+  export HOMEBREW_NO_AUTO_UPDATE=1
+  brew bundle --file="$brewfile" --no-lock
+  unset HOMEBREW_NO_AUTO_UPDATE
 
   log "Brew bundle complete"
+}
+
+install_cask_apps() {
+  log "Installing GUI applications via Homebrew Cask"
+
+  local casks=(
+    kitty
+    tailscale
+  )
+
+  export HOMEBREW_NO_AUTO_UPDATE=1
+  for app in "${casks[@]}"; do
+    if brew list --cask "$app" &>/dev/null; then
+      log "$app already installed"
+    else
+      log "Installing $app..."
+      brew install --cask "$app" || warn "Failed to install $app"
+    fi
+  done
+  unset HOMEBREW_NO_AUTO_UPDATE
 }
 
 # ------------------------------------------------------------------------------
@@ -323,7 +350,7 @@ install_rust_and_cargo_tools() {
     log "rustup already installed"
   fi
 
-  # shellcheck disable=SC1090
+  # shellcheck disable=SC1091
   source "$HOME/.cargo/env" || true
 
   if ! need_cmd cargo; then
@@ -455,8 +482,12 @@ install_llm() {
   llm install -U llm-anthropic
   llm install -U llm-gemini
   llm install -U llm-openai-plugin
-  llm install -U llm-mlx
   llm install -U llm-mistral
+  if [[ "$(uname -m)" == "arm64" ]]; then
+    llm install -U llm-mlx
+  else
+    log "Skipping llm-mlx (requires Apple Silicon)"
+  fi
 }
 
 symlink_llm_templates() {
@@ -647,17 +678,25 @@ apply_spotlight_configs() {
 
 post_checks() {
   log "Quick sanity checks"
-  need_cmd git     || die "git missing"
-  need_cmd tmux    || warn "tmux missing"
-  need_cmd nvim    || warn "nvim missing"
-  need_cmd rg      || warn "ripgrep missing"
-  need_cmd fd      || warn "fd missing"
-  need_cmd fzf     || warn "fzf missing"
-  need_cmd lazygit || warn "lazygit missing"
+  need_cmd git      || die "git missing"
+  need_cmd brew     || die "brew missing"
+  need_cmd tmux     || warn "tmux missing"
+  need_cmd nvim     || warn "nvim missing"
+  need_cmd rg       || warn "ripgrep missing"
+  need_cmd fd       || warn "fd missing"
+  need_cmd fzf      || warn "fzf missing"
+  need_cmd bat      || warn "bat missing"
+  need_cmd eza      || warn "eza missing"
+  need_cmd zoxide   || warn "zoxide missing"
+  need_cmd lazygit  || warn "lazygit missing"
   need_cmd starship || warn "starship missing"
-  need_cmd bat     || warn "bat missing"
-  need_cmd eza     || warn "eza missing"
-  need_cmd zoxide  || warn "zoxide missing"
+  need_cmd yazi     || warn "yazi missing"
+  need_cmd fnm      || warn "fnm missing"
+  need_cmd rustc    || warn "rust missing"
+  need_cmd cargo    || warn "cargo missing"
+  need_cmd uv       || warn "uv missing"
+  need_cmd deno     || warn "deno missing"
+  need_cmd node     || log "Node.js not yet installed (run: fnm install --lts)"
 }
 
 # ------------------------------------------------------------------------------
@@ -678,8 +717,9 @@ main() {
   ensure_git_identity_templates
   symlink_xdg_dirs
 
-  # Phase 3 — Brew Bundle
+  # Phase 3 — Brew Bundle + GUI Apps
   brew_bundle
+  install_cask_apps
 
   # Phase 4 — Shell Environment
   install_zsh_environment
@@ -710,24 +750,27 @@ main() {
   log ""
   log "Next steps:"
   log "  1. Open a new shell (or exec zsh) so PATH updates apply"
-  log "  2. Configure your Git identity (REQUIRED for commits):"
+  log "  2. Open Tailscale from Applications and sign in"
+  log "  3. Configure your Git identity (REQUIRED for commits):"
   log "     Edit ~/.gituserconfig and uncomment/set your name and email"
-  log "     (Optional) Edit ~/.gituserconfig.kmc and ~/.gituserconfig.fete"
+  log "     (Optional) Edit ~/.gituserconfig.kmc and ~/.gituserconfig.nsv"
   log "     for project-specific identities"
-  log "  3. Install Python versions with uv:"
+  log "  4. Install Python versions with uv:"
   log "     uv python install 3.12"
   log "     uv python install 3.11"
-  log "  4. Install Node.js with fnm and enable corepack:"
+  log "  5. Install Node.js with fnm and enable corepack:"
   log "     fnm install --lts"
   log "     fnm use lts-latest"
   log "     fnm default lts-latest"
   log "     corepack enable"
-  log "  5. Install Ruby with ruby-install:"
+  log "  6. Install Ruby with ruby-install:"
   log "     ruby-install ruby 3.3.6"
-  log "  6. Set up LLM API keys:"
+  log "  7. Set up LLM API keys:"
   log "     llm keys set anthropic"
   log "     llm keys set openai"
   log "     llm keys set gemini"
+  log "  8. (Optional) Install remaining Brewfile apps:"
+  log "     brew bundle --file=~/.Brewfile"
   log ""
   log "NOTE: If you saw any warnings above, review them before proceeding."
 }

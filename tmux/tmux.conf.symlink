@@ -38,8 +38,8 @@ set -g focus-events on
 # Split panes with | and -
 unbind '"'
 unbind %
-bind | split-window -h
-bind - split-window -v
+bind | split-window -h -c "#{pane_current_path}" 
+bind - split-window -v -c "#{pane_current_path}" 
 
 # (Optional) Vim-like pane navigation with Alt-h/j/k/l
 bind -n M-h select-pane -L

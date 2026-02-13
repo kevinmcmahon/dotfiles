@@ -526,7 +526,8 @@ install_claude_code() {
 
 install_opencode() {
   log "Installing OpenCode"
-  if need_cmd opencode; then
+  if need_cmd opencode || [[ -x "$HOME/.opencode/bin/opencode" ]]; then
+    export PATH="$HOME/.opencode/bin:$PATH"
     log "opencode already installed: $(opencode --version | head -n 1)"
   else
     curl -fsSL https://opencode.ai/install | bash

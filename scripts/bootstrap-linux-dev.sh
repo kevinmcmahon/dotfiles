@@ -564,7 +564,8 @@ install_claude_code() {
 
 install_deno() {
   log "Installing Deno"
-  if need_cmd deno; then
+  if need_cmd deno || [[ -x "$HOME/.deno/bin/deno" ]]; then
+    export PATH="$HOME/.deno/bin:$PATH"
     log "deno already installed: $(deno --version | head -n 1)"
     return 0
   fi
@@ -580,7 +581,8 @@ install_deno() {
 
 install_opencode() {
   log "Installing OpenCode"
-  if need_cmd opencode; then
+  if need_cmd opencode || [[ -x "$HOME/.opencode/bin/opencode" ]]; then
+    export PATH="$HOME/.opencode/bin:$PATH"
     log "opencode already installed: $(opencode --version | head -n 1)"
   else
     curl -fsSL https://opencode.ai/install | bash

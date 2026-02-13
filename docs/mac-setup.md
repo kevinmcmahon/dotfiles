@@ -11,7 +11,8 @@ The `bootstrap-mac.sh` script configures a complete development environment:
 - **Dotfile symlinks** (zsh, git, nvim, tmux, kitty, etc.)
 - **Shell environment** (oh-my-zsh, plugins, starship prompt)
 - **GUI apps**: kitty (terminal) and Tailscale (VPN)
-- **Rust** toolchain and cargo tools (viu, tectonic)
+- **Go** via Homebrew
+- **Rust** toolchain and cargo tools (viu)
 - **Python** tooling via uv (package manager, ruff, pynvim)
 - **Deno** runtime
 - **AI CLIs** (Claude Code, OpenCode, llm)
@@ -46,10 +47,10 @@ exec zsh
 | Category | Packages |
 |----------|----------|
 | CLI essentials | bat, coreutils, curl, eza, fd, fzf, jq, ripgrep, tmux, tree, wget, zoxide |
-| Dev tools | direnv, git, git-lfs, lazygit, neovim, shellcheck, starship |
-| Language managers | fnm (Node), chruby + ruby-install (Ruby) |
+| Dev tools | direnv, git, git-lfs, lazygit, neovim, shellcheck, starship, tectonic |
+| Languages & managers | go, fnm (Node), chruby + ruby-install (Ruby) |
 | File manager | yazi |
-| Fonts | JetBrains Mono Nerd Font |
+| Fonts | Fira Code Nerd Font, JetBrains Mono Nerd Font, Monaspace |
 
 ### Via Homebrew Cask
 
@@ -63,7 +64,6 @@ exec zsh
 | Tool | Purpose |
 |------|---------|
 | viu | Terminal image viewer |
-| tectonic | LaTeX compiler |
 
 ### Via Installers
 
@@ -225,6 +225,7 @@ npm install -g neovim
 | Neovim | `brew install neovim` | AppImage |
 | lazygit, starship, fzf | `brew install` | Binary downloads |
 | yazi | `brew install yazi` | `cargo install` |
+| tectonic | `brew install tectonic` | `cargo install` |
 | Default shell | zsh (already default) | `chsh -s` required |
 | pbcopy/pbpaste | Native | xclip wrappers |
 | Go | `brew install go` | Official tarball |

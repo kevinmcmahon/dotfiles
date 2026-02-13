@@ -326,9 +326,9 @@ install_zsh_environment() {
     return 0
   fi
 
-  # Run in subshell to prevent 'exec zsh' at end from terminating bootstrap
-  # Skip ssh-agent to prevent passphrase prompts during bootstrap
-  if ! (SKIP_SSH_AGENT=1 bash "$DOTFILES_DIR/zsh/install.sh"); then
+  # SKIP_EXEC_ZSH: prevent zsh/install.sh from exec'ing into a new shell (blocks bootstrap)
+  # SKIP_SSH_AGENT: prevent passphrase prompts during bootstrap
+  if ! (SKIP_SSH_AGENT=1 SKIP_EXEC_ZSH=1 bash "$DOTFILES_DIR/zsh/install.sh"); then
     warn "zsh/install.sh reported errors (may still be partially successful)"
   fi
 
@@ -359,12 +359,7 @@ install_rust_and_cargo_tools() {
 
   log "rustup: $(rustup --version 2>/dev/null || echo 'unknown')"
 
-  # yazi is installed via brew on macOS (pre-built binary, much faster)
-  if need_cmd yazi; then
-    log "yazi already installed: $(yazi --version | head -n 1)"
-  else
-    warn "yazi not found — install via: brew install yazi"
-  fi
+  # yazi is installed via brew (BootstrapBrewfile), not cargo on macOS
 
   # --- viu (terminal image viewer) ---
   if need_cmd viu; then
@@ -375,13 +370,12 @@ install_rust_and_cargo_tools() {
     log "viu installed: $(viu --version | head -n 1)"
   fi
 
-  # --- tectonic (LaTeX compiler) ---
+  # --- tectonic (LaTeX compiler) — use brew on macOS (cargo build has C dep issues) ---
   if need_cmd tectonic; then
     log "tectonic already installed: $(tectonic --version | head -n 1)"
   else
-    log "Installing tectonic..."
-    cargo install tectonic
-    log "tectonic installed: $(tectonic --version | head -n 1)"
+    log "Installing tectonic via brew..."
+    brew install tectonic || warn "Failed to install tectonic"
   fi
 }
 

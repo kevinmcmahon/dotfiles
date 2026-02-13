@@ -135,7 +135,9 @@ echo "  - eza (ls replacement)"
 echo "  - nvim (editor)"
 echo "  - direnv (directory environments)"
 echo ""
-if [[ -t 1 ]]; then
+if [[ "${SKIP_EXEC_ZSH:-0}" == "1" ]]; then
+  echo "Skipping shell launch (called from bootstrap)."
+elif [[ -t 1 ]]; then
   echo "Launching new shell..."
   exec zsh
 else

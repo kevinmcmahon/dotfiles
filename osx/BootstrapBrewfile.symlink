@@ -1,0 +1,37 @@
+# Minimal Brewfile for macOS bootstrap
+# Installed via: brew bundle --file=~/.BootstrapBrewfile
+# For additional apps, use osx/Brewfile.symlink or brew install directly.
+
+# --- CLI essentials ---
+brew "bat"
+brew "coreutils"
+brew "curl"
+brew "direnv"
+brew "eza"
+brew "fd"
+brew "fzf"
+brew "git"
+brew "git-lfs"
+brew "jq"
+brew "ripgrep"
+brew "shellcheck"
+brew "tmux"
+brew "tree"
+brew "wget"
+brew "zoxide"
+
+# --- Dev tools ---
+brew "lazygit"
+brew "neovim"
+brew "starship"
+
+# --- Language version managers ---
+brew "fnm"
+brew "chruby"
+brew "ruby-install"
+
+# --- File manager ---
+brew "yazi"
+
+# --- Fonts ---
+cask "font-jetbrains-mono-nerd-font"

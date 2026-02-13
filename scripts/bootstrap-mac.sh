@@ -395,7 +395,8 @@ install_uv() {
 
 install_deno() {
   log "Installing Deno"
-  if need_cmd deno; then
+  if need_cmd deno || [[ -x "$HOME/.deno/bin/deno" ]]; then
+    export PATH="$HOME/.deno/bin:$PATH"
     log "deno already installed: $(deno --version | head -n 1)"
     return 0
   fi

@@ -489,14 +489,20 @@ symlink_llm_templates() {
   log "Symlinking llm templates"
 
   src="$DOTFILES_DIR/llm/templates.symlink"
-  dst="$HOME/.config/io.datasette.llm/templates"
+
+  # macOS uses ~/Library/Application Support, Linux uses ~/.config
+  local llm_data_dir="$HOME/Library/Application Support/io.datasette.llm"
+  if [[ ! -d "$llm_data_dir" ]]; then
+    llm_data_dir="$HOME/.config/io.datasette.llm"
+  fi
+  dst="$llm_data_dir/templates"
 
   if [[ ! -d "$src" ]]; then
     warn "No llm templates found at $src (skipping)"
     return 0
   fi
 
-  mkdir -p "$HOME/.config/io.datasette.llm"
+  mkdir -p "$llm_data_dir"
 
   if [[ -e "$dst" && ! -L "$dst" ]]; then
     warn "Removing existing templates path (not a symlink): $dst"

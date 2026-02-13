@@ -101,7 +101,11 @@ echo "Linked alias.zsh to $ZSH_CUSTOM/alias.zsh"
 # -----------------------------
 # Set zsh as default shell
 # -----------------------------
-current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  current_shell="$(dscl . -read /Users/"$USER" UserShell | awk '{print $2}')"
+else
+  current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+fi
 zsh_path="$(which zsh)"
 
 if [[ "$current_shell" != "$zsh_path" ]]; then

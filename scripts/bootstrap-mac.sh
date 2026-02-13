@@ -328,7 +328,7 @@ install_zsh_environment() {
 
   # SKIP_EXEC_ZSH: prevent zsh/install.sh from exec'ing into a new shell (blocks bootstrap)
   # SKIP_SSH_AGENT: prevent passphrase prompts during bootstrap
-  if ! (SKIP_SSH_AGENT=1 SKIP_EXEC_ZSH=1 bash "$DOTFILES_DIR/zsh/install.sh"); then
+  if ! (export SKIP_SSH_AGENT=1 SKIP_EXEC_ZSH=1; bash "$DOTFILES_DIR/zsh/install.sh"); then
     warn "zsh/install.sh reported errors (may still be partially successful)"
   fi
 

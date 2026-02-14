@@ -400,7 +400,7 @@ sudo apt remove fail2ban -y
 
 ## Related Documentation
 
-- [Bootstrap Script](../scripts/bootstrap-linux-dev.sh) - Initial server setup
+- [Bootstrap Script](../scripts/bootstrap.sh) - Initial server setup
 - [User Recreation](../scripts/recreate-user.sh) - Recreate user accounts safely
 - [Tailscale Documentation](https://tailscale.com/kb/) - Official Tailscale docs
 - [UFW Documentation](https://help.ubuntu.com/community/UFW) - Ubuntu firewall guide

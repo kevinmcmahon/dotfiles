@@ -3,11 +3,9 @@
 One-command setup for macOS and Linux dev environments. Safe to re-run at any time.
 
 ```bash
-# macOS
-scripts/bootstrap-mac.sh
-
-# Linux (Ubuntu/Debian)
-scripts/bootstrap-linux-dev.sh
+scripts/bootstrap.sh                     # auto-detects macOS or Linux
+INSTALL_NODE=1 scripts/bootstrap.sh      # also install Node.js LTS
+SKIP_DEFAULTS=1 scripts/bootstrap.sh     # skip macOS system defaults
 ```
 
 ## Goals
@@ -15,7 +13,7 @@ scripts/bootstrap-linux-dev.sh
 - **One command** — a fresh machine goes from zero to usable dev environment
 - **Idempotent** — every function checks state before acting; re-running skips what's already done
 - **No root entry point** — scripts run as your user; `sudo` is used internally only where needed (apt, chsh)
-- **Platform-aware** — separate scripts for macOS and Linux with shared conventions
+- **Platform-aware** — single entry point auto-detects macOS or Linux; platform-specific logic lives in dedicated modules
 
 ## Philosophy
 
@@ -28,28 +26,58 @@ Key design decisions:
 - **Dotfile management is separate from provisioning** — the bootstrap scripts handle tool installation, while the topic directories hold configuration. They meet at the symlink phase.
 - **Templates for secrets** — files containing personal data (git identity) use `.template` files that are copied (not symlinked) and `.gitignore`'d, so they never leak into the repo
 
-## Current Architecture
+## Architecture
 
-### macOS Bootstrap Phases (`scripts/bootstrap-mac.sh`)
+### File Layout
 
-| Phase | What it does |
-|-------|-------------|
-| 1. Foundation | Preflight checks, create dirs, Xcode CLT, Homebrew, git |
-| 2. Dotfile Symlinks | `*.symlink` -> `~/.<name>`, git identity templates, XDG config dirs |
-| 3. Brew Bundle | Install packages from `BootstrapBrewfile`, install cask apps (kitty, tailscale) |
-| 4. Shell Environment | Run `zsh/install.sh` (oh-my-zsh, plugins, shell symlinks) |
-| 5. Language Runtimes | Rust/rustup, uv, Deno, optionally Node.js (fnm + corepack) |
-| 6. Python/Dev Tooling | Neovim Python venv, ruff, llm + plugins, llm templates |
-| 7. AI/Dev CLIs | Claude Code, OpenCode |
-| 8. macOS Configuration | System defaults (Finder, keyboard, trackpad, dock, screenshots), Spotlight exclusions |
-| 9. Post-install | Sanity checks for expected commands |
+```
+scripts/
+  bootstrap.sh              # Single entry point — auto-detects platform
+  lib/
+    common.sh               # Shared utilities + cross-platform installers
+    platform-mac.sh         # macOS-specific: brew, xcode, cask, defaults
+    platform-linux.sh       # Linux-specific: apt, appimage, manual binaries
+  audit-mac.sh              # macOS environment audit
+  audit-linux.sh            # Linux environment audit
+```
 
-### Linux Bootstrap (`scripts/bootstrap-linux-dev.sh`)
+`bootstrap.sh` detects the platform via `uname -s`, sources `lib/common.sh` for shared logic, then sources the appropriate `lib/platform-*.sh`. The install order is defined exactly once in `bootstrap.sh`'s `main()` function. Platform modules implement a contract of 8 functions that differ by OS; common.sh handles everything that works the same everywhere.
 
-The Linux script covers the same ground but uses different package managers and installation methods:
+### Bootstrap Phases (`scripts/bootstrap.sh`)
 
-| Difference | macOS | Linux |
-|-----------|-------|-------|
+| Phase | What it does | Defined in |
+|-------|-------------|-----------|
+| 1. Foundation | Preflight checks, create dirs, package manager + git | `platform-*.sh` |
+| 2. Dotfile Symlinks | `*.symlink` -> `~/.<name>`, git identity templates, XDG config dirs | `common.sh` |
+| 3. Platform Packages | Remaining platform tools (brew bundle, cask apps / go, nvim, lazygit, etc.) | `platform-*.sh` |
+| 4. Shell Environment | oh-my-zsh, plugins, shell symlinks, set default shell | `common.sh` + `platform-*.sh` |
+| 5. Language Runtimes | Rust/rustup, uv, Deno, optionally Node.js (fnm + corepack) | `common.sh` + `platform-*.sh` |
+| 6. Dev Tooling | Neovim Python venv, ruff, llm + plugins, llm templates | `common.sh` |
+| 7. AI/Dev CLIs | Claude Code, OpenCode | `common.sh` |
+| 8. Platform Config | macOS system defaults + Spotlight exclusions (no-op on Linux) | `platform-*.sh` |
+| 9. Post-install | Sanity checks for expected commands | `common.sh` + `platform-*.sh` |
+
+Symlinks must happen AFTER Phase 1 (which provides git and the package manager) but BEFORE Phase 3 (because on macOS, `brew bundle` reads `~/.BootstrapBrewfile` which is created by the symlink phase).
+
+### Platform Contract
+
+Each `lib/platform-*.sh` must define these 8 functions:
+
+| Function | Purpose |
+|----------|---------|
+| `preflight_checks` | Verify OS, architecture, not root |
+| `install_platform_foundation` | Minimal setup: package manager + git (before symlinks) |
+| `install_platform_packages` | Remaining platform tools (after symlinks are in place) |
+| `install_rust_and_cargo_tools` | Shared rustup (from common) + platform-specific cargo/brew tools |
+| `set_default_shell_zsh` | chsh with platform-appropriate shell detection |
+| `apply_platform_config` | macOS defaults + spotlight; no-op on Linux |
+| `post_checks_platform` | Extra platform-specific sanity checks |
+| `print_next_steps` | Platform-appropriate post-install instructions |
+
+### Platform Differences
+
+| Concern | macOS (`platform-mac.sh`) | Linux (`platform-linux.sh`) |
+|---------|--------------------------|----------------------------|
 | System packages | Homebrew (`brew bundle`) | apt-get |
 | Neovim | Homebrew | AppImage -> `~/.local/bin/nvim` |
 | lazygit | Homebrew | GitHub release tarball |
@@ -162,8 +190,8 @@ Git identity uses a layered include system to support multiple identities (perso
 2. **Add config files** — these get symlinked to `~/.config/<tool>/` if you add the topic to the XDG list in the bootstrap scripts
 3. **Add `*.symlink` files** — for files that need to live at `~/.<name>`
 4. **Optionally add `install.sh`** — if the tool needs a standalone installer
-5. **Update the bootstrap scripts** — add the install function and call it from `main()`. If it needs XDG symlinking, add the topic name to the `symlink_xdg_dirs` loop.
-6. **Update the audit script** — add checks for the new tool's commands, symlinks, and config
+5. **Update the bootstrap** — add the install function to `lib/common.sh` (if cross-platform) or the appropriate `lib/platform-*.sh` (if platform-specific), and call it from `main()` in `bootstrap.sh`. If it needs XDG symlinking, add the topic name to the `symlink_xdg_dirs` loop in `common.sh`.
+6. **Update the audit scripts** — add checks for the new tool's commands, symlinks, and config to both `audit-mac.sh` and `audit-linux.sh`
 
 ## Auditing
 
@@ -197,23 +225,32 @@ It checks:
 
 Output: pass/fail/warn counts with a summary. Exit code 1 if any failures.
 
-### Linux Audit (future)
+### `scripts/audit-linux.sh`
 
-No `audit-linux.sh` exists yet. A future version should mirror `audit-mac.sh` but check:
-- apt packages instead of brew formulae
-- AppImage/binary installs in `~/.local/bin` (nvim, lazygit)
-- starship, fzf from non-brew sources
-- Go in `/usr/local/go`
-- chruby/ruby-install from source
+Linux counterpart of the macOS audit. Same pass/fail/warn framework, same helper functions. Checks:
+- Platform and architecture
+- Base apt packages (git, tmux, rg, jq, zsh, etc.)
+- fd/bat wrapper symlinks in `~/.local/bin`
+- Optional packages (eza, zoxide, tree — warns if missing)
+- Every `*.symlink` file has a correct symlink in place
+- XDG config directory symlinks (no kitty)
+- Zsh environment (oh-my-zsh, plugins, shell symlinks)
+- Git identity files (existence + whether name/email are set)
+- Language runtimes (rust, go, uv, deno, fnm, chruby, ruby-install)
+- Binary installs in `~/.local/bin` (nvim AppImage, lazygit)
+- Starship and fzf (from non-brew sources)
+- Cargo tools (viu, tectonic, yazi)
+- Python tooling (ruff, neovim python venv)
+- LLM tool + plugins + template symlinks (at `~/.config` path)
+- AI CLIs (claude, opencode)
+- Standard directories (`~/.local/bin`, `~/.config`)
+- Default shell (via `getent passwd`)
 - pbcopy/pbpaste wrapper scripts
-- No GUI app or macOS defaults checks
 
-## Future Direction
+Output: pass/fail/warn counts with a summary. Exit code 1 if any failures.
 
-The mac and linux bootstrap scripts share ~450 lines of duplicated logic (utility functions, symlink operations, git identity templates, tool installers for rust, uv, deno, node, llm, claude, opencode, etc.). The planned consolidation (Approach 2: topic-based installers) would:
+## Design History
 
-1. **Extract `scripts/lib/common.sh`** — shared utility functions (`log`, `warn`, `die`, `need_cmd`), symlink helpers, git identity template logic
-2. **Create per-topic installers** — each tool gets an `install.sh` in its topic directory (e.g., `rust/install.sh`, `deno/install.sh`) that handles platform differences internally
-3. **Slim bootstrap scripts to orchestrators** — `bootstrap-mac.sh` and `bootstrap-linux-dev.sh` become thin scripts that: do platform-specific setup (brew/apt, Xcode CLT), source `common.sh`, call topic installers in order, run platform-specific post-config (macOS defaults)
+The original bootstrap used two separate scripts (`bootstrap-mac.sh` and `bootstrap-linux-dev.sh`) that shared ~450 lines of duplicated logic. This created drift risk: adding a tool to one script and forgetting the other.
 
-This eliminates duplication while keeping each topic self-contained and independently runnable.
+The consolidation (Feb 2026) replaced them with the current `bootstrap.sh` + `lib/` architecture. The install list is now defined exactly once in `bootstrap.sh`'s `main()` function. Platform differences live in dedicated modules with a clear contract. Trivial platform differences (1-3 lines) use inline `$PLATFORM` checks in `common.sh` rather than splitting into separate files.

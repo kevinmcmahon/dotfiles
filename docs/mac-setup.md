@@ -4,7 +4,7 @@ Set up a fresh macOS machine for development using the automated bootstrap scrip
 
 ## Overview
 
-The `bootstrap-mac.sh` script configures a complete development environment:
+The `bootstrap.sh` script auto-detects macOS and configures a complete development environment:
 
 - **Xcode Command Line Tools** (no Apple ID needed)
 - **Homebrew** and core CLI packages
@@ -34,7 +34,7 @@ git clone https://github.com/kevinmcmahon/dotfiles.git ~/dotfiles
 
 # 2. Run bootstrap
 cd ~/dotfiles/scripts
-./bootstrap-mac.sh
+./bootstrap.sh
 
 # 3. Open a new shell
 exec zsh
@@ -169,7 +169,7 @@ See `osx/mas-list.txt` for the full list.
 
 Example:
 ```bash
-SKIP_DEFAULTS=1 ./bootstrap-mac.sh
+SKIP_DEFAULTS=1 ./bootstrap.sh
 ```
 
 ## Troubleshooting
@@ -217,7 +217,9 @@ Run `:checkhealth` in Neovim and address any warnings. Common fixes:
 npm install -g neovim
 ```
 
-## Differences from Linux Bootstrap
+## Platform Differences
+
+Both platforms use the same `scripts/bootstrap.sh` entry point. The differences are in how each tool gets installed:
 
 | Feature | macOS | Linux |
 |---------|-------|-------|
@@ -235,6 +237,6 @@ npm install -g neovim
 
 ## Related Documentation
 
-- [Linux Bootstrap Script](../scripts/bootstrap-linux-dev.sh) — Linux equivalent
+- [Bootstrap System](bootstrap.md) — Full bootstrap architecture documentation
 - [Linux Networking Setup](linux-networking-setup.md) — Tailscale, firewall, mosh
 - [macOS Defaults Source](../osx/set-defaults.sh) — Standalone defaults script

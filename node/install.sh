@@ -33,11 +33,10 @@ else
   fnm install --lts
 fi
 
-# Set LTS as default
-log "Setting LTS as default Node.js version"
+# Set LTS as default and activate it.
+# These are fast no-ops if already set, but we always run them to ensure
+# the default and active version stay correct after an LTS bump.
 fnm default lts-latest
-
-# Activate it
 fnm use lts-latest
 
 log "Node.js active: $(node --version)"

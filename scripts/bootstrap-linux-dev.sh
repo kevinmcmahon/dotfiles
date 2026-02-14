@@ -137,6 +137,8 @@ setup_node() {
     fnm install --lts
   fi
 
+  # These are fast no-ops if already set, but we always run them to ensure
+  # the default and active version stay correct after an LTS bump.
   fnm default lts-latest
   fnm use lts-latest
 

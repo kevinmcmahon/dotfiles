@@ -353,6 +353,12 @@ install_lazygit() {
   version="$(curl -fsSL https://api.github.com/repos/jesseduffield/lazygit/releases/latest |
     jq -r '.tag_name' | sed 's/^v//')"
 
+  # Skip if already installed at latest version
+  if need_cmd lazygit && [[ "$(lazygit --version 2>/dev/null)" == *"version=${version}"* ]]; then
+    log "lazygit v${version} already installed"
+    return 0
+  fi
+
   local tmpdir
   tmpdir="$(mktemp -d)"
   trap 'rm -rf "${tmpdir:-}"' RETURN

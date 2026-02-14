@@ -21,10 +21,7 @@ git/
 │   │   ├── pre-commit         # git-secrets scan
 │   │   ├── commit-msg         # git-secrets scan
 │   │   ├── prepare-commit-msg # git-secrets + LLM assist
-│   │   ├── post-checkout      # LFS (if enabled)
-│   │   ├── post-commit        # LFS (if enabled)
-│   │   ├── post-merge         # LFS (if enabled)
-│   │   └── pre-push           # LFS (if enabled)
+│   │   └── post-checkout      # LFS auto-configure (if repo uses it)
 │   └── secrets/
 │       ├── patterns           # Blocked patterns (AWS, GitHub tokens)
 │       └── allowed            # Exceptions
@@ -95,7 +92,7 @@ ln -sf ~/dotfiles/git/git-core.symlink ~/.git-core
 
 ### Linux
 
-The `bootstrap-linux-dev.sh` script handles all symlinks. Manually:
+The `bootstrap.sh` script handles all symlinks. Manually:
 
 ```bash
 ln -sf ~/dotfiles/git/gitconfig.symlink ~/.gitconfig
@@ -186,10 +183,10 @@ These local files should contain **only** your `user.name` and `user.email` for 
 
 ### Bootstrap integration (Linux)
 
-`bootstrap-linux-dev.sh` can generate the local files if they are missing:
+`bootstrap.sh` can generate the local files if they are missing:
 
 - `~/.gitconfig-local` (with `__HOME__` substituted)
-- `~/.gituserconfig.kmc` and `~/.gituserconfig.fete` (copied from templates)
+- `~/.gituserconfig.kmc` and `~/.gituserconfig.nsv` (copied from templates)
 
 It will **never overwrite** existing local files.
 
@@ -255,12 +252,12 @@ All hooks are in `~/.git-core/hooks/` (set via `core.hooksPath`).
 - OpenAI API keys (`sk-...`, `sk-proj-...`)
 - Google API keys (`AIza...`)
 
-### LFS Hooks
+### LFS Hook
 
-`post-checkout`, `post-commit`, `post-merge`, `pre-push` handle Git LFS. They:
+`post-checkout` auto-configures Git LFS for repos that use it. It:
 
-- Only run if the repo has `filter=lfs` in `.gitattributes`
-- Skip silently if `git-lfs` isn't installed
+- Only runs if the repo has `filter=lfs` in `.gitattributes`
+- Skips silently if `git-lfs` isn't installed
 - Won't interfere with non-LFS repos
 
 ### LLM Commit Assistance

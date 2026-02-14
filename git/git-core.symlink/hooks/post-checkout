@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-git config --get filter.lfs.required >/dev/null 2>&1 || exit 0
+# If this repo has any 'filter=lfs' entries in its .gitattributes, enable LFS
+REPO_ROOT=$(git rev-parse --show-toplevel)
+ATTRFILE="$REPO_ROOT/.gitattributes"
 
-if ! command -v git-lfs >/dev/null 2>&1; then
-  printf >&2 "\n%s\n\n" \
-    "This repository uses Git LFS, but 'git-lfs' is not on your PATH."
-  exit 2
+if command -v git-lfs >/dev/null 2>&1 &&
+  [ -f "$ATTRFILE" ] &&
+  grep -q 'filter=lfs' "$ATTRFILE"; then
+  git lfs install --local >/dev/null
 fi
-
-exec git lfs post-checkout "$@"

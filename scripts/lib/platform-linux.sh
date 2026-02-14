@@ -254,7 +254,7 @@ install_go_official() {
   url="https://go.dev/dl/${filename}"
 
   tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' EXIT
+  trap 'rm -rf "$tmpdir"' RETURN
 
   log "Downloading $url"
   curl -fL "$url" -o "$tmpdir/$filename"
@@ -344,7 +344,7 @@ install_lazygit() {
 
   local tmpdir
   tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' EXIT
+  trap 'rm -rf "$tmpdir"' RETURN
 
   local tarball url
   tarball="lazygit_${version}_Linux_${lazygit_arch}.tar.gz"

@@ -79,8 +79,10 @@ install_rust_and_cargo_tools() {
   if need_cmd tectonic; then
     log "tectonic already installed: $(tectonic --version | head -n 1)"
   else
+    log "Installing tectonic build dependencies..."
+    sudo apt-get install -y libfontconfig1-dev libgraphite2-dev libharfbuzz-dev libicu-dev
     log "Installing tectonic..."
-    cargo install tectonic
+    cargo install -F external-harfbuzz tectonic
     log "tectonic installed: $(tectonic --version | head -n 1)"
   fi
 }
@@ -222,7 +224,10 @@ install_go_official() {
   fi
 
   # Skip if already installed at desired version
-  if need_cmd go && [[ "$(go version 2>/dev/null)" == *"$version"* ]]; then
+  # Check both PATH and the known install location
+  local go_bin
+  go_bin="$(command -v go 2>/dev/null || echo /usr/local/go/bin/go)"
+  if [[ -x "$go_bin" ]] && [[ "$($go_bin version 2>/dev/null)" == *"$version"* ]]; then
     log "Go $version already installed"
     return 0
   fi
@@ -310,6 +315,12 @@ install_neovim_appimage() {
 
   local nvim_path="$LOCAL_BIN/$nvim_asset"
   local nvim_link="$LOCAL_BIN/nvim"
+
+  # Skip if already installed at desired version
+  if [[ -x "$nvim_link" ]] && [[ "$("$nvim_link" --version 2>/dev/null | head -n 1)" == *"${NVIM_VERSION#v}"* ]]; then
+    log "Neovim ${NVIM_VERSION} already installed"
+    return 0
+  fi
 
   # Download from GitHub releases
   local url="https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/${nvim_asset}"

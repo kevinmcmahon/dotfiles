@@ -20,8 +20,9 @@ git/
 │   ├── hooks/
 │   │   ├── pre-commit         # git-secrets scan
 │   │   ├── commit-msg         # git-secrets scan
-│   │   ├── prepare-commit-msg # git-secrets + LLM assist
-│   │   └── post-checkout      # LFS auto-configure (if repo uses it)
+│   │   ├── prepare-commit-msg     # git-secrets + LLM assist
+│   │   ├── prepare-commit-msg-llm # LLM commit message generator
+│   │   └── post-checkout          # LFS auto-configure (if repo uses it)
 │   └── secrets/
 │       ├── patterns           # Blocked patterns (AWS, GitHub tokens)
 │       └── allowed            # Exceptions

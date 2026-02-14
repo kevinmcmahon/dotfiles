@@ -254,7 +254,7 @@ install_go_official() {
   url="https://go.dev/dl/${filename}"
 
   tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' RETURN
+  trap 'rm -rf "${tmpdir:-}"' RETURN
 
   log "Downloading $url"
   curl -fL "$url" -o "$tmpdir/$filename"
@@ -344,7 +344,7 @@ install_lazygit() {
 
   local tmpdir
   tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' RETURN
+  trap 'rm -rf "${tmpdir:-}"' RETURN
 
   local tarball url
   tarball="lazygit_${version}_Linux_${lazygit_arch}.tar.gz"
@@ -413,7 +413,7 @@ install_ruby_install() {
 
   local tmpdir
   tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' RETURN
+  trap 'rm -rf "${tmpdir:-}"' RETURN
 
   local url="https://github.com/postmodern/ruby-install/releases/download/v${RUBY_INSTALL_VERSION}/ruby-install-${RUBY_INSTALL_VERSION}.tar.gz"
   log "Downloading ruby-install v${RUBY_INSTALL_VERSION}"
@@ -441,7 +441,7 @@ install_chruby() {
 
   local tmpdir
   tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' RETURN
+  trap 'rm -rf "${tmpdir:-}"' RETURN
 
   local url="https://github.com/postmodern/chruby/releases/download/v${CHRUBY_VERSION}/chruby-${CHRUBY_VERSION}.tar.gz"
   log "Downloading chruby v${CHRUBY_VERSION}"

@@ -25,7 +25,7 @@ set -euo pipefail
 #
 #   # Step 5: Clone dotfiles and bootstrap
 #   git clone <repo> ~/dotfiles
-#   cd ~/dotfiles/scripts && ./bootstrap-linux-dev.sh
+#   cd ~/dotfiles/scripts && ./bootstrap.sh
 #
 # WHAT IT DOES:
 #   - Backs up target user's .ssh to /root/user-backup-<timestamp>
@@ -242,7 +242,7 @@ echo "     git clone <your-repo-url> ~/dotfiles"
 echo ""
 echo "  3. Run the bootstrap script:"
 echo "     cd ~/dotfiles/scripts"
-echo "     ./bootstrap-linux-dev.sh"
+echo "     ./bootstrap.sh"
 echo ""
 echo "     (Bootstrap will be faster - system packages already installed)"
 echo ""

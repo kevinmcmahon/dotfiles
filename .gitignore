@@ -27,3 +27,8 @@ codex/
 # Repomix output (AI context dumps)
 **/output.txt
 **/repomix-output*
+
+# Kitty themes (third-party clone) and local state
+kitty/themes/
+kitty/current-theme.conf
+*.bak

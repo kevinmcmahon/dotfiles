@@ -3,9 +3,9 @@
 set -uo pipefail
 
 # ------------------------------------------------------------------------------
-# macOS Dev Environment Audit
+# Linux Dev Environment Audit
 # Checks for drift or misaligned configuration against what bootstrap.sh
-# sets up on macOS. Safe to run anytime — read-only, changes nothing.
+# sets up on Linux. Safe to run anytime — read-only, changes nothing.
 # ------------------------------------------------------------------------------
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
@@ -81,86 +81,40 @@ check_dir_exists() {
 # ==============================================================================
 
 section "Platform"
-if [[ "$(uname -s)" == "Darwin" ]]; then
-  pass "macOS detected: $(sw_vers -productVersion)"
+if [[ "$(uname -s)" == "Linux" ]]; then
+  pass "Linux detected"
 else
-  fail "Not macOS — this audit is for macOS only"
+  fail "Not Linux — this audit is for Linux only"
   exit 1
 fi
 
 arch="$(uname -m)"
-if [[ "$arch" == "arm64" ]]; then
-  pass "Apple Silicon (arm64)"
-elif [[ "$arch" == "x86_64" ]]; then
-  pass "Intel (x86_64)"
-else
-  warn "Unknown architecture: $arch"
-fi
+case "$arch" in
+  aarch64|arm64) pass "ARM64 (aarch64)" ;;
+  x86_64|amd64)  pass "x86_64 (amd64)" ;;
+  *)             warn "Unknown architecture: $arch" ;;
+esac
 
-# --- Xcode CLT ---
-section "Xcode Command Line Tools"
-if xcode-select -p &>/dev/null; then
-  pass "Xcode CLT installed: $(xcode-select -p)"
-else
-  fail "Xcode CLT not installed"
-fi
-
-# --- Homebrew ---
-section "Homebrew"
-if command -v brew >/dev/null 2>&1; then
-  pass "Homebrew installed: $(brew --prefix)"
-else
-  fail "Homebrew not found"
-fi
-
-# --- BootstrapBrewfile packages ---
-section "Brew Packages (BootstrapBrewfile)"
-brew_formulae=(
-  bat coreutils curl direnv eza fd fzf git git-lfs jq ripgrep
-  shellcheck tmux tree wget zoxide lazygit neovim starship
-  go fnm chruby ruby-install yazi
-)
-
-for pkg in "${brew_formulae[@]}"; do
-  if brew list "$pkg" &>/dev/null 2>&1; then
-    pass "$pkg"
-  else
-    fail "$pkg not installed"
-  fi
+# --- Base apt packages ---
+section "Base apt Packages"
+apt_cmds=(git git-lfs tmux rg jq make gcc zsh curl wget xclip)
+for cmd in "${apt_cmds[@]}"; do
+  check_cmd "$cmd" "$cmd"
 done
 
-# tectonic (installed via brew on macOS)
-if brew list tectonic &>/dev/null 2>&1; then
-  pass "tectonic (brew)"
-elif command -v tectonic >/dev/null 2>&1; then
-  warn "tectonic found but not via brew: $(which tectonic)"
-else
-  fail "tectonic not installed"
-fi
+# --- fd/bat wrappers ---
+section "fd/bat Wrappers"
+check_symlink "$LOCAL_BIN/fd" "$(command -v fdfind 2>/dev/null || echo "fdfind")" "~/.local/bin/fd"
+check_symlink "$LOCAL_BIN/bat" "$(command -v batcat 2>/dev/null || echo "batcat")" "~/.local/bin/bat"
 
-# --- Brew Cask apps ---
-section "Brew Cask Apps"
-cask_apps=(kitty tailscale)
-for app in "${cask_apps[@]}"; do
-  # Capitalise first letter for /Applications check (e.g. kitty → Kitty)
-  app_name="$(tr '[:lower:]' '[:upper:]' <<< "${app:0:1}")${app:1}"
-  if brew list --cask "$app" &>/dev/null 2>&1; then
-    pass "$app"
-  elif [[ -d "/Applications/${app_name}.app" ]]; then
-    pass "$app (found in /Applications)"
+# --- Optional packages ---
+section "Optional Packages"
+optional_cmds=(eza zoxide tree)
+for cmd in "${optional_cmds[@]}"; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    pass "$cmd: $(command -v "$cmd")"
   else
-    fail "$app not installed"
-  fi
-done
-
-# --- Brew Cask fonts ---
-section "Fonts"
-fonts=(font-fira-code-nerd-font font-jetbrains-mono-nerd-font font-monaspace)
-for font in "${fonts[@]}"; do
-  if brew list --cask "$font" &>/dev/null 2>&1; then
-    pass "$font"
-  else
-    fail "$font not installed"
+    warn "$cmd: not found (optional)"
   fi
 done
 
@@ -178,13 +132,6 @@ for f in "$DOTFILES_DIR"/git/*.symlink; do
   base="$(basename "$f" .symlink)"
   check_symlink "$HOME/.$base" "$f" "~/.$base"
 done
-
-# --- osx/*.symlink files ---
-section "Dotfile Symlinks (osx/)"
-for f in "$DOTFILES_DIR"/osx/*.symlink; do
-  base="$(basename "$f" .symlink)"
-  check_symlink "$HOME/.$base" "$f" "~/.$base"
-done
 shopt -u nullglob
 
 # --- git-core directory ---
@@ -193,7 +140,7 @@ check_symlink "$HOME/.git-core" "$DOTFILES_DIR/git/git-core.symlink" "~/.git-cor
 
 # --- XDG config directories ---
 section "XDG Config Directories (~/.config)"
-for d in nvim yazi tmux starship git kitty; do
+for d in nvim yazi tmux starship git; do
   check_symlink "$CONFIG_DIR/$d" "$DOTFILES_DIR/$d" "~/.config/$d"
 done
 
@@ -250,18 +197,47 @@ for f in "$HOME/.gituserconfig.kmc" "$HOME/.gituserconfig.nsv"; do
   fi
 done
 
-# --- CLI tools (non-brew) ---
-section "Language Runtimes & CLI Tools"
+# --- Language runtimes ---
+section "Language Runtimes"
 check_cmd rustup "rustup"
 check_cmd rustc "rustc"
 check_cmd cargo "cargo"
-check_cmd go "go"
 check_cmd uv "uv"
 check_cmd deno "deno"
 check_cmd fnm "fnm"
-check_cmd chruby-exec "chruby"
 
-# Optional: node (installed via fnm post-bootstrap or INSTALL_NODE=1)
+# --- Go ---
+section "Go"
+if [[ -x /usr/local/go/bin/go ]]; then
+  pass "go: /usr/local/go/bin/go ($(/usr/local/go/bin/go version | awk '{print $3}'))"
+elif command -v go >/dev/null 2>&1; then
+  pass "go: $(command -v go)"
+else
+  fail "go not found (expected at /usr/local/go/bin/go)"
+fi
+
+# --- Ruby ---
+section "Ruby"
+if [[ -f /usr/local/share/chruby/chruby.sh ]]; then
+  pass "chruby: /usr/local/share/chruby/chruby.sh"
+else
+  fail "chruby: /usr/local/share/chruby/chruby.sh not found"
+fi
+check_cmd ruby-install "ruby-install"
+
+# --- Binary installs ---
+section "Binary Installs"
+check_file_exists "$LOCAL_BIN/nvim" "~/.local/bin/nvim (Neovim AppImage)"
+check_file_exists "$LOCAL_BIN/lazygit" "~/.local/bin/lazygit"
+
+# --- Starship & fzf ---
+section "Starship & fzf"
+check_cmd starship "starship"
+check_cmd fzf "fzf"
+check_dir_exists "$HOME/.fzf" "~/.fzf (git clone)"
+
+# --- Node (optional) ---
+section "Node (optional)"
 if command -v node >/dev/null 2>&1; then
   pass "node: $(node --version)"
 
@@ -290,9 +266,10 @@ else
 fi
 
 # --- Cargo tools ---
-section "Cargo / Brew-installed Tools"
+section "Cargo Tools"
 check_cmd viu "viu"
 check_cmd tectonic "tectonic"
+check_cmd yazi "yazi"
 
 # --- Python tooling ---
 section "Python Tooling"
@@ -314,10 +291,7 @@ section "LLM Tool"
 if command -v llm >/dev/null 2>&1; then
   pass "llm installed"
   installed_plugins="$(llm plugins 2>/dev/null)"
-  expected_plugins=(llm-anthropic llm-gemini llm-openai-plugin llm-mistral)
-  if [[ "$arch" == "arm64" ]]; then
-    expected_plugins+=(llm-mlx)
-  fi
+  expected_plugins=(llm-anthropic llm-gemini llm-openai-plugin llm-mistral llm-mlx)
   for plugin in "${expected_plugins[@]}"; do
     if echo "$installed_plugins" | grep -q "$plugin"; then
       pass "llm plugin: $plugin"
@@ -329,12 +303,9 @@ else
   fail "llm not installed"
 fi
 
-# LLM templates — macOS uses ~/Library/Application Support, Linux uses ~/.config
+# --- LLM templates ---
 section "LLM Templates"
-llm_data_dir="$HOME/Library/Application Support/io.datasette.llm"
-if [[ ! -d "$llm_data_dir" ]]; then
-  llm_data_dir="$HOME/.config/io.datasette.llm"
-fi
+llm_data_dir="$HOME/.config/io.datasette.llm"
 check_symlink "$llm_data_dir/templates" "$DOTFILES_DIR/llm/templates.symlink" "llm templates"
 
 # --- AI CLIs ---
@@ -359,63 +330,25 @@ check_dir_exists "$CONFIG_DIR" "~/.config"
 
 # --- Default shell ---
 section "Shell"
-current_shell="$(dscl . -read /Users/"$USER" UserShell 2>/dev/null | awk '{print $2}')"
+current_shell="$(getent passwd "$USER" | cut -d: -f7)"
 if [[ "$current_shell" == *"zsh"* ]]; then
   pass "Default shell is zsh: $current_shell"
 else
   warn "Default shell is not zsh: $current_shell"
 fi
 
-# --- macOS Defaults (spot-check key settings) ---
-section "macOS Defaults (spot check)"
-
-check_default() {
-  local domain="$1"
-  local key="$2"
-  local expected="$3"
-  local label="${4:-$domain $key}"
-
-  local actual
-  actual="$(defaults read "$domain" "$key" 2>/dev/null)" || {
-    warn "$label: not set"
-    return
-  }
-
-  if [[ "$actual" == "$expected" ]]; then
-    pass "$label = $expected"
-  else
-    fail "$label = $actual (expected $expected)"
-  fi
-}
-
-check_default "com.apple.finder" "AppleShowAllFiles" "1" "Finder: show hidden files"
-check_default "NSGlobalDomain" "AppleShowAllExtensions" "1" "Finder: show extensions"
-check_default "com.apple.finder" "ShowStatusBar" "1" "Finder: status bar"
-check_default "com.apple.finder" "ShowPathbar" "1" "Finder: path bar"
-check_default "com.apple.finder" "FXPreferredViewStyle" "Nlsv" "Finder: list view"
-check_default "NSGlobalDomain" "ApplePressAndHoldEnabled" "0" "Keyboard: key repeat"
-check_default "com.apple.screencapture" "type" "png" "Screenshots: PNG format"
-check_default "com.apple.desktopservices" "DSDontWriteNetworkStores" "1" "No .DS_Store on network"
-
-# --- Spotlight exclusions ---
-section "Spotlight Exclusions"
-for d in "$HOME/Library/Caches" "$HOME/Library/Developer"; do
-  idx="$d/.metadata_never_index"
-  if [[ -f "$idx" ]]; then
-    pass "$idx"
-  else
-    warn "$idx missing"
-  fi
-done
-
-# --- ~/Library visibility ---
-section "Library Visibility"
-# stat with -f %Xf gets the BSD file flags; 0x8000 = UF_HIDDEN
-lib_flags="$(stat -f '%Xf' ~/Library 2>/dev/null || echo "0")"
-if (( (16#$lib_flags & 0x8000) == 0 )); then
-  pass "~/Library is visible"
+# --- pbcopy/pbpaste wrappers ---
+section "pbcopy/pbpaste Wrappers"
+if [[ -x "$LOCAL_BIN/pbcopy" ]]; then
+  pass "~/.local/bin/pbcopy exists and is executable"
 else
-  fail "~/Library is hidden (run: chflags nohidden ~/Library)"
+  fail "~/.local/bin/pbcopy missing or not executable"
+fi
+
+if [[ -x "$LOCAL_BIN/pbpaste" ]]; then
+  pass "~/.local/bin/pbpaste exists and is executable"
+else
+  fail "~/.local/bin/pbpaste missing or not executable"
 fi
 
 # ==============================================================================

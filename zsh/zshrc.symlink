@@ -3,7 +3,8 @@
 # Auto-attach tmux only on SSH/Mosh, never if already in tmux (keep near top)
 if [[ -o interactive ]] && [[ -t 1 ]] && command -v tmux >/dev/null 2>&1; then
   if [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" || -n "$MOSH" ]]; then
-    tmux attach -t main 2>/dev/null || tmux new -s main
+    sess="main-$(hostname -s)"
+    tmux attach -t "$sess" 2>/dev/null || tmux new -s "$sess"
   fi
 fi
 

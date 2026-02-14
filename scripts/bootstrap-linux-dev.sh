@@ -26,6 +26,7 @@ set -euo pipefail
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 LOCAL_BIN="${LOCAL_BIN:-$HOME/.local/bin}"
 CONFIG_DIR="${CONFIG_DIR:-$HOME/.config}"
+INSTALL_NODE="${INSTALL_NODE:-0}"
 
 log() { printf "\n\033[1;34m==>\033[0m %s\n" "$*"; }
 warn() { printf "\033[1;33mWARN:\033[0m %s\n" "$*"; }
@@ -112,6 +113,39 @@ install_fnm() {
   else
     warn "fnm command not found after installation"
   fi
+}
+
+setup_node() {
+  if [[ "$INSTALL_NODE" != "1" ]]; then
+    log "Skipping Node.js setup (set INSTALL_NODE=1 to enable)"
+    return 0
+  fi
+
+  log "Setting up Node.js LTS via fnm + corepack"
+
+  if ! need_cmd fnm; then
+    warn "fnm not found — skipping Node.js setup"
+    return 0
+  fi
+
+  eval "$(fnm env)"
+
+  if fnm list 2>/dev/null | grep -q "lts-latest"; then
+    log "Node.js LTS already installed"
+  else
+    log "Installing Node.js LTS..."
+    fnm install --lts
+  fi
+
+  fnm default lts-latest
+  fnm use lts-latest
+
+  log "Node.js active: $(node --version)"
+
+  log "Enabling corepack..."
+  corepack enable
+
+  log "Corepack enabled: $(corepack --version)"
 }
 
 install_go_official() {
@@ -821,6 +855,7 @@ main() {
   # Language runtimes and version managers (install before dotfiles/shell setup)
   install_go_official
   install_fnm
+  setup_node
 
   symlink_dotfiles_symlink_pattern
   ensure_git_identity_templates
@@ -874,11 +909,14 @@ main() {
   log "  3. Install Python versions with uv:"
   log "     uv python install 3.12"
   log "     uv python install 3.11"
-  log "  4. Install Node.js with fnm and enable corepack (for yarn/pnpm):"
-  log "     fnm install --lts"
-  log "     fnm use lts-latest"
-  log "     fnm default lts-latest"
-  log "     corepack enable"
+  if [[ "$INSTALL_NODE" != "1" ]]; then
+    log "  4. Install Node.js with fnm and enable corepack (for yarn/pnpm):"
+    log "     fnm install --lts"
+    log "     fnm use lts-latest"
+    log "     fnm default lts-latest"
+    log "     corepack enable"
+    log "     (or re-run with INSTALL_NODE=1 to automate this)"
+  fi
   log "  5. Install Ruby with ruby-install:"
   log "     ruby-install ruby 3.3.6"
   log "     (or set RUBY_VERSION=3.3.6 before bootstrap)"

@@ -21,6 +21,7 @@ DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 LOCAL_BIN="${LOCAL_BIN:-$HOME/.local/bin}"
 CONFIG_DIR="${CONFIG_DIR:-$HOME/.config}"
 SKIP_DEFAULTS="${SKIP_DEFAULTS:-0}"
+INSTALL_NODE="${INSTALL_NODE:-0}"
 ARCH="$(uname -m)"
 
 # ------------------------------------------------------------------------------
@@ -408,6 +409,39 @@ install_deno() {
   log "deno installed: $(deno --version 2>/dev/null | head -n 1 || echo 'WARN: deno not found in PATH')"
 }
 
+setup_node() {
+  if [[ "$INSTALL_NODE" != "1" ]]; then
+    log "Skipping Node.js setup (set INSTALL_NODE=1 to enable)"
+    return 0
+  fi
+
+  log "Setting up Node.js LTS via fnm + corepack"
+
+  if ! need_cmd fnm; then
+    warn "fnm not found — skipping Node.js setup"
+    return 0
+  fi
+
+  eval "$(fnm env)"
+
+  if fnm list 2>/dev/null | grep -q "lts-latest"; then
+    log "Node.js LTS already installed"
+  else
+    log "Installing Node.js LTS..."
+    fnm install --lts
+  fi
+
+  fnm default lts-latest
+  fnm use lts-latest
+
+  log "Node.js active: $(node --version)"
+
+  log "Enabling corepack..."
+  corepack enable
+
+  log "Corepack enabled: $(corepack --version)"
+}
+
 # ------------------------------------------------------------------------------
 # Phase 6 — Python/Dev Tooling
 # ------------------------------------------------------------------------------
@@ -698,7 +732,7 @@ post_checks() {
   need_cmd cargo    || warn "cargo missing"
   need_cmd uv       || warn "uv missing"
   need_cmd deno     || warn "deno missing"
-  need_cmd node     || log "Node.js not yet installed (run: fnm install --lts)"
+  need_cmd node     || log "Node.js not yet installed (run: fnm install --lts, or INSTALL_NODE=1)"
 }
 
 # ------------------------------------------------------------------------------
@@ -730,6 +764,7 @@ main() {
   install_rust_and_cargo_tools
   install_uv
   install_deno
+  setup_node
 
   # Phase 6 — Python/Dev Tooling
   install_nvim_python_venv_uv
@@ -760,11 +795,14 @@ main() {
   log "  4. Install Python versions with uv:"
   log "     uv python install 3.12"
   log "     uv python install 3.11"
-  log "  5. Install Node.js with fnm and enable corepack:"
-  log "     fnm install --lts"
-  log "     fnm use lts-latest"
-  log "     fnm default lts-latest"
-  log "     corepack enable"
+  if [[ "$INSTALL_NODE" != "1" ]]; then
+    log "  5. Install Node.js with fnm and enable corepack:"
+    log "     fnm install --lts"
+    log "     fnm use lts-latest"
+    log "     fnm default lts-latest"
+    log "     corepack enable"
+    log "     (or re-run with INSTALL_NODE=1 to automate this)"
+  fi
   log "  6. Install Ruby with ruby-install:"
   log "     ruby-install ruby 3.3.6"
   log "  7. Set up LLM API keys:"

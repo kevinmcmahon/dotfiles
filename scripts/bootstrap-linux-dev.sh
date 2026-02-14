@@ -258,10 +258,10 @@ EOF
     warn "Created $HOME/.gituserconfig.kmc (EDIT THIS: set name/email)"
   fi
 
-  if [[ ! -f "$HOME/.gituserconfig.fete" && -f "$DOTFILES_DIR/git/gituserconfig-fete.template" ]]; then
-    cp "$DOTFILES_DIR/git/gituserconfig-fete.template" "$HOME/.gituserconfig.fete"
-    chmod 600 "$HOME/.gituserconfig.fete"
-    warn "Created $HOME/.gituserconfig.fete (EDIT THIS: set name/email)"
+  if [[ ! -f "$HOME/.gituserconfig.nsv" && -f "$DOTFILES_DIR/git/gituserconfig-nsv.template" ]]; then
+    cp "$DOTFILES_DIR/git/gituserconfig-nsv.template" "$HOME/.gituserconfig.nsv"
+    chmod 600 "$HOME/.gituserconfig.nsv"
+    warn "Created $HOME/.gituserconfig.nsv (EDIT THIS: set name/email)"
   fi
 }
 
@@ -906,7 +906,7 @@ main() {
   log "  1. Open a new shell (or exec zsh) so PATH updates apply"
   log "  2. Configure your Git identity (REQUIRED for commits):"
   log "     Edit ~/.gituserconfig and uncomment/set your name and email"
-  log "     (Optional) Edit ~/.gituserconfig.kmc and ~/.gituserconfig.fete"
+  log "     (Optional) Edit ~/.gituserconfig.kmc and ~/.gituserconfig.nsv"
   log "     for project-specific identities"
   log "  3. Install Python versions with uv:"
   log "     uv python install 3.12"

@@ -51,43 +51,50 @@ works the same everywhere.
 
 ### bootstrap.sh — Phase Ordering
 
+Note: symlinks must happen AFTER `install_platform_foundation` (which provides git
+and the package manager) but BEFORE `install_platform_packages` (because on macOS,
+`brew_bundle` reads `~/.BootstrapBrewfile` which is created by the symlink phase).
+
 ```
 main() {
-  # Phase 1 — Foundation (platform-specific)
+  # Phase 1 — Foundation (platform-specific: get package manager + git)
   preflight_checks
   ensure_dirs
   ensure_local_bin_in_path
-  install_platform_packages
+  install_platform_foundation
 
-  # Phase 2 — Dotfile Symlinks (common)
+  # Phase 2 — Dotfile Symlinks (common — must precede brew bundle on mac)
   symlink_dotfiles_symlink_pattern
   ensure_git_identity_templates
   symlink_xdg_dirs
 
-  # Phase 3 — Shell Environment (common)
+  # Phase 3 — Platform Packages (needs symlinks in place for BootstrapBrewfile)
+  install_platform_packages
+
+  # Phase 4 — Shell Environment (common)
   install_zsh_environment
   set_default_shell_zsh
 
-  # Phase 4 — Language Runtimes
+  # Phase 5 — Language Runtimes
   install_rust_and_cargo_tools
   install_uv
   install_deno
   setup_node
 
-  # Phase 5 — Dev Tooling (common)
+  # Phase 6 — Dev Tooling (common)
   install_nvim_python_venv_uv
   install_ruff_uv
   install_llm
   symlink_llm_templates
 
-  # Phase 6 — AI/Dev CLIs (common)
+  # Phase 7 — AI/Dev CLIs (common)
   install_claude_code
   install_opencode
 
-  # Phase 7 — Platform Configuration (platform-specific)
+  # Phase 8 — Platform Configuration (platform-specific)
   apply_platform_config
 
-  # Phase 8 — Post-install
+  # Phase 9 — Post-install
   post_checks
   print_next_steps
 }
@@ -100,7 +107,8 @@ Each `platform-*.sh` must define these functions:
 | Function | Purpose |
 |----------|---------|
 | `preflight_checks` | Verify OS, architecture, not root |
-| `install_platform_packages` | System package manager + platform-only tools |
+| `install_platform_foundation` | Minimal setup: package manager + git (before symlinks) |
+| `install_platform_packages` | Remaining platform tools (after symlinks are in place) |
 | `install_rust_and_cargo_tools` | Shared rustup (from common) + platform-specific cargo/brew tools |
 | `set_default_shell_zsh` | chsh with platform-appropriate shell detection |
 | `apply_platform_config` | macOS defaults + spotlight; no-op on Linux |
@@ -135,7 +143,8 @@ Each `platform-*.sh` must define these functions:
 | Function | What it wraps |
 |----------|--------------|
 | `preflight_checks` | Darwin check, architecture detection |
-| `install_platform_packages` | `install_xcode_clt`, `install_homebrew`, `install_git_via_brew`, `brew_bundle`, `install_cask_apps` |
+| `install_platform_foundation` | `install_xcode_clt`, `install_homebrew`, `install_git_via_brew` |
+| `install_platform_packages` | `brew_bundle`, `install_cask_apps` |
 | `install_rust_and_cargo_tools` | rustup (common helper) + brew for tectonic; viu via cargo |
 | `set_default_shell_zsh` | dscl-based shell detection |
 | `apply_platform_config` | `apply_macos_defaults`, `apply_spotlight_configs` |
@@ -147,7 +156,8 @@ Each `platform-*.sh` must define these functions:
 | Function | What it wraps |
 |----------|--------------|
 | `preflight_checks` | Linux check, not root, architecture |
-| `install_platform_packages` | `apt_install_base`, `install_extras_optional`, `install_go_official`, `install_fnm`, `install_neovim_appimage`, `install_lazygit`, `install_starship`, `install_fzf`, `install_ruby_build_deps`, `install_ruby_install`, `install_chruby`, `install_pbcopy_wrappers` |
+| `install_platform_foundation` | `apt_install_base`, `install_extras_optional` |
+| `install_platform_packages` | `install_go_official`, `install_fnm`, `install_neovim_appimage`, `install_lazygit`, `install_starship`, `install_fzf`, `install_ruby_build_deps`, `install_ruby_install`, `install_chruby`, `install_pbcopy_wrappers` |
 | `install_rust_and_cargo_tools` | rustup (common helper) + cargo for yazi, viu, tectonic |
 | `set_default_shell_zsh` | getent-based shell detection, `/etc/shells` management |
 | `apply_platform_config` | No-op |

@@ -142,8 +142,12 @@ fi
 section "Brew Cask Apps"
 cask_apps=(kitty tailscale)
 for app in "${cask_apps[@]}"; do
+  # Capitalise first letter for /Applications check (e.g. kitty → Kitty)
+  app_name="$(tr '[:lower:]' '[:upper:]' <<< "${app:0:1}")${app:1}"
   if brew list --cask "$app" &>/dev/null 2>&1; then
     pass "$app"
+  elif [[ -d "/Applications/${app_name}.app" ]]; then
+    pass "$app (found in /Applications)"
   else
     fail "$app not installed"
   fi

@@ -53,7 +53,7 @@ scripts/
 | 4. Shell Environment | oh-my-zsh, plugins, shell symlinks, set default shell | `common.sh` + `platform-*.sh` |
 | 5. Language Runtimes | Rust/rustup, uv, Deno, optionally Node.js (fnm + corepack) | `common.sh` + `platform-*.sh` |
 | 6. Dev Tooling | Neovim Python venv, ruff, llm + plugins, llm templates | `common.sh` |
-| 7. AI/Dev CLIs | Claude Code, OpenCode | `common.sh` |
+| 7. AI/Dev CLIs | Claude Code, Claude config symlinks, OpenCode | `common.sh` |
 | 8. Platform Config | macOS system defaults + Spotlight exclusions (no-op on Linux) | `platform-*.sh` |
 | 9. Post-install | Sanity checks for expected commands | `common.sh` + `platform-*.sh` |
 
@@ -109,6 +109,11 @@ Each `lib/platform-*.sh` must define these 8 functions:
 | XDG topic dirs | `~/.config/<topic>/` | `nvim/` -> `~/.config/nvim/` |
 | `zsh/env/` | `~/.zsh/env/` | Layered zsh environment |
 | `llm/templates.symlink/` | `<llm-data>/templates/` | llm template directory |
+| `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Claude Code global instructions |
+| `claude/commands/` | `~/.claude/commands/` | Claude Code slash commands |
+| `claude/docs/` | `~/.claude/docs/` | Claude Code reference docs |
+| `claude/hooks/` | `~/.claude/hooks/` | Claude Code hook scripts |
+| `claude/settings.json` | `~/.claude/settings.json` | Claude Code settings (hooks, plugins) |
 
 Existing files are backed up with a `.bak.<timestamp>` suffix before being replaced.
 
@@ -121,6 +126,9 @@ Existing files are backed up with a `.bak.<timestamp>` suffix before being repla
 | `CONFIG_DIR` | `$HOME/.config` | XDG config base directory |
 | `SKIP_DEFAULTS` | `0` | Set to `1` to skip macOS system defaults (mac only) |
 | `INSTALL_NODE` | `0` | Set to `1` to install Node.js LTS via fnm + corepack |
+| `NTFY_TOPIC` | *(unset)* | ntfy topic for Claude Code push notifications (required for ntfy) |
+| `NTFY_SERVER` | `https://ntfy.sh` | ntfy server URL (optional, for self-hosted) |
+| `NTFY_PRIORITY` | `high` | ntfy notification priority (min/low/default/high/urgent) |
 
 ## Topic Directory Structure
 
@@ -216,7 +224,7 @@ It checks:
 - Cargo/brew tools (viu, tectonic)
 - Python tooling (ruff, neovim python venv)
 - LLM tool + plugins + template symlinks
-- AI CLIs (claude, opencode)
+- AI CLIs (claude, opencode) and Claude Code config symlinks
 - Standard directories (`~/.local/bin`, `~/.config`)
 - Default shell
 - macOS defaults (spot-checks key settings)
@@ -242,7 +250,7 @@ Linux counterpart of the macOS audit. Same pass/fail/warn framework, same helper
 - Cargo tools (viu, tectonic, yazi)
 - Python tooling (ruff, neovim python venv)
 - LLM tool + plugins + template symlinks (at `~/.config` path)
-- AI CLIs (claude, opencode)
+- AI CLIs (claude, opencode) and Claude Code config symlinks
 - Standard directories (`~/.local/bin`, `~/.config`)
 - Default shell (via `getent passwd`)
 - pbcopy/pbpaste wrapper scripts

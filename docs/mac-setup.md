@@ -86,6 +86,7 @@ exec zsh
 | `nvim/`, `yazi/`, `tmux/`, `starship/`, `git/`, `kitty/` | `~/.config/<name>` |
 | `zsh/*.symlink` | `~/.zshrc`, `~/.zshenv`, `~/.zprofile` |
 | `llm/templates.symlink` | `~/.config/io.datasette.llm/templates` |
+| `claude/CLAUDE.md`, `commands/`, `docs/`, `hooks/`, `settings.json` | `~/.claude/<name>` |
 
 ## Post-Install Configuration
 
@@ -141,6 +142,17 @@ llm keys set anthropic
 llm keys set openai
 llm keys set gemini
 ```
+
+### Ntfy Push Notifications (optional)
+
+To receive push notifications on your phone when Claude Code needs input:
+
+1. Install the ntfy app ([iOS](https://apps.apple.com/app/ntfy/id1625396347) / [Android](https://play.google.com/store/apps/details?id=io.heckel.ntfy))
+2. Subscribe to a unique, hard-to-guess topic
+3. Add to `~/.zsh/env/optional/private.zsh`:
+   ```bash
+   export NTFY_TOPIC="your-unique-topic"
+   ```
 
 ## Optional: Additional Apps
 

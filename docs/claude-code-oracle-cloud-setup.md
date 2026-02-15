@@ -271,6 +271,8 @@ ssh -T git@github.com
 
 ## Part 6: Set Up Ntfy Push Notifications
 
+The dotfiles repo includes a pre-configured ntfy hook script and Claude Code settings. If you ran the bootstrap, both `~/.claude/hooks/ntfy-notify.sh` and `~/.claude/settings.json` are already symlinked from the repo. All you need to do is set the env var and install the phone app.
+
 ### 6.1 Install ntfy App on Phone
 
 - iOS: [App Store](https://apps.apple.com/app/ntfy/id1625396347)
@@ -285,100 +287,50 @@ In the ntfy app:
 
 > ⚠️ **Security Note:** Anyone who knows your topic name can send you notifications. Use something random/unguessable. For production use, consider self-hosting ntfy.
 
-### 6.3 Create the Notification Hook Script
+### 6.3 Set the Environment Variable
+
+Add to `~/.zsh/env/optional/private.zsh` (this file is gitignored, so your topic stays private):
 
 ```bash
-mkdir -p ~/.claude/hooks
+export NTFY_TOPIC="claude-yourname-abc123"  # ← your unique topic
 
-cat > ~/.claude/hooks/ntfy-notify.sh << 'EOF'
-#!/bin/bash
-
-# Configuration
-NTFY_TOPIC="claude-yourname-abc123"  # ← CHANGE THIS to your topic
-NTFY_SERVER="https://ntfy.sh"
-
-# Get the hook type from argument
-HOOK_TYPE="${1:-unknown}"
-
-# Read event data from stdin
-EVENT_DATA=$(cat)
-
-# Extract project name from environment or use default
-PROJECT_NAME="${CLAUDE_PROJECT_NAME:-Claude}"
-
-# Build notification based on hook type
-case "$HOOK_TYPE" in
-    question)
-        # Extract the question from AskUserQuestion tool
-        QUESTION=$(echo "$EVENT_DATA" | jq -r '.tool_input.questions[0].question // .tool_input.question // "needs your input"' 2>/dev/null)
-        TITLE="🤖 $PROJECT_NAME"
-        MESSAGE="$QUESTION"
-        PRIORITY="high"
-        TAGS="question"
-        ;;
-    tool)
-        TOOL_NAME=$(echo "$EVENT_DATA" | jq -r '.tool_name // "unknown"' 2>/dev/null)
-        TITLE="🔧 $PROJECT_NAME"
-        MESSAGE="Using tool: $TOOL_NAME"
-        PRIORITY="default"
-        TAGS="tools"
-        ;;
-    *)
-        TITLE="📢 $PROJECT_NAME"
-        MESSAGE="Claude needs attention"
-        PRIORITY="default"
-        TAGS="notification"
-        ;;
-esac
-
-# Send to ntfy
-curl -s \
-    -H "Title: $TITLE" \
-    -H "Priority: $PRIORITY" \
-    -H "Tags: $TAGS" \
-    -d "$MESSAGE" \
-    "$NTFY_SERVER/$NTFY_TOPIC" > /dev/null 2>&1 &
-
-# Exit successfully (don't block Claude)
-exit 0
-EOF
-
-chmod +x ~/.claude/hooks/ntfy-notify.sh
+# Optional overrides:
+# export NTFY_SERVER="https://ntfy.yourdomain.com"  # default: https://ntfy.sh
+# export NTFY_PRIORITY="urgent"                     # default: high
 ```
 
-### 6.4 Configure Claude Code Hook
+Then reload your shell:
+```bash
+source ~/.zshrc
+```
 
-Create or edit `~/.claude/settings.json`:
+### 6.4 Verify the Symlinks
+
+If you ran the bootstrap, these should already be in place:
 
 ```bash
-mkdir -p ~/.claude
+ls -la ~/.claude/hooks/ntfy-notify.sh  # → dotfiles/claude/hooks/ntfy-notify.sh
+ls -la ~/.claude/settings.json         # → dotfiles/claude/settings.json
+```
 
-cat > ~/.claude/settings.json << 'EOF'
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "AskUserQuestion",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/ntfy-notify.sh question"
-          }
-        ]
-      }
-    ]
-  }
-}
-EOF
+If not, run `symlink_claude_config` from the bootstrap or manually symlink:
+```bash
+ln -snf ~/dotfiles/claude/hooks ~/.claude/hooks
+ln -snf ~/dotfiles/claude/settings.json ~/.claude/settings.json
 ```
 
 ### 6.5 Test the Notification
 
 ```bash
-echo '{"tool_input":{"questions":[{"question":"Test notification - is this working?"}]}}' | ~/.claude/hooks/ntfy-notify.sh question
+NTFY_TOPIC=your-topic CLAUDE_HOOK_EVENT_DATA='{"tool_input":{"question":"Test notification"}}' ~/.claude/hooks/ntfy-notify.sh question
 ```
 
 You should receive a push notification on your phone!
+
+To verify the script exits silently when unconfigured (e.g., on a machine without ntfy):
+```bash
+unset NTFY_TOPIC && ~/.claude/hooks/ntfy-notify.sh question && echo "Exited cleanly"
+```
 
 ---
 
@@ -477,51 +429,9 @@ echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
 
 Now use `claude-project` instead of `claude` to get project-specific notifications.
 
-### Enhanced Notification for Task Completion
+### Task Completion Notifications
 
-Add a "Stop" hook to notify when Claude finishes:
-
-```bash
-cat > ~/.claude/settings.json << 'EOF'
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "AskUserQuestion",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/ntfy-notify.sh question"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '{\"reason\":\"completed\"}' | ~/.claude/hooks/ntfy-notify.sh complete"
-          }
-        ]
-      }
-    ]
-  }
-}
-EOF
-```
-
-Add to your notify script (before the `esac`):
-
-```bash
-    complete)
-        TITLE="✅ $PROJECT_NAME"
-        MESSAGE="Task completed!"
-        PRIORITY="high"
-        TAGS="white_check_mark"
-        ;;
-```
+The repo-managed `settings.json` already includes both a "PreToolUse" hook (for questions) and a "Stop" hook (for task completion). No manual configuration needed — just set `NTFY_TOPIC` and both notification types work automatically.
 
 ### Git Worktrees for Parallel Development
 
@@ -552,8 +462,9 @@ Now run separate Claude agents in separate tmux windows, each in their own workt
 
 ### Notifications not arriving
 - Test ntfy directly: `curl -d "test" ntfy.sh/your-topic`
-- Check the topic name matches in app and script
-- Verify the script is executable: `ls -la ~/.claude/hooks/`
+- Check the topic name matches in the app and your `NTFY_TOPIC` env var: `echo $NTFY_TOPIC`
+- Verify the script is executable and symlinked: `ls -la ~/.claude/hooks/ntfy-notify.sh`
+- Check the symlink is correct: `readlink ~/.claude/settings.json`
 
 ### "Out of capacity" when creating instance
 - Try different availability domain

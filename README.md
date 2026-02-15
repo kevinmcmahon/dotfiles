@@ -41,6 +41,7 @@ dotfiles/
 │   │   └── platform-linux.sh  # Linux-specific installs
 │   ├── audit-mac.sh           # verify macOS install state
 │   └── audit-linux.sh         # verify Linux install state
+├── claude/                    # Claude Code config (CLAUDE.md, hooks, settings)
 ├── git/                       # git config + hooks
 ├── zsh/                       # shell config
 ├── nvim/                      # Neovim config (XDG)
@@ -58,6 +59,7 @@ dotfiles/
 |----------|---------|--------|
 | `INSTALL_NODE` | `0` | Set to `1` to install Node.js LTS via fnm |
 | `SKIP_DEFAULTS` | `0` | Set to `1` to skip macOS `defaults write` commands |
+| `NTFY_TOPIC` | *(unset)* | Set to enable ntfy push notifications for Claude Code hooks |
 
 ### Adding a New Tool
 

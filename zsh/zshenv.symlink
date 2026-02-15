@@ -27,5 +27,11 @@ export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 
 export OLLAMA_HOST=http://localhost:11434
 
+# Mosh can't relay kitty's keyboard protocol sequences, causing garbled input.
+# Disable the keyboard protocol part of shell integration when running under mosh.
+if [[ -n "$MOSH" && -n "$KITTY_SHELL_INTEGRATION" ]]; then
+  export KITTY_SHELL_INTEGRATION="$KITTY_SHELL_INTEGRATION no-keyboard"
+fi
+
 # Don't let interactive Zsh config re-run this stuff
 export ZSHENV_LOADED=1

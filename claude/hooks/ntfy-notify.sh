@@ -1,6 +1,6 @@
 #!/bin/bash
-#
-# ntfy-notify.sh: Send push notifications via ntfy.sh
+# ABOUTME: Send push notifications via ntfy.sh when Claude Code hooks fire.
+# ABOUTME: Reads NTFY_TOPIC from env; exits silently if unset (safe on unconfigured machines).
 #
 # ntfy is the SIMPLEST option - no account, no API key, no setup.
 # Just pick a unique topic name and subscribe to it in the app.
@@ -8,31 +8,30 @@
 # Setup:
 #   1. Install ntfy app (iOS: App Store, Android: Play Store or F-Droid)
 #   2. Subscribe to your topic (use a random string for privacy)
-#   3. That's it. Seriously.
+#   3. Add to ~/.zsh/env/optional/private.zsh:
+#        export NTFY_TOPIC="your-unique-topic"
+#      Optionally also set:
+#        export NTFY_SERVER="https://ntfy.yourdomain.com"  # default: https://ntfy.sh
+#        export NTFY_PRIORITY="urgent"                     # default: high
 #
 # Security note: Anyone who knows your topic can send you notifications,
 # so use a random string like "claude-dev-a8f3k2m9x" not "john-notifications"
 #
 # Usage: Called automatically by Claude Code hooks
-# Test:  ./ntfy-notify.sh test
+# Test:  NTFY_TOPIC=test-topic ./ntfy-notify.sh test
 
 # ============================================
-# CONFIGURATION
+# CONFIGURATION (from environment)
 # ============================================
 
-# Option 1: Use the free public server (easiest)
-NTFY_SERVER="https://ntfy.sh"
+# NTFY_TOPIC is required — exit silently if unset so hooks don't break
+# on machines that haven't configured ntfy yet.
+if [[ -z "${NTFY_TOPIC:-}" ]]; then
+  exit 0
+fi
 
-# Option 2: Self-host ntfy and use your own server
-# NTFY_SERVER="https://ntfy.yourdomain.com"
-
-# Your topic name - make it unique and hard to guess!
-# Example: claude-dev-$(openssl rand -hex 4) → claude-dev-a8f3k2m9
-NTFY_TOPIC="claude-dev-a8f3k2m9"
-
-# Priority: min, low, default, high, urgent
-# "high" will make noise even in Do Not Disturb on some phones
-PRIORITY="high"
+NTFY_SERVER="${NTFY_SERVER:-https://ntfy.sh}"
+PRIORITY="${NTFY_PRIORITY:-high}"
 
 # ============================================
 # SCRIPT LOGIC

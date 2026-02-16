@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+"""
+pplx-search — lightweight Perplexity CLI for use with Claude Code.
+
+Usage:
+    pplx-search "your query here"
+    pplx-search --model sonar-pro "your query here"
+    pplx-search --deep "your query here"           # deep research mode
+    pplx-search --reason "your query here"          # reasoning mode
+    echo "query" | pplx-search --stdin
+
+Requires: PERPLEXITY_API_KEY environment variable.
+No dependencies beyond Python 3.12+ stdlib.
+"""
+
+import json
+import os
+import sys
+import urllib.request
+import urllib.error
+import argparse
+import textwrap
+
+API_URL = "https://api.perplexity.ai/chat/completions"
+
+MODELS = {
+    "sonar":           "sonar",
+    "sonar-pro":       "sonar-pro",
+    "deep-research":   "sonar-deep-research",
+    "reasoning":       "sonar-reasoning-pro",
+}
+
+DEFAULT_MODEL = "sonar-pro"
+
+
+def get_api_key():
+    key = os.environ.get("PERPLEXITY_API_KEY")
+    if not key:
+        print("ERROR: PERPLEXITY_API_KEY environment variable not set.", file=sys.stderr)
+        print("Get a key at: https://www.perplexity.ai/settings/api", file=sys.stderr)
+        sys.exit(1)
+    return key
+
+
+def search(query: str, model: str = DEFAULT_MODEL, system_prompt: str | None = None) -> dict:
+    """Call the Perplexity API and return the parsed response."""
+    api_key = get_api_key()
+
+    if system_prompt is None:
+        system_prompt = (
+            "Be precise and concise. Provide factual information with sources. "
+            "Use markdown formatting for readability."
+        )
+
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": query},
+        ],
+    }
+
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        API_URL,
+        data=data,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        print(f"ERROR: Perplexity API returned {e.code}: {body}", file=sys.stderr)
+        sys.exit(1)
+    except urllib.error.URLError as e:
+        print(f"ERROR: Could not reach Perplexity API: {e.reason}", file=sys.stderr)
+        sys.exit(1)
+
+
+def format_response(resp: dict) -> str:
+    """Format the API response as clean markdown output."""
+    lines = []
+
+    # Main answer
+    content = resp.get("choices", [{}])[0].get("message", {}).get("content", "")
+    if not content:
+        return "No response received."
+
+    lines.append(content.strip())
+
+    # Citations
+    citations = resp.get("citations", [])
+    if citations:
+        lines.append("")
+        lines.append("---")
+        lines.append("**Sources:**")
+        for i, url in enumerate(citations, 1):
+            lines.append(f"  [{i}] {url}")
+
+    # Token usage (compact, on one line)
+    usage = resp.get("usage", {})
+    if usage:
+        prompt_tok = usage.get("prompt_tokens", 0)
+        completion_tok = usage.get("completion_tokens", 0)
+        lines.append("")
+        lines.append(f"_[tokens: {prompt_tok} in / {completion_tok} out]_")
+
+    return "\n".join(lines)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Search the web via Perplexity AI.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=textwrap.dedent("""\
+            models:
+              sonar             fast search (default for quick lookups)
+              sonar-pro         deeper search with better synthesis (default)
+              deep-research     comprehensive multi-step research
+              reasoning         complex analytical / reasoning tasks
+
+            examples:
+              pplx-search "latest rust async improvements"
+              pplx-search --model sonar "quick fact check"
+              pplx-search --deep "comprehensive comparison of state management in React 2025"
+              pplx-search --reason "why is borrow checker needed if we have lifetimes"
+        """),
+    )
+    parser.add_argument("query", nargs="*", help="Search query")
+    parser.add_argument(
+        "-m", "--model",
+        choices=list(MODELS.keys()),
+        default=None,
+        help="Model to use (default: sonar-pro)",
+    )
+    parser.add_argument("--deep", action="store_true", help="Use deep-research model")
+    parser.add_argument("--reason", action="store_true", help="Use reasoning model")
+    parser.add_argument("--stdin", action="store_true", help="Read query from stdin")
+    parser.add_argument("--json", action="store_true", help="Output raw JSON response")
+    parser.add_argument(
+        "--system", type=str, default=None,
+        help="Custom system prompt",
+    )
+
+    args = parser.parse_args()
+
+    # Determine model
+    if args.deep:
+        model = MODELS["deep-research"]
+    elif args.reason:
+        model = MODELS["reasoning"]
+    elif args.model:
+        model = MODELS[args.model]
+    else:
+        model = MODELS[DEFAULT_MODEL]
+
+    # Get query
+    if args.stdin:
+        query = sys.stdin.read().strip()
+    elif args.query:
+        query = " ".join(args.query)
+    else:
+        parser.print_help()
+        sys.exit(1)
+
+    if not query:
+        print("ERROR: Empty query.", file=sys.stderr)
+        sys.exit(1)
+
+    # Execute search
+    resp = search(query, model=model, system_prompt=args.system)
+
+    # Output
+    if args.json:
+        print(json.dumps(resp, indent=2))
+    else:
+        print(format_response(resp))
+
+
+if __name__ == "__main__":
+    main()

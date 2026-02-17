@@ -50,5 +50,6 @@
     "feature-dev@claude-plugins-official": true,
     "playwright@claude-plugins-official": true
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "skipDangerousModePermissionPrompt": true
 }

@@ -24,6 +24,12 @@
 # CONFIGURATION (from environment)
 # ============================================
 
+# Claude Code hooks don't inherit the parent shell's environment,
+# so source the private env file if vars aren't already set.
+if [[ -z "${NTFY_TOPIC:-}" && -f ~/.zsh/env/optional/private.zsh ]]; then
+  source ~/.zsh/env/optional/private.zsh
+fi
+
 # NTFY_TOPIC is required — exit silently if unset so hooks don't break
 # on machines that haven't configured ntfy yet.
 if [[ -z "${NTFY_TOPIC:-}" ]]; then

@@ -19,13 +19,24 @@
         ]
       }
     ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/ntfy-notify.sh question"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"reason\":\"completed\"}' | ~/.claude/hooks/ntfy-notify.sh complete"
+            "command": "~/.claude/hooks/ntfy-notify.sh complete"
           }
         ]
       }

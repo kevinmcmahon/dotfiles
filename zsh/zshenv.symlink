@@ -33,5 +33,8 @@ if [[ -n "$MOSH" && -n "$KITTY_SHELL_INTEGRATION" ]]; then
   export KITTY_SHELL_INTEGRATION="$KITTY_SHELL_INTEGRATION no-keyboard"
 fi
 
+# Load private/unversioned env vars (needed by non-interactive shells like Claude hooks)
+[[ -f "$HOME/.zsh/env/optional/private.zsh" ]] && source "$HOME/.zsh/env/optional/private.zsh"
+
 # Don't let interactive Zsh config re-run this stuff
 export ZSHENV_LOADED=1

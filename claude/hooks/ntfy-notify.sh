@@ -40,9 +40,10 @@ PRIORITY="${NTFY_PRIORITY:-high}"
 EVENT_TYPE="${1:-unknown}"
 EVENT_DATA="${CLAUDE_HOOK_EVENT_DATA:-}"
 PROJECT_NAME=$(basename "$PWD")
+HOST_NAME="${NTFY_HOST_LABEL:-$(hostname -s)}"
 
 # Build the message
-TITLE="🤖 $PROJECT_NAME"
+TITLE="🤖 $HOST_NAME: $PROJECT_NAME"
 MESSAGE="needs your input"
 
 if [[ -n "$EVENT_DATA" ]]; then
@@ -61,9 +62,9 @@ fi
 
 # Add emoji based on event type
 case "$EVENT_TYPE" in
-    question) TITLE="❓ $PROJECT_NAME" ;;
-    error)    TITLE="❌ $PROJECT_NAME"; MESSAGE="Error occurred" ;;
-    complete) TITLE="✅ $PROJECT_NAME"; MESSAGE="Task complete" ;;
+    question) TITLE="❓ $HOST_NAME: $PROJECT_NAME" ;;
+    error)    TITLE="❌ $HOST_NAME: $PROJECT_NAME"; MESSAGE="Error occurred" ;;
+    complete) TITLE="✅ $HOST_NAME: $PROJECT_NAME"; MESSAGE="Task complete" ;;
 esac
 
 # Send to ntfy

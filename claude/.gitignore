@@ -5,3 +5,4 @@ projects
 ide
 
 *.db
+*.bak.*

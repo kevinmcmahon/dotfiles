@@ -7,6 +7,8 @@
       "Bash(grep:*)"
     ]
   },
+  "model": "opus",
+  "enableAllProjectMcpServers": true,
   "hooks": {
     "PreToolUse": [
       {
@@ -42,20 +44,11 @@
       }
     ]
   },
-  "model": "opus",
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [],
   "enabledPlugins": {
-    "superpowers@superpowers-marketplace": true,
     "frontend-design@claude-plugins-official": true,
-    "swift-lsp@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
+    "context7@claude-plugins-official": false,
     "feature-dev@claude-plugins-official": true,
     "playwright@claude-plugins-official": true
   },
-  "alwaysThinkingEnabled": true,
-  "skipDangerousModePermissionPrompt": true,
-  "feedbackSurveyState": {
-    "lastShownTime": 1754073719691
-  }
+  "alwaysThinkingEnabled": true
 }

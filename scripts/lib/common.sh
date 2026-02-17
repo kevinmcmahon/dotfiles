@@ -192,7 +192,7 @@ symlink_claude_config() {
   # Symlink individual items — NOT the whole directory, because ~/.claude
   # also contains machine-local state (mcp.json, settings.local.json,
   # credentials, cache, history, etc.).
-  local items="CLAUDE.md claude-code-guidelines.md settings.json claude_desktop_config.json mcp.json commands docs hooks skills"
+  local items="CLAUDE.md settings.json claude_desktop_config.json mcp.json commands docs hooks skills"
 
   for item in $items; do
     local src="$claude_src/$item"

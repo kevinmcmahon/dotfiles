@@ -181,6 +181,29 @@ symlink_xdg_dirs() {
   fi
 }
 
+symlink_claude_dirs() {
+  log "Symlinking Claude Code directories (commands, hooks, skills, docs)"
+
+  local claude_home="$HOME/.claude"
+  local claude_src="$DOTFILES_DIR/claude"
+
+  mkdir -p "$claude_home"
+
+  for d in commands hooks skills docs; do
+    local src="$claude_src/$d"
+    local dst="$claude_home/$d"
+    if [ -d "$src" ]; then
+      if [ -e "$dst" ] && [ ! -L "$dst" ]; then
+        backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
+        warn "Backing up existing $dst -> $backup"
+        mv "$dst" "$backup"
+      fi
+      ln -snf "$src" "$dst"
+      log "Linked $dst -> $src"
+    fi
+  done
+}
+
 # ==============================================================================
 # Shell
 # ==============================================================================

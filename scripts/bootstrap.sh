@@ -52,7 +52,6 @@ main() {
   symlink_dotfiles_symlink_pattern
   ensure_git_identity_templates
   symlink_xdg_dirs
-  symlink_claude_dirs
 
   # Phase 3 — Platform Packages (brew bundle needs BootstrapBrewfile symlink)
   install_platform_packages
@@ -75,6 +74,7 @@ main() {
 
   # Phase 7 — AI/Dev CLIs
   install_claude_code
+  symlink_claude_config
   install_opencode
 
   # Phase 8 — Platform Configuration

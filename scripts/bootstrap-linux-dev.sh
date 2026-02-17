@@ -598,6 +598,37 @@ install_claude_code() {
   log "claude installed: $(claude --version 2>/dev/null || echo 'WARN: claude not found in PATH')"
 }
 
+symlink_claude_config() {
+  log "Symlinking Claude Code configs into ~/.claude"
+
+  local claude_src="$DOTFILES_DIR/claude"
+  local claude_dst="$HOME/.claude"
+
+  mkdir -p "$claude_dst"
+
+  # Symlink individual items — NOT the whole directory, because ~/.claude
+  # also contains machine-local state (mcp.json, settings.local.json,
+  # credentials, cache, history, etc.).
+  local items="CLAUDE.md commands docs hooks skills settings.json"
+
+  for item in $items; do
+    local src="$claude_src/$item"
+    local dst="$claude_dst/$item"
+    if [ -e "$src" ] || [ -d "$src" ]; then
+      if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+        continue
+      fi
+      if [ -e "$dst" ] || [ -L "$dst" ]; then
+        backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
+        warn "Backing up existing $dst -> $backup"
+        mv "$dst" "$backup"
+      fi
+      ln -snf "$src" "$dst"
+      log "Linked $dst -> $src"
+    fi
+  done
+}
+
 install_deno() {
   log "Installing Deno"
   if need_cmd deno || [[ -x "$HOME/.deno/bin/deno" ]]; then
@@ -891,6 +922,7 @@ main() {
 
   # Claude Code CLI
   install_claude_code
+  symlink_claude_config
 
   # OpenCode CLI
   install_opencode
@@ -922,6 +954,9 @@ main() {
   log "  5. Install Ruby with ruby-install:"
   log "     ruby-install ruby 3.3.6"
   log "     (or set RUBY_VERSION=3.3.6 before bootstrap)"
+  log "  6. (Optional) Set up ntfy push notifications for Claude Code:"
+  log "     Add to ~/.zsh/env/optional/private.zsh:"
+  log "       export NTFY_TOPIC=\"your-unique-topic\""
   log ""
   log "NOTE: If you saw any warnings above, review them before proceeding."
   log "Optional: Install keychain manually if you need SSH key management:"

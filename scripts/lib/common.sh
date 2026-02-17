@@ -181,20 +181,28 @@ symlink_xdg_dirs() {
   fi
 }
 
-symlink_claude_dirs() {
-  log "Symlinking Claude Code directories (commands, hooks, skills, docs)"
+symlink_claude_config() {
+  log "Symlinking Claude Code configs into ~/.claude"
 
-  local claude_home="$HOME/.claude"
   local claude_src="$DOTFILES_DIR/claude"
+  local claude_dst="$HOME/.claude"
 
-  mkdir -p "$claude_home"
+  mkdir -p "$claude_dst"
 
-  for d in commands hooks skills docs; do
-    local src="$claude_src/$d"
-    local dst="$claude_home/$d"
-    if [ -d "$src" ]; then
-      if [ -e "$dst" ] && [ ! -L "$dst" ]; then
-        backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
+  # Symlink individual items — NOT the whole directory, because ~/.claude
+  # also contains machine-local state (mcp.json, settings.local.json,
+  # credentials, cache, history, etc.).
+  local items="CLAUDE.md commands docs hooks skills settings.json"
+
+  for item in $items; do
+    local src="$claude_src/$item"
+    local dst="$claude_dst/$item"
+    if [ -e "$src" ] || [ -d "$src" ]; then
+      if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+        continue
+      fi
+      if [ -e "$dst" ] || [ -L "$dst" ]; then
+        local backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
         warn "Backing up existing $dst -> $backup"
         mv "$dst" "$backup"
       fi

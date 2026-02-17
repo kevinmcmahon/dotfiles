@@ -125,6 +125,9 @@ print_next_steps() {
   log "     llm keys set gemini"
   log "  8. (Optional) Install remaining Brewfile apps:"
   log "     brew bundle --file=~/.Brewfile"
+  log "  9. (Optional) Set up ntfy push notifications for Claude Code:"
+  log "     Add to ~/.zsh/env/optional/private.zsh:"
+  log "       export NTFY_TOPIC=\"your-unique-topic\""
   log ""
   log "NOTE: If you saw any warnings above, review them before proceeding."
 }

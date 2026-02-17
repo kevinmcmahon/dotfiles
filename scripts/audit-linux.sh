@@ -308,6 +308,12 @@ section "LLM Templates"
 llm_data_dir="$HOME/.config/io.datasette.llm"
 check_symlink "$llm_data_dir/templates" "$DOTFILES_DIR/llm/templates.symlink" "llm templates"
 
+# --- Claude Code config ---
+section "Claude Code Config"
+for item in CLAUDE.md commands docs hooks settings.json; do
+  check_symlink "$HOME/.claude/$item" "$DOTFILES_DIR/claude/$item" "~/.claude/$item"
+done
+
 # --- AI CLIs ---
 section "AI CLIs"
 check_cmd claude "Claude Code"

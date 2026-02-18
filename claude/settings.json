@@ -23,11 +23,20 @@
     ],
     "Notification": [
       {
-        "matcher": "",
+        "matcher": "permission_prompt",
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/ntfy-notify.sh question"
+            "command": "~/.claude/hooks/ntfy-notify.sh permission"
+          }
+        ]
+      },
+      {
+        "matcher": "idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/ntfy-notify.sh idle"
           }
         ]
       }

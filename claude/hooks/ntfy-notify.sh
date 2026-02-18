@@ -12,13 +12,18 @@
 #        export NTFY_TOPIC="your-unique-topic"
 #      Optionally also set:
 #        export NTFY_SERVER="https://ntfy.yourdomain.com"  # default: https://ntfy.sh
-#        export NTFY_PRIORITY="urgent"                     # default: high
 #
 # Security note: Anyone who knows your topic can send you notifications,
 # so use a random string like "claude-dev-a8f3k2m9x" not "john-notifications"
 #
-# Usage: Called automatically by Claude Code hooks
-# Test:  NTFY_TOPIC=test-topic ./ntfy-notify.sh test
+# Hook event types and their triggers:
+#   question   - PreToolUse/AskUserQuestion: Claude asks a clarifying question
+#   permission - Notification/permission_prompt: a tool needs your approval
+#   idle       - Notification/idle_prompt: Claude has been waiting 60s+ for input
+#   complete   - Stop: Claude finished its task
+#
+# Usage: Called automatically by Claude Code hooks (event data arrives on stdin)
+# Test:  echo '{"tool_input":{"question":"Use React or Vue?"}}' | NTFY_TOPIC=test-topic ./ntfy-notify.sh question
 
 # ============================================
 # CONFIGURATION (from environment)
@@ -37,44 +42,113 @@ if [[ -z "${NTFY_TOPIC:-}" ]]; then
 fi
 
 NTFY_SERVER="${NTFY_SERVER:-https://ntfy.sh}"
-PRIORITY="${NTFY_PRIORITY:-high}"
 
 # ============================================
-# SCRIPT LOGIC
+# DEDUPLICATION
+# ============================================
+
+DEDUP_DIR="/tmp/ntfy-claude-dedup"
+DEDUP_WINDOW=15
+
+mkdir -p "$DEDUP_DIR"
+
+# Remove stale lockfiles (older than 60s)
+find "$DEDUP_DIR" -type f -mmin +1 -delete 2>/dev/null
+
+dedup_check() {
+  local key="$1"
+  local hash
+  hash=$(printf '%s' "$key" | md5 -q 2>/dev/null || printf '%s' "$key" | md5sum | cut -d' ' -f1)
+  local lockfile="$DEDUP_DIR/$hash"
+
+  if [[ -f "$lockfile" ]]; then
+    local now file_mtime age
+    now=$(date +%s)
+    file_mtime=$(stat -f%m "$lockfile" 2>/dev/null || stat -c%Y "$lockfile" 2>/dev/null || echo 0)
+    age=$(( now - file_mtime ))
+    if (( age < DEDUP_WINDOW )); then
+      return 1
+    fi
+  fi
+
+  touch "$lockfile"
+  return 0
+}
+
+# ============================================
+# PARSE EVENT
 # ============================================
 
 EVENT_TYPE="${1:-unknown}"
-EVENT_DATA="${CLAUDE_HOOK_EVENT_DATA:-}"
+EVENT_JSON=$(cat)
+
 PROJECT_NAME=$(basename "$PWD")
 HOST_NAME="${NTFY_HOST_LABEL:-$(hostname -s)}"
 
-# Build the message
-TITLE="🤖 $HOST_NAME: $PROJECT_NAME"
-MESSAGE="needs your input"
+# ============================================
+# BUILD MESSAGE PER EVENT TYPE
+# ============================================
 
-if [[ -n "$EVENT_DATA" ]]; then
-    QUESTION=$(echo "$EVENT_DATA" | jq -r '
-        .tool_input.question // 
-        .tool_input.questions[0].question // 
-        .tool_input.message //
-        "needs your input"
-    ' 2>/dev/null)
-    
-    if [[ -n "$QUESTION" && "$QUESTION" != "null" ]]; then
-        [[ ${#QUESTION} -gt 200 ]] && QUESTION="${QUESTION:0:200}..."
-        MESSAGE="$QUESTION"
-    fi
-fi
-
-# Add emoji based on event type
 case "$EVENT_TYPE" in
-    question) TITLE="❓ $HOST_NAME: $PROJECT_NAME" ;;
-    error)    TITLE="❌ $HOST_NAME: $PROJECT_NAME"; MESSAGE="Error occurred" ;;
-    complete) TITLE="✅ $HOST_NAME: $PROJECT_NAME"; MESSAGE="Task complete" ;;
+  question)
+    PRIORITY="high"
+    ICON="❓"
+    QUESTION=$(echo "$EVENT_JSON" | jq -r '
+      .tool_input.question //
+      .tool_input.questions[0].question //
+      .tool_input.message //
+      empty
+    ' 2>/dev/null)
+    if [[ -n "$QUESTION" && "$QUESTION" != "null" ]]; then
+      [[ ${#QUESTION} -gt 200 ]] && QUESTION="${QUESTION:0:200}..."
+      MESSAGE="$QUESTION"
+    else
+      MESSAGE="Needs your input"
+    fi
+    ;;
+
+  permission)
+    PRIORITY="urgent"
+    ICON="🔐"
+    # Notification events provide a message field with the prompt text
+    TOOL_MSG=$(echo "$EVENT_JSON" | jq -r '.message // empty' 2>/dev/null)
+    if [[ -n "$TOOL_MSG" && "$TOOL_MSG" != "null" ]]; then
+      [[ ${#TOOL_MSG} -gt 200 ]] && TOOL_MSG="${TOOL_MSG:0:200}..."
+      MESSAGE="$TOOL_MSG"
+    else
+      MESSAGE="A tool needs your approval"
+    fi
+    ;;
+
+  idle)
+    PRIORITY="default"
+    ICON="💤"
+    MESSAGE="Waiting for your input"
+    ;;
+
+  complete)
+    PRIORITY="default"
+    ICON="✅"
+    MESSAGE="Task finished"
+    ;;
+
+  *)
+    PRIORITY="default"
+    ICON="🤖"
+    MESSAGE="Hook fired: $EVENT_TYPE"
+    ;;
 esac
 
-# Send to ntfy
-# The magic: just POST to ntfy.sh/your-topic
+TITLE="$ICON $HOST_NAME: $PROJECT_NAME"
+
+# ============================================
+# SEND (with dedup guard)
+# ============================================
+
+if ! dedup_check "${EVENT_TYPE}:${MESSAGE}"; then
+  exit 0
+fi
+
 curl -sf \
     -H "Title: $TITLE" \
     -H "Priority: $PRIORITY" \

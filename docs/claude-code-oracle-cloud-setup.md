@@ -1,4 +1,4 @@
-# Claude Code On-The-Go: Oracle Cloud Always Free + Ntfy Edition
+# Claude Code On-The-Go: Oracle Cloud Pay-as-you-Go + Ntfy Edition
 
 Run Claude Code from your phone with push notifications when Claude needs input.
 
@@ -10,24 +10,102 @@ Phone (Termius) → mosh → Tailscale → Oracle ARM VM → Claude Code
 
 ## Prerequisites
 
-- Oracle Cloud account (Pay-as-you-Go with budget alerts ✓)
+- Oracle Cloud account (Pay-as-you-Go — see Part 1 for setup)
 - Tailscale account (free tier works fine)
 - Termius on your phone
 - ntfy app on your phone
 
 ---
 
-## Part 1: Create the Oracle Cloud Instance
+## Part 1: Oracle Cloud Account & Billing Setup
 
-### 1.1 Navigate to Compute
+The Always Free tier ARM instances are notoriously hard to provision on a plain free-tier account due to capacity limits. A **Pay-as-you-Go (PAYG)** account gets priority access to the same Always Free resources — you won't be charged as long as you stay within the free limits.
+
+### Always Free Limits (what costs $0 on PAYG)
+
+| Resource | Free Allowance |
+|----------|---------------|
+| ARM VM.Standard.A1.Flex | **4 OCPUs + 24 GB RAM** total (across up to 4 instances) |
+| AMD VM.Standard.E2.1.Micro | 2 instances (1/8 OCPU + 1 GB each) |
+| Boot volumes | Up to **200 GB** total block storage (up to 4 volumes) |
+| Outbound data transfer | **10 TB/month** |
+| VCN, subnets, gateways | Included |
+| Flexible load balancer | 1 instance |
+| Object storage | 20 GB |
+| Autonomous Database | 2 instances (1 OCPU + 20 GB each) |
+
+> These limits apply **indefinitely** in your home region — they don't expire after 30 days.
+
+### 1.1 Create an Oracle Cloud Account
+
+1. Go to [oracle.com/cloud/free](https://www.oracle.com/cloud/free/) and click **Start for free**
+2. Fill in your details and choose a **home region** (this is where your Always Free resources live — pick one close to you)
+3. Add a credit card for verification (you won't be charged during the 30-day trial)
+
+### 1.2 Upgrade to Pay-as-you-Go
+
+Upgrading unlocks better capacity availability for ARM instances. You keep all Always Free resources and are only charged for usage **beyond** the free limits.
+
+1. Log in to the [OCI Console](https://cloud.oracle.com/)
+2. Look for the **Upgrade** banner at the top of the console home page and click it
+   - If you don't see the banner, click the **hamburger menu** (top-left) → **Billing & Cost Management** → **Upgrade and Manage Payment**
+3. Select **Pay As You Go** (no commitment, no minimums)
+4. Enter a valid credit/debit card and confirm
+5. Your account status updates to paid (usually immediate)
+
+> Once upgraded, you **cannot** revert to free-tier-only. But all Always Free resources remain free forever — the card is only charged if you create resources beyond the free limits.
+
+### 1.3 Set Up Budget Alerts
+
+OCI does not support hard spending caps that automatically stop charges. Budgets provide **email notifications** so you can catch unexpected costs early and delete the offending resources.
+
+1. Open the **hamburger menu** → **Billing & Cost Management** → **Cost Management** → **Budgets**
+2. Click **Create Budget**:
+   - **Target type:** Compartment (select your root compartment to cover everything)
+   - **Name:** `free-tier-guard` (or whatever you prefer)
+   - **Monthly budget amount:** `$1.00` (any spend means you've exceeded free limits)
+   - **Start day:** 1
+3. Click **Create**
+4. On the budget details page, go to the **Budget Alert Rules** tab → **Create Budget Alert Rule**:
+
+| Field | Value |
+|-------|-------|
+| Threshold metric | **Actual Spend** |
+| Threshold type | **Absolute amount** |
+| Threshold | `$0.01` |
+| Email recipients | your email address |
+
+5. Click **Create** to save the alert rule
+6. **(Recommended)** Add a second alert rule with **Forecast Spend** at `$1.00` to catch runaway usage before it hits
+
+You'll receive an email the moment any charge appears on your account. The correct response is to log in and delete whatever resource is causing the charge.
+
+> **Tip:** Add multiple alert rules at different thresholds (e.g., $0.01 actual, $1 forecast, $5 actual) for layered protection.
+
+### 1.4 Verify Your Free Tier Status
+
+After upgrading, confirm you have Always Free capacity:
+
+1. **Hamburger menu** → **Governance & Administration** → **Tenancy Details**
+2. Check that your home region matches what you chose at sign-up
+3. **Hamburger menu** → **Compute** → **Instances** → **Create Instance** → **Change shape**
+4. Select **Ampere** → **VM.Standard.A1.Flex** — it should show "Always Free eligible"
+
+---
+
+## Part 2: Create the Oracle Cloud Instance
+
+> **Prefer Terraform?** See [oracle-cloud-terraform.md](oracle-cloud-terraform.md) for IaC equivalents of Parts 2-3, then skip to Part 3.5 (Tailscale).
+
+### 2.1 Navigate to Compute
 
 1. Go to Oracle Cloud Console → Compute → Instances → Create Instance
 
-### 1.2 Configure the Instance
+### 2.2 Configure the Instance
 
 **Name:** `claude-dev` (or whatever you prefer)
 
-**Placement:** Leave default (your home region)
+**Placement:** Leave default (your home region — Always Free resources only work here)
 
 **Image and Shape:**
 - Click "Edit" in the Image and shape section
@@ -36,14 +114,19 @@ Phone (Termius) → mosh → Tailscale → Oracle ARM VM → Claude Code
   - Instance type: **Virtual machine**
   - Shape series: **Ampere** (ARM-based processor)
   - Shape name: **VM.Standard.A1.Flex**
-  - OCPUs: **4**
-  - Memory: **24 GB**
+  - OCPUs: **4** (uses your full Always Free allowance)
+  - Memory: **24 GB** (uses your full Always Free allowance)
 
 > ⚠️ **Capacity Issues:** If you get "Out of capacity" errors, try:
 > - Different availability domain (if your region has multiple)
 > - Try during off-peak hours (early morning UTC)
 > - Reduce to 2 OCPUs / 12GB initially, resize later
 > - Use the [OCI Instance Notifier](https://github.com/hitrov/oci-arm-host-capacity) script
+> - PAYG accounts have significantly better success rates than free-tier-only accounts
+
+**Boot Volume:**
+- Leave default (typically 46.6 GB) — this stays within the 200 GB free block storage limit
+- Do **not** create additional block volumes unless you're tracking your total against the 200 GB cap
 
 **Networking:**
 - Select your VCN or create a new one
@@ -54,27 +137,27 @@ Phone (Termius) → mosh → Tailscale → Oracle ARM VM → Claude Code
 - Generate or upload your SSH key pair
 - **Save the private key** - you'll need it for initial setup
 
-### 1.3 Create the Instance
+### 2.3 Create the Instance
 
 Click "Create" and wait for it to be running (usually 1-2 minutes).
 
 ---
 
-## Part 2: Initial Security Setup
+## Part 3: Initial Security Setup
 
-### 2.1 Connect via SSH (temporary, for initial setup)
+### 3.1 Connect via SSH (temporary, for initial setup)
 
 ```bash
 ssh -i /path/to/your-key.pem ubuntu@<PUBLIC_IP>
 ```
 
-### 2.2 Update the System
+### 3.2 Update the System
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
-### 2.3 Install Essential Packages
+### 3.3 Install Essential Packages
 
 ```bash
 sudo apt install -y \
@@ -89,7 +172,7 @@ sudo apt install -y \
   ufw
 ```
 
-### 2.4 Install Tailscale
+### 3.4 Install Tailscale
 
 ```bash
 curl -fsSL https://tailscale.com/install.sh | sh
@@ -105,7 +188,7 @@ tailscale ip -4
 
 Note this IP (e.g., `100.x.y.z`) - this is how you'll connect from now on.
 
-### 2.5 Configure Firewall (UFW)
+### 3.5 Configure Firewall (UFW)
 
 ```bash
 # Reset to defaults
@@ -125,7 +208,7 @@ sudo ufw allow in on tailscale0 to any port 60000:61000 proto udp
 sudo ufw enable
 ```
 
-### 2.6 Lock Down Oracle Cloud Security List
+### 3.6 Lock Down Oracle Cloud Security List
 
 In Oracle Cloud Console:
 1. Go to Networking → Virtual Cloud Networks → Your VCN
@@ -136,14 +219,14 @@ In Oracle Cloud Console:
 
 > The instance will now only be accessible via Tailscale. No public SSH.
 
-### 2.7 Configure fail2ban
+### 3.7 Configure fail2ban
 
 ```bash
 sudo systemctl enable fail2ban
 sudo systemctl start fail2ban
 ```
 
-### 2.8 Test Tailscale Connection
+### 3.8 Test Tailscale Connection
 
 **From your local machine (with Tailscale installed):**
 ```bash
@@ -154,22 +237,22 @@ If this works, your public SSH is no longer needed.
 
 ---
 
-## Part 3: Install Claude Code
+## Part 4: Install Claude Code
 
-### 3.1 Install Node.js (required for Claude Code)
+### 4.1 Install Node.js (required for Claude Code)
 
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install -y nodejs
 ```
 
-### 3.2 Install Claude Code
+### 4.2 Install Claude Code
 
 ```bash
 npm install -g @anthropic-ai/claude-code
 ```
 
-### 3.3 Authenticate Claude Code
+### 4.3 Authenticate Claude Code
 
 ```bash
 claude
@@ -179,9 +262,9 @@ Follow the prompts to authenticate with your Anthropic account.
 
 ---
 
-## Part 4: Session Persistence with tmux
+## Part 5: Session Persistence with tmux
 
-### 4.1 Configure tmux
+### 5.1 Configure tmux
 
 Create `~/.tmux.conf`:
 
@@ -220,7 +303,7 @@ bind r source-file ~/.tmux.conf \; display "Reloaded!"
 EOF
 ```
 
-### 4.2 Auto-attach to tmux on Login
+### 5.2 Auto-attach to tmux on Login
 
 Add to your `~/.bashrc` (or `~/.zshrc` if you switch shells):
 
@@ -236,17 +319,17 @@ EOF
 
 ---
 
-## Part 5: Set Up Git SSH Keys
+## Part 6: Set Up Git SSH Keys
 
 Since mosh doesn't forward SSH agent, you'll need keys on the VM for git operations.
 
-### 5.1 Generate SSH Key on VM
+### 6.1 Generate SSH Key on VM
 
 ```bash
 ssh-keygen -t ed25519 -C "your-email@example.com"
 ```
 
-### 5.2 Add to GitHub
+### 6.2 Add to GitHub
 
 ```bash
 cat ~/.ssh/id_ed25519.pub
@@ -254,14 +337,14 @@ cat ~/.ssh/id_ed25519.pub
 
 Copy this and add it to GitHub: Settings → SSH and GPG keys → New SSH key
 
-### 5.3 Configure Git
+### 6.3 Configure Git
 
 ```bash
 git config --global user.name "Your Name"
 git config --global user.email "your-email@example.com"
 ```
 
-### 5.4 Test Connection
+### 6.4 Test Connection
 
 ```bash
 ssh -T git@github.com
@@ -269,16 +352,16 @@ ssh -T git@github.com
 
 ---
 
-## Part 6: Set Up Ntfy Push Notifications
+## Part 7: Set Up Ntfy Push Notifications
 
 The dotfiles repo includes a pre-configured ntfy hook script and Claude Code settings. If you ran the bootstrap, both `~/.claude/hooks/ntfy-notify.sh` and `~/.claude/settings.json` are already symlinked from the repo. All you need to do is set the env var and install the phone app.
 
-### 6.1 Install ntfy App on Phone
+### 7.1 Install ntfy App on Phone
 
 - iOS: [App Store](https://apps.apple.com/app/ntfy/id1625396347)
 - Android: [Play Store](https://play.google.com/store/apps/details?id=io.heckel.ntfy) or F-Droid
 
-### 6.2 Subscribe to Your Topic
+### 7.2 Subscribe to Your Topic
 
 In the ntfy app:
 1. Tap "+" to add a subscription
@@ -287,7 +370,7 @@ In the ntfy app:
 
 > ⚠️ **Security Note:** Anyone who knows your topic name can send you notifications. Use something random/unguessable. For production use, consider self-hosting ntfy.
 
-### 6.3 Set the Environment Variable
+### 7.3 Set the Environment Variable
 
 Add to `~/.zsh/env/optional/private.zsh` (this file is gitignored, so your topic stays private):
 
@@ -304,7 +387,7 @@ Then reload your shell:
 source ~/.zshrc
 ```
 
-### 6.4 Verify the Symlinks
+### 7.4 Verify the Symlinks
 
 If you ran the bootstrap, these should already be in place:
 
@@ -319,7 +402,7 @@ ln -snf ~/dotfiles/claude/hooks ~/.claude/hooks
 ln -snf ~/dotfiles/claude/settings.json ~/.claude/settings.json
 ```
 
-### 6.5 Test the Notification
+### 7.5 Test the Notification
 
 ```bash
 NTFY_TOPIC=your-topic CLAUDE_HOOK_EVENT_DATA='{"tool_input":{"question":"Test notification"}}' ~/.claude/hooks/ntfy-notify.sh question
@@ -334,13 +417,13 @@ unset NTFY_TOPIC && ~/.claude/hooks/ntfy-notify.sh question && echo "Exited clea
 
 ---
 
-## Part 7: Configure Termius
+## Part 8: Configure Termius
 
-### 7.1 Install Tailscale on Your Phone
+### 8.1 Install Tailscale on Your Phone
 
 Install the Tailscale app and sign in to the same Tailnet as your VM.
 
-### 7.2 Add Host in Termius
+### 8.2 Add Host in Termius
 
 1. Open Termius
 2. Add new Host:
@@ -350,18 +433,18 @@ Install the Tailscale app and sign in to the same Tailnet as your VM.
    - **Username:** ubuntu
    - **Key:** Import or paste your SSH private key
 
-### 7.3 Configure Mosh
+### 8.3 Configure Mosh
 
 1. In the host settings, enable **Mosh**
 2. Mosh ports: `60000-61000`
 
-### 7.4 Connect!
+### 8.4 Connect!
 
 Tap the host to connect. You should land directly in tmux.
 
 ---
 
-## Part 8: Daily Usage
+## Part 9: Daily Usage
 
 ### Starting Work
 
@@ -466,7 +549,14 @@ Now run separate Claude agents in separate tmux windows, each in their own workt
 - Verify the script is executable and symlinked: `ls -la ~/.claude/hooks/ntfy-notify.sh`
 - Check the symlink is correct: `readlink ~/.claude/settings.json`
 
+### Unexpected charges on PAYG account
+- Check **Billing & Cost Management** → **Cost Analysis** to see what's incurring charges
+- Common culprits: extra block volumes, instances outside home region, exceeding 4 OCPU / 24 GB total
+- Delete the offending resource immediately — PAYG charges stop when the resource is terminated
+- Verify your budget alert is configured (Part 1.3) so you catch charges early
+
 ### "Out of capacity" when creating instance
+- PAYG accounts have better success than free-tier-only — upgrade first (Part 1.2)
 - Try different availability domain
 - Reduce resources temporarily (2 OCPU / 12GB)
 - Try during off-peak hours
@@ -503,7 +593,8 @@ Now run separate Claude agents in separate tmux windows, each in their own workt
 ## Summary
 
 You now have:
-- ✅ Always-on ARM VM (4 OCPU, 24GB RAM) - completely free
+- ✅ Pay-as-you-Go account with budget alerts (safety net against surprise charges)
+- ✅ Always-on ARM VM (4 OCPU, 24GB RAM) - within Always Free limits ($0)
 - ✅ Tailscale-only access (no public SSH exposure)
 - ✅ Mosh for resilient mobile connections
 - ✅ tmux for persistent sessions

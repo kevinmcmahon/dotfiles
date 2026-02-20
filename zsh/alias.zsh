@@ -92,3 +92,5 @@ alias tdev='tmux attach -t dev 2>/dev/null || tmux new -s dev'
 
 # If tmux feels hung: detach all other clients and reattach cleanly
 alias tfix='sess="main-$(hostname -s)"; tmux detach-client -a 2>/dev/null; tmux switch-client -t "$sess" 2>/dev/null || tmux attach -t "$sess" 2>/dev/null || tmux new -s "$sess"'
+
+alias claude-mem='bun "/Users/kevin/.claude/plugins/marketplaces/thedotmack/plugin/scripts/worker-service.cjs"'

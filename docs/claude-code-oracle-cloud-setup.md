@@ -95,7 +95,7 @@ After upgrading, confirm you have Always Free capacity:
 
 ## Part 2: Create the Oracle Cloud Instance
 
-> **Prefer Terraform?** See [oracle-cloud-terraform.md](oracle-cloud-terraform.md) for IaC equivalents of Parts 2-3, then skip to Part 3.5 (Tailscale).
+> **Prefer Terraform?** See [oracle-cloud-terraform.md](oracle-cloud-terraform.md) (or grab the repo directly: [oci-alwaysfree-tf-stack](https://github.com/kevinmcmahon/oci-alwaysfree-tf-stack)) for IaC equivalents of Parts 2-3, then skip to Part 3.5 (Tailscale).
 
 ### 2.1 Navigate to Compute
 

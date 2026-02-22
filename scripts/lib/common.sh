@@ -115,7 +115,7 @@ ensure_git_identity_templates() {
   local home_abs="$HOME"
 
   if [[ ! -f "$HOME/.gituserconfig" ]]; then
-    cat > "$HOME/.gituserconfig" <<'EOF'
+    cat >"$HOME/.gituserconfig" <<'EOF'
 # ~/.gituserconfig
 # Default Git identity (NOT checked in).
 # This is your fallback identity for repos that don't match
@@ -226,7 +226,10 @@ install_zsh_environment() {
 
   # SKIP_EXEC_ZSH: prevent zsh/install.sh from exec'ing into a new shell (blocks bootstrap)
   # SKIP_SSH_AGENT: prevent passphrase prompts during bootstrap
-  if ! (export SKIP_SSH_AGENT=1 SKIP_EXEC_ZSH=1; bash "$DOTFILES_DIR/zsh/install.sh"); then
+  if ! (
+    export SKIP_SSH_AGENT=1 SKIP_EXEC_ZSH=1
+    bash "$DOTFILES_DIR/zsh/install.sh"
+  ); then
     warn "zsh/install.sh reported errors (may still be partially successful)"
   fi
 
@@ -289,6 +292,71 @@ install_deno() {
   export PATH="$HOME/.deno/bin:$PATH"
 
   log "deno installed: $(deno --version 2>/dev/null | head -n 1 || echo 'WARN: deno not found in PATH')"
+}
+
+ensure_local_bin_in_path() {
+  log "Ensuring LOCAL_BIN is on PATH for this bootstrap run"
+  if ! echo "$PATH" | tr ':' '\n' | grep -qx "$LOCAL_BIN"; then
+    warn "$LOCAL_BIN not currently on PATH for this shell session."
+    warn "Adding it for this bootstrap run."
+    export PATH="$LOCAL_BIN:$PATH"
+  fi
+}
+
+install_codex() {
+  log "Installing Codex CLI"
+
+  # Install location (overrideable)
+  local prefix="${CODEX_PREFIX:-$HOME/.local}"
+  local bin_dir="$prefix/bin"
+  local expected="$bin_dir/codex"
+
+  # Require node/npm (recommended: fnm-managed)
+  if ! need_cmd node || ! need_cmd npm; then
+    warn "node/npm not found; skipping Codex CLI install (install Node via fnm first)."
+    return 0
+  fi
+
+  mkdir -p "$bin_dir"
+
+  # Idempotency:
+  # - If codex exists anywhere on PATH, don't reinstall.
+  # - If it's not at expected path, show what we found.
+  if need_cmd codex; then
+    local found
+    found="$(command -v codex 2>/dev/null || true)"
+    if [[ "$found" == "$expected" ]]; then
+      log "codex already installed at expected path: $found"
+    else
+      warn "codex already found on PATH: $found"
+      warn "Expected install location would be: $expected"
+    fi
+    log "codex version: $(codex --version 2>/dev/null | head -n 1 || echo 'unknown')"
+    return 0
+  fi
+
+  log "Installing Codex CLI to: $expected"
+  log "Using per-install npm prefix (no global npm config changes)."
+
+  npm install -g --prefix "$prefix" @openai/codex
+
+  # Ensure this shell sees it immediately (bootstrap only; does not persist)
+  if ! echo "$PATH" | tr ':' '\n' | grep -qx "$bin_dir"; then
+    export PATH="$bin_dir:$PATH"
+  fi
+
+  if [[ -x "$expected" ]]; then
+    log "Installed: $expected"
+  else
+    warn "Install completed but expected binary not found at: $expected"
+  fi
+
+  if need_cmd codex; then
+    log "codex version: $(codex --version 2>/dev/null | head -n 1 || echo 'unknown')"
+  else
+    warn "codex not found in PATH after install. Ensure $bin_dir is on PATH."
+    return 1
+  fi
 }
 
 setup_node() {
@@ -499,21 +567,21 @@ install_opencode() {
 
 post_checks() {
   log "Quick sanity checks"
-  need_cmd git      || die "git missing"
-  need_cmd tmux     || warn "tmux missing"
-  need_cmd nvim     || warn "nvim missing"
-  need_cmd rg       || warn "ripgrep missing"
-  need_cmd fd       || warn "fd missing"
-  need_cmd fzf      || warn "fzf missing"
-  need_cmd bat      || warn "bat missing"
-  need_cmd rustc    || warn "rust missing"
-  need_cmd cargo    || warn "cargo missing"
-  need_cmd uv       || warn "uv missing"
-  need_cmd deno     || warn "deno missing"
-  need_cmd fnm      || warn "fnm missing"
+  need_cmd git || die "git missing"
+  need_cmd tmux || warn "tmux missing"
+  need_cmd nvim || warn "nvim missing"
+  need_cmd rg || warn "ripgrep missing"
+  need_cmd fd || warn "fd missing"
+  need_cmd fzf || warn "fzf missing"
+  need_cmd bat || warn "bat missing"
+  need_cmd rustc || warn "rust missing"
+  need_cmd cargo || warn "cargo missing"
+  need_cmd uv || warn "uv missing"
+  need_cmd deno || warn "deno missing"
+  need_cmd fnm || warn "fnm missing"
 
   # Platform-specific post-checks (defined by platform modules)
   post_checks_platform
 
-  need_cmd node     || log "Node.js not yet installed (run: fnm install --lts, or INSTALL_NODE=1)"
+  need_cmd node || log "Node.js not yet installed (run: fnm install --lts, or INSTALL_NODE=1)"
 }

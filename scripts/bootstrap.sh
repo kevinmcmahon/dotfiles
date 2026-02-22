@@ -28,17 +28,17 @@ source "$SCRIPTS_DIR/lib/common.sh"
 
 # Source platform-specific library
 case "$PLATFORM" in
-  Darwin)
-    # shellcheck source=lib/platform-mac.sh
-    source "$SCRIPTS_DIR/lib/platform-mac.sh"
-    ;;
-  Linux)
-    # shellcheck source=lib/platform-linux.sh
-    source "$SCRIPTS_DIR/lib/platform-linux.sh"
-    ;;
-  *)
-    die "Unsupported platform: $PLATFORM"
-    ;;
+Darwin)
+  # shellcheck source=lib/platform-mac.sh
+  source "$SCRIPTS_DIR/lib/platform-mac.sh"
+  ;;
+Linux)
+  # shellcheck source=lib/platform-linux.sh
+  source "$SCRIPTS_DIR/lib/platform-linux.sh"
+  ;;
+*)
+  die "Unsupported platform: $PLATFORM"
+  ;;
 esac
 
 main() {
@@ -75,6 +75,7 @@ main() {
   # Phase 7 — AI/Dev CLIs
   install_claude_code
   symlink_claude_config
+  install_codex
   install_opencode
 
   # Phase 8 — Platform Configuration

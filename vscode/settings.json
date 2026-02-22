@@ -5,7 +5,7 @@
     "workbench.iconTheme": "vscode-icons",
     "workbench.colorTheme": "Monokai Pro Light",
     "workbench.editorAssociations": {
-        "*.pdf": "latex-workshop-pdf-hook"
+        "*.pdf": "latex-workshop-pdf-hook",
     },
     "workbench.list.smoothScrolling": true,
     "window.zoomLevel": 1,
@@ -19,7 +19,7 @@
         "*.jsx": "${capture}.js",
         "*.tsx": "${capture}.ts",
         "tsconfig.json": "tsconfig.*.json",
-        "package.json": "package-lock.json,yarn.lock,pnpm-lock.yaml"
+        "package.json": "package-lock.json,yarn.lock,pnpm-lock.yaml",
     },
     "telemetry.telemetryLevel": "off",
     "vsicons.dontShowNewVersionMessage": true,
@@ -52,7 +52,7 @@
     "editor.unicodeHighlight.invisibleCharacters": false,
     "editor.wordWrap": "on",
     "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
+        "source.organizeImports": "explicit",
     },
     // -------------------------------------------------------------------------
     // FILES & STORAGE
@@ -64,10 +64,10 @@
         "**/.classpath": true,
         "**/.project": true,
         "**/.settings": true,
-        "**/.factorypath": true
+        "**/.factorypath": true,
     },
     "files.associations": {
-        "*.symlink": "shellscript"
+        "*.symlink": "shellscript",
     },
     "search.exclude": {
         "**/node_modules": true,
@@ -80,7 +80,7 @@
         "**/.mypy_cache": true,
         "**/.ruff_cache": true,
         "**/.nova": true,
-        "**/.vscode": true
+        "**/.vscode": true,
     },
     "security.workspace.trust.untrustedFiles": "open",
     // -------------------------------------------------------------------------
@@ -95,7 +95,7 @@
     "terminal.integrated.suggest.quickSuggestions": {
         "commands": "on",
         "arguments": "on",
-        "unknown": "off"
+        "unknown": "off",
     },
     "terminal.integrated.suggest.enabled": true,
     "terminal.integrated.fontLigatures.enabled": true,
@@ -111,30 +111,30 @@
         "mailto",
         "vscode",
         "vscode-insiders",
-        "docker-desktop"
+        "docker-desktop",
     ],
     "terminal.integrated.profiles.osx": {
         "bash": {
             "path": "bash",
             "args": ["-l"],
-            "icon": "terminal-bash"
+            "icon": "terminal-bash",
         },
         "zsh": {
             "path": "zsh",
-            "args": ["-l"]
+            "args": ["-l"],
         },
         "fish": {
             "path": "fish",
-            "args": ["-l"]
+            "args": ["-l"],
         },
         "tmux": {
             "path": "tmux",
-            "icon": "terminal-tmux"
+            "icon": "terminal-tmux",
         },
         "pwsh": {
             "path": "pwsh",
-            "icon": "terminal-powershell"
-        }
+            "icon": "terminal-powershell",
+        },
     },
     // -------------------------------------------------------------------------
     // DEBUG & DIAGNOSTICS
@@ -152,51 +152,51 @@
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
         "editor.codeActionsOnSave": {
-            "source.organizeImports": "explicit"
-        }
+            "source.organizeImports": "explicit",
+        },
     },
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.insertSpaces": true,
         "editor.tabSize": 4,
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
     },
     "[javascript]": {
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[javascriptreact]": {
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[vue]": {
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[typescriptreact]": {
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
         "editor.showUnused": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[typescript]": {
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
         "editor.showUnused": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[css]": {
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[html]": {
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[dart]": {
         "editor.formatOnSave": true,
@@ -206,13 +206,13 @@
         "editor.suggest.snippetsPreventQuickSuggestions": false,
         "editor.suggestSelection": "recentlyUsedByPrefix",
         "editor.tabCompletion": "onlySnippets",
-        "editor.wordBasedSuggestions": "off"
+        "editor.wordBasedSuggestions": "off",
     },
     "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     "[jsonc]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     // -------------------------------------------------------------------------
     // CODE FORMATTING & LINTING
@@ -228,41 +228,40 @@
         "erb": "erb",
         "javascript": "javascriptreact",
         "vue": "html",
-        "ejs": "html"
+        "ejs": "html",
     },
     "emmet.triggerExpansionOnTab": true,
     "emmet.syntaxProfiles": {
         "html": {
-            "attr_quotes": "single"
+            "attr_quotes": "single",
         },
         "jsx": {
             "self_closing_tag": true,
-            "attr_quotes": "single"
-        }
+            "attr_quotes": "single",
+        },
     },
     "eslint.validate": ["javascript", "javascriptreact", "vue"],
     "eslint.workingDirectories": [
         {
-            "mode": "auto"
-        }
+            "mode": "auto",
+        },
     ],
     "html.completion.attributeDefaultValue": "singlequotes",
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
     "sonarlint.rules": {
         "javascript:S1516": {
-            "level": "off"
+            "level": "off",
         },
         "typescript:S1848": {
-            "level": "off"
+            "level": "off",
         },
         "Web:PageWithoutTitleCheck": {
-            "level": "off"
+            "level": "off",
         },
         "Web:S5254": {
-            "level": "off"
-        }
+            "level": "off",
+        },
     },
-    "sonarlint.pathToNodeExecutable": "/Users/kevin/.asdf/shims/node",
     // -------------------------------------------------------------------------
     // LANGUAGE & FRAMEWORK SETTINGS
     // -------------------------------------------------------------------------
@@ -297,7 +296,7 @@
         "!Select",
         "!Select sequence",
         "!Split",
-        "!Split sequence"
+        "!Split sequence",
     ],
     "yaml.schemas": {},
     "yaml.validate": false,
@@ -322,7 +321,7 @@
     // -------------------------------------------------------------------------
     "remote.SSH.defaultExtensions": ["gitpod.gitpod-remote-ssh"],
     "remote.SSH.remotePlatform": {
-        "*.gitpod.io": "linux"
+        "*.gitpod.io": "linux",
     },
     "dev.containers.dockerPath": "docker",
     "dev.containers.dockerComposePath": "docker-compose",
@@ -335,7 +334,7 @@
     // CLOUD & API SETTINGS (PATHS MOVED TO ENVIRONMENT VARIABLES)
     // -------------------------------------------------------------------------
     "aws.suppressPrompts": {
-        "regionAddAutomatically": true
+        "regionAddAutomatically": true,
     },
     "vscode-edge-devtools.webhint": false,
     "prisma.showPrismaDataPlatformNotification": false,
@@ -347,7 +346,7 @@
         "plaintext": false,
         "markdown": false,
         "scminput": false,
-        "restructuredtext": false
+        "restructuredtext": false,
     },
     "github.copilot.editor.enableAutoCompletions": true,
     "openctx.enable": true,
@@ -435,12 +434,12 @@
         "xabikos",
         "yoavbls",
         "yzhang",
-        "zignd"
+        "zignd",
     ],
     "remote.defaultExtensionsIfInstalledLocally": [
         "GitHub.copilot",
         "GitHub.copilot-chat",
-        "GitHub.vscode-pull-request-github"
+        "GitHub.vscode-pull-request-github",
     ],
     "mcpServer.startOnActivate": false,
     "chat.mcp.discovery.enabled": {
@@ -452,7 +451,7 @@
     "chat.mcp.access": "none",
     "workbench.secondarySideBar.defaultVisibility": "visible",
     "claudeCode.preferredLocation": "panel",
-    "github.copilot.nextEditSuggestions.enabled": true,
-    "gitlens.ai.model": "vscode",
-    "gitlens.ai.vscode.model": "copilot:gpt-4.1"
+    "sonarlint.pathToNodeExecutable": "/Users/kevin/.fnm/aliases/default/bin/node",
+    "aws.cloudformation.telemetry.enabled": false,
+    "ltex.java.path": "/home/ubuntu/.local/share/java/jdk-21.0.10+7",
 }

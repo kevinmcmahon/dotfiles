@@ -212,6 +212,48 @@ symlink_claude_config() {
   done
 }
 
+sync_ai_resources() {
+  log "Syncing AI resources from canonical ai/ directory"
+
+  local sync_script="$DOTFILES_DIR/scripts/ai-sync.sh"
+  if [[ ! -x "$sync_script" ]]; then
+    warn "ai-sync.sh not found or not executable, skipping"
+    return 0
+  fi
+
+  "$sync_script"
+}
+
+symlink_opencode_ai_dirs() {
+  log "Symlinking OpenCode AI directories into ~/.opencode"
+
+  local opencode_dst="$HOME/.opencode"
+
+  for resource in commands docs skills; do
+    local src="$DOTFILES_DIR/opencode/$resource"
+    local dst="$opencode_dst/$resource"
+
+    if [[ ! -d "$src" ]]; then
+      continue
+    fi
+
+    mkdir -p "$opencode_dst"
+
+    if [[ -L "$dst" ]] && [[ "$(readlink "$dst")" == "$src" ]]; then
+      continue
+    fi
+
+    if [[ -e "$dst" ]] || [[ -L "$dst" ]]; then
+      local backup="${dst}.bak-$(date +%Y%m%d-%H%M%S)"
+      warn "Backing up existing $dst -> $backup"
+      mv "$dst" "$backup"
+    fi
+
+    ln -snf "$src" "$dst"
+    log "Linked $dst -> $src"
+  done
+}
+
 # ==============================================================================
 # Shell
 # ==============================================================================

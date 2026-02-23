@@ -255,6 +255,7 @@ autoload -Uz kitty-themes-fzf
 autoload -Uz add-zsh-hook
 autoload -Uz python
 autoload -Uz reload
+autoload -Uz ai-sync
 add-zsh-hook precmd update_kitty_tab_title
 
 

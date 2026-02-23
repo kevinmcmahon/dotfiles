@@ -74,9 +74,11 @@ main() {
 
   # Phase 7 — AI/Dev CLIs
   install_claude_code
+  sync_ai_resources
   symlink_claude_config
   install_codex
   install_opencode
+  symlink_opencode_ai_dirs
 
   # Phase 8 — Platform Configuration
   apply_platform_config

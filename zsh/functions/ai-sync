@@ -1,0 +1,5 @@
+# ABOUTME: Wrapper function to run the ai-sync.sh script from anywhere.
+# ABOUTME: Generates symlink farms from canonical ai/ directory into each AI tool's config dir.
+function ai-sync() {
+  "${DOTFILES_DIR:-$HOME/dotfiles}/scripts/ai-sync.sh" "$@"
+}

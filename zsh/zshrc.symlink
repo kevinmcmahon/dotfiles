@@ -189,6 +189,7 @@ export EDITOR='nvim'
 fpath=(
     "${HOME}/dotfiles/zsh/functions"
     "${HOME}/.zfunc"
+    "${HOME}/dotfiles/zsh/completions"
     "${fpath[@]}"
 )
 
@@ -256,8 +257,6 @@ autoload -Uz python
 autoload -Uz reload
 add-zsh-hook precmd update_kitty_tab_title
 
-
-source "${HOME}/dotfiles/zsh/functions/completions.zsh"
 
 # For direnv (independent of starship)
 command -v direnv >/dev/null && zsh-defer eval "$(direnv hook zsh)"

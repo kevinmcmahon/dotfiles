@@ -1,0 +1,8 @@
+#compdef ssh-git-id
+
+_ssh_git_id() {
+  _arguments \
+    '--fix[Apply the suggested fix to the Git remote URL]'
+}
+
+_ssh_git_id "$@"

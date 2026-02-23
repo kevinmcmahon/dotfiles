@@ -1,0 +1,9 @@
+#compdef ssh-test
+
+_ssh_test() {
+  local -a aliases
+  aliases=(${(f)"$(grep -h '^Host ' ~/.ssh/config.d/* 2>/dev/null | awk '{print $2}' | sort -u)"})
+  compadd -- $aliases
+}
+
+_ssh_test "$@"

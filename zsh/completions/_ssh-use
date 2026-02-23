@@ -1,0 +1,9 @@
+#compdef ssh-use
+
+_ssh_use() {
+  local -a keys
+  keys=(${(f)"$(find ~/.ssh/identities -type f ! -name '*.pub' -exec basename {} \; 2>/dev/null)"})
+  compadd -- $keys
+}
+
+_ssh_use "$@"

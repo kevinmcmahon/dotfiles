@@ -32,3 +32,11 @@ codex/
 kitty/themes/
 kitty/current-theme.conf
 *.bak
+
+# Generated AI symlink farms (built by scripts/ai-sync.sh)
+claude/commands/
+claude/docs/
+claude/skills/
+opencode/commands/
+opencode/docs/
+opencode/skills/

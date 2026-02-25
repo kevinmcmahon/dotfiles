@@ -1,0 +1,1 @@
+../../ai/scripts/claude/block-git.sh

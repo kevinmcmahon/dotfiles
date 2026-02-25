@@ -19,6 +19,15 @@
             "command": "~/.claude/hooks/ntfy-notify.sh question"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/block-git.sh"
+          }
+        ]
       }
     ],
     "Notification": [

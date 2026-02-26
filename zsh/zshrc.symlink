@@ -274,7 +274,8 @@ fi
 # Load starship prompt if available
 command -v starship >/dev/null && eval "$(starship init zsh)"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# NOTE: fzf keybindings/completion loaded above via zsh-defer eval "$(fzf --zsh)"
+# ~/.fzf.zsh is a leftover from fzf's git-clone installer — no longer needed
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"

@@ -60,6 +60,17 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "EnterWorktree",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/fix-worktree-hooks.sh"
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {

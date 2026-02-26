@@ -1,4 +1,0 @@
-python() { uv run python "$@"; }
-pip()    { uv run pip "$@"; }
-python3() { uv run python "$@"; }
-pip3()    { uv run pip "$@"; }

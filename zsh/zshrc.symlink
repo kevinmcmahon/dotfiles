@@ -31,6 +31,7 @@ else
 fi
 
 load_env_dir "${ZSH_ENV_ROOT}/core"
+load_env_dir "${ZSH_ENV_ROOT}/tools"
 
 # Load platform-specific configurations
 if [[ ${IS_MACOS:-0} -eq 1 ]]; then

@@ -31,7 +31,6 @@ else
 fi
 
 load_env_dir "${ZSH_ENV_ROOT}/core"
-load_env_dir "${ZSH_ENV_ROOT}/tools"
 
 # Load platform-specific configurations
 if [[ ${IS_MACOS:-0} -eq 1 ]]; then
@@ -161,6 +160,10 @@ zstyle :omz:plugins:ssh-agent quiet yes
 [[ -f "$HOME/.zsh/env/core/path.zsh" ]] && source "$HOME/.zsh/env/core/path.zsh"
 [[ -f "$HOME/.zsh/env/core/runtime.zsh" ]] && source "$HOME/.zsh/env/core/runtime.zsh"
 
+# Load tools AFTER oh-my-zsh and PATH re-source so dynamic tools (fnm, cargo env,
+# etc.) get last say on PATH and their entries aren't wiped.
+load_env_dir "${ZSH_ENV_ROOT}/tools"
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -254,7 +257,6 @@ autoload -Uz h
 autoload -Uz mdview
 autoload -Uz kitty-themes-fzf
 autoload -Uz add-zsh-hook
-autoload -Uz python
 autoload -Uz reload
 autoload -Uz ai-sync
 add-zsh-hook precmd update_kitty_tab_title

@@ -61,13 +61,13 @@
         ]
       }
     ],
-    "PostToolUse": [
+    "SessionStart": [
       {
-        "matcher": "EnterWorktree",
+        "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/fix-worktree-hooks.sh"
+            "command": "git config --local --unset core.hooksPath 2>/dev/null || true"
           }
         ]
       }

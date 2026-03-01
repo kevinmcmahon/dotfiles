@@ -1,5 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "ENABLE_LSP_TOOL": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(ls:*)",
@@ -79,7 +82,11 @@
     "feature-dev@claude-plugins-official": true,
     "playwright@claude-plugins-official": true,
     "claude-mem@thedotmack": true,
-    "modern-go-guidelines@goland-claude-marketplace": true
+    "modern-go-guidelines@goland-claude-marketplace": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "linear@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
   "skipDangerousModePermissionPrompt": true

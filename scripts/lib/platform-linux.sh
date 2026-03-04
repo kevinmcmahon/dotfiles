@@ -74,22 +74,6 @@ install_rust_and_cargo_tools() {
     cargo install viu
     log "viu installed: $(viu --version | head -n 1)"
   fi
-
-  # --- tectonic (LaTeX compiler) ---
-  # Prefer apt package; fall back to cargo install if unavailable or too old.
-  if need_cmd tectonic; then
-    log "tectonic already installed: $(tectonic --version | head -n 1)"
-  else
-    log "Installing tectonic (trying apt first, then cargo fallback)..."
-    if sudo apt-get install -y tectonic 2>/dev/null && need_cmd tectonic; then
-      log "tectonic installed via apt: $(tectonic --version | head -n 1)"
-    else
-      log "apt tectonic unavailable or failed; building via cargo..."
-      sudo apt-get install -y libfontconfig1-dev libgraphite2-dev libharfbuzz-dev libicu-dev
-      cargo install --locked -F external-harfbuzz tectonic
-      log "tectonic installed via cargo: $(tectonic --version | head -n 1)"
-    fi
-  fi
 }
 
 set_default_shell_zsh() {

@@ -20,7 +20,6 @@ vim.opt.breakindent = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
-
 -- keep signcolumn on by default
 vim.opt.signcolumn = "yes"
 
@@ -29,3 +28,17 @@ vim.opt.splitright = true
 vim.opt.splitbelow = true
 
 vim.opt.undofile = true
+
+-- Remote-only: copy yanks to local clipboard via OSC52-compatible pbcopy wrapper
+vim.g.clipboard = {
+  name = "osc52-pbcopy",
+  copy = {
+    ["+"] = "pbcopy",
+    ["*"] = "pbcopy",
+  },
+  paste = {
+    ["+"] = "pbpaste",
+    ["*"] = "pbpaste",
+  },
+  cache_enabled = 0,
+}

@@ -267,6 +267,7 @@ fi
 
 # --- Cargo tools ---
 section "Cargo Tools"
+check_cmd tree-sitter "tree-sitter"
 check_cmd viu "viu"
 
 check_cmd yazi "yazi"

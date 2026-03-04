@@ -50,6 +50,15 @@ install_rust_and_cargo_tools() {
 
   install_rustup
 
+  # --- tree-sitter CLI ---
+  if need_cmd tree-sitter; then
+    log "tree-sitter already installed: $(tree-sitter --version | head -n 1)"
+  else
+    log "Installing tree-sitter CLI..."
+    cargo install tree-sitter-cli
+    log "tree-sitter installed: $(tree-sitter --version | head -n 1)"
+  fi
+
   # --- viu (terminal image viewer) ---
   if need_cmd viu; then
     log "viu already installed: $(viu --version | head -n 1)"

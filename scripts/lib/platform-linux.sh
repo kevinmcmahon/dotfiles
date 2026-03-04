@@ -56,6 +56,15 @@ install_rust_and_cargo_tools() {
 
   install_rustup
 
+  # --- tree-sitter CLI ---
+  if need_cmd tree-sitter; then
+    log "tree-sitter already installed: $(tree-sitter --version | head -n 1)"
+  else
+    log "Installing tree-sitter CLI..."
+    cargo install tree-sitter-cli
+    log "tree-sitter installed: $(tree-sitter --version | head -n 1)"
+  fi
+
   # --- yazi (file manager) ---
   if need_cmd yazi && need_cmd ya; then
     log "yazi already installed: $(yazi --version | head -n 1)"

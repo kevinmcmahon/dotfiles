@@ -285,10 +285,13 @@ install_zsh_environment() {
 install_rustup() {
   log "Installing Rust toolchain"
 
+  # Ensure ~/.cargo/bin is on PATH for the rest of this session
+  export PATH="$HOME/.cargo/bin:$PATH"
+
   if ! need_cmd rustup; then
     log "Installing rustup (Rust toolchain manager)"
     curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs |
-      sh -s -- -y
+      sh -s -- -y --default-toolchain stable
   else
     log "rustup already installed"
   fi
@@ -296,11 +299,23 @@ install_rustup() {
   # shellcheck disable=SC1091
   source "$HOME/.cargo/env" || true
 
+  if ! need_cmd rustup; then
+    die "rustup not available after install"
+  fi
+
+  # Ensure stable toolchain is installed, default, and up-to-date.
+  # Prevents build failures from stale apt-installed rustc or outdated toolchains.
+  log "Ensuring stable Rust toolchain is current"
+  rustup toolchain install stable
+  rustup default stable
+  rustup update stable
+
   if ! need_cmd cargo; then
     die "cargo not available after rustup install"
   fi
 
   log "rustup: $(rustup --version 2>/dev/null || echo 'unknown')"
+  log "rustc:  $(rustc --version 2>/dev/null || echo 'unknown')"
 }
 
 # ==============================================================================

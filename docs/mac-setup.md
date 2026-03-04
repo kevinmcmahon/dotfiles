@@ -47,7 +47,7 @@ exec zsh
 | Category | Packages |
 |----------|----------|
 | CLI essentials | bat, coreutils, curl, eza, fd, fzf, jq, ripgrep, tmux, tree, wget, zoxide |
-| Dev tools | direnv, git, git-lfs, lazygit, neovim, shellcheck, starship, tectonic |
+| Dev tools | direnv, git, git-lfs, lazygit, neovim, shellcheck, starship |
 | Languages & managers | go, fnm (Node), chruby + ruby-install (Ruby) |
 | File manager | yazi |
 | Fonts | Fira Code Nerd Font, JetBrains Mono Nerd Font, Monaspace |
@@ -239,7 +239,7 @@ Both platforms use the same `scripts/bootstrap.sh` entry point. The differences 
 | Neovim | `brew install neovim` | AppImage |
 | lazygit, starship, fzf | `brew install` | Binary downloads |
 | yazi | `brew install yazi` | `cargo install` |
-| tectonic | `brew install tectonic` | `cargo install` |
+
 | Default shell | zsh (already default) | `chsh -s` required |
 | pbcopy/pbpaste | Native | xclip wrappers |
 | Go | `brew install go` | Official tarball |

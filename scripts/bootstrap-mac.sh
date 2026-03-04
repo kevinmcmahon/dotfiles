@@ -6,7 +6,7 @@ set -euo pipefail
 # - Installs Xcode Command Line Tools
 # - Installs Homebrew and core packages via BootstrapBrewfile
 # - Symlinks dotfiles (XDG configs + *.symlink)
-# - Installs Rust toolchain and cargo tools (viu, tectonic)
+# - Installs Rust toolchain and cargo tools (viu)
 # - Installs uv (Python version & package manager)
 # - Installs Deno runtime
 # - Installs llm (Simon Willison's CLI tool)
@@ -371,13 +371,7 @@ install_rust_and_cargo_tools() {
     log "viu installed: $(viu --version | head -n 1)"
   fi
 
-  # --- tectonic (LaTeX compiler) — use brew on macOS (cargo build has C dep issues) ---
-  if need_cmd tectonic; then
-    log "tectonic already installed: $(tectonic --version | head -n 1)"
-  else
-    log "Installing tectonic via brew..."
-    brew install tectonic || warn "Failed to install tectonic"
-  fi
+
 }
 
 install_uv() {

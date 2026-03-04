@@ -129,14 +129,6 @@ for pkg in "${brew_formulae[@]}"; do
   fi
 done
 
-# tectonic (installed via brew on macOS)
-if brew list tectonic &>/dev/null 2>&1; then
-  pass "tectonic (brew)"
-elif command -v tectonic >/dev/null 2>&1; then
-  warn "tectonic found but not via brew: $(which tectonic)"
-else
-  fail "tectonic not installed"
-fi
 
 # --- Brew Cask apps ---
 section "Brew Cask Apps"
@@ -292,7 +284,7 @@ fi
 # --- Cargo tools ---
 section "Cargo / Brew-installed Tools"
 check_cmd viu "viu"
-check_cmd tectonic "tectonic"
+
 
 # --- Python tooling ---
 section "Python Tooling"

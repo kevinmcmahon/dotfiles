@@ -9,7 +9,7 @@ set -euo pipefail
 # - Installs Neovim AppImage into ~/.local/bin/nvim
 # - Installs lazygit (arm64/x64) into ~/.local/bin
 # - Installs starship prompt
-# - Installs cargo tools: yazi, viu, tectonic
+# - Installs cargo tools: yazi, viu
 # - Installs uv (Python version & package manager)
 # - Installs fnm (Fast Node Manager)
 # - Installs ruby-install + chruby (Ruby version manager)
@@ -483,19 +483,7 @@ install_rust_and_cargo_tools() {
     log "viu installed: $(viu --version | head -n 1)"
   fi
 
-  # --- tectonic (LaTeX compiler) ---
-  if need_cmd tectonic; then
-    log "tectonic already installed: $(tectonic --version | head -n 1)"
-  else
-    log "Installing tectonic (trying apt first)..."
-    if sudo_apt install -y tectonic; then
-      log "tectonic installed via apt: $(tectonic --version | head -n 1)"
-    else
-      log "apt package unavailable, falling back to cargo install..."
-      cargo install tectonic --locked
-      log "tectonic installed via cargo: $(tectonic --version | head -n 1)"
-    fi
-  fi
+
 }
 
 install_starship() {

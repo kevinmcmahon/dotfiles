@@ -59,13 +59,7 @@ install_rust_and_cargo_tools() {
     log "viu installed: $(viu --version | head -n 1)"
   fi
 
-  # --- tectonic (LaTeX compiler) — use brew on macOS (cargo build has C dep issues) ---
-  if need_cmd tectonic; then
-    log "tectonic already installed: $(tectonic --version | head -n 1)"
-  else
-    log "Installing tectonic via brew..."
-    brew install tectonic || warn "Failed to install tectonic"
-  fi
+
 }
 
 set_default_shell_zsh() {

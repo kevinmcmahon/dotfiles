@@ -268,7 +268,7 @@ fi
 # --- Cargo tools ---
 section "Cargo Tools"
 check_cmd viu "viu"
-check_cmd tectonic "tectonic"
+
 check_cmd yazi "yazi"
 
 # --- Python tooling ---

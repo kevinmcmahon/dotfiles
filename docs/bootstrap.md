@@ -84,7 +84,7 @@ Each `lib/platform-*.sh` must define these 8 functions:
 | starship | Homebrew | `starship.rs` installer |
 | fzf | Homebrew | Git clone + install script |
 | yazi | Homebrew | `cargo install` |
-| tectonic | Homebrew | `cargo install` |
+
 | Go | Homebrew | Official tarball to `/usr/local/go` |
 | Ruby | `brew install chruby ruby-install` | Manual install from source |
 | GUI apps | Homebrew Cask (kitty, tailscale) | N/A (server environment) |
@@ -221,7 +221,7 @@ It checks:
 - Zsh environment (oh-my-zsh, plugins, shell symlinks)
 - Git identity files (existence + whether name/email are set)
 - Language runtimes (rust, go, uv, deno, fnm, chruby, node)
-- Cargo/brew tools (viu, tectonic)
+- Cargo/brew tools (viu)
 - Python tooling (ruff, neovim python venv)
 - LLM tool + plugins + template symlinks
 - AI CLIs (claude, opencode) and Claude Code config symlinks
@@ -247,7 +247,7 @@ Linux counterpart of the macOS audit. Same pass/fail/warn framework, same helper
 - Language runtimes (rust, go, uv, deno, fnm, chruby, ruby-install)
 - Binary installs in `~/.local/bin` (nvim AppImage, lazygit)
 - Starship and fzf (from non-brew sources)
-- Cargo tools (viu, tectonic, yazi)
+- Cargo tools (viu, yazi)
 - Python tooling (ruff, neovim python venv)
 - LLM tool + plugins + template symlinks (at `~/.config` path)
 - AI CLIs (claude, opencode) and Claude Code config symlinks

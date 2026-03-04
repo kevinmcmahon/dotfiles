@@ -591,6 +591,97 @@ symlink_claude_config() {
   done
 }
 
+sync_ai_resources() {
+  log "Syncing AI resources from canonical ai/ directory"
+
+  local sync_script="$DOTFILES_DIR/scripts/ai-sync.sh"
+  if [[ ! -x "$sync_script" ]]; then
+    warn "ai-sync.sh not found or not executable, skipping"
+    return 0
+  fi
+
+  "$sync_script"
+}
+
+symlink_opencode_ai_dirs() {
+  log "Symlinking OpenCode AI directories into ~/.opencode"
+
+  local opencode_dst="$HOME/.opencode"
+
+  for resource in commands docs skills; do
+    local src="$DOTFILES_DIR/opencode/$resource"
+    local dst="$opencode_dst/$resource"
+
+    if [[ ! -d "$src" ]]; then
+      continue
+    fi
+
+    mkdir -p "$opencode_dst"
+
+    if [[ -L "$dst" ]] && [[ "$(readlink "$dst")" == "$src" ]]; then
+      continue
+    fi
+
+    if [[ -e "$dst" ]] || [[ -L "$dst" ]]; then
+      local backup="${dst}.bak-$(date +%Y%m%d-%H%M%S)"
+      warn "Backing up existing $dst -> $backup"
+      mv "$dst" "$backup"
+    fi
+
+    ln -snf "$src" "$dst"
+    log "Linked $dst -> $src"
+  done
+}
+
+install_codex() {
+  log "Installing Codex CLI"
+
+  # Install location (overrideable)
+  local prefix="${CODEX_PREFIX:-$HOME/.local}"
+  local bin_dir="$prefix/bin"
+  local expected="$bin_dir/codex"
+
+  # Require node/npm (recommended: fnm-managed)
+  if ! need_cmd node || ! need_cmd npm; then
+    warn "node/npm not found; skipping Codex CLI install (install Node via fnm first)."
+    return 0
+  fi
+
+  mkdir -p "$bin_dir"
+
+  # Idempotency:
+  # - If codex exists anywhere on PATH, don't reinstall.
+  # - If it's not at expected path, show what we found.
+  if need_cmd codex; then
+    local found
+    found="$(command -v codex 2>/dev/null || true)"
+    if [[ "$found" == "$expected" ]]; then
+      log "codex already installed at expected path: $found"
+    else
+      warn "codex already found on PATH: $found"
+      warn "Expected install location would be: $expected"
+    fi
+    log "codex version: $(codex --version 2>/dev/null | head -n 1 || echo 'unknown')"
+    return 0
+  fi
+
+  log "Installing Codex CLI to: $expected"
+  log "Using per-install npm prefix (no global npm config changes)."
+
+  npm install -g --prefix "$prefix" @openai/codex
+
+  # Ensure this shell sees it immediately (bootstrap only; does not persist)
+  if ! echo "$PATH" | tr ':' '\n' | grep -qx "$bin_dir"; then
+    export PATH="$bin_dir:$PATH"
+  fi
+
+  if [[ -x "$expected" ]]; then
+    log "Installed: $expected"
+  else
+    warn "Install completed but expected binary not found at: $expected"
+  fi
+}
+
 install_opencode() {
   log "Installing OpenCode"
   if need_cmd opencode || [[ -x "$HOME/.opencode/bin/opencode" ]]; then
@@ -801,8 +892,11 @@ main() {
 
   # Phase 7 — AI/Dev CLIs
   install_claude_code
+  sync_ai_resources
   symlink_claude_config
+  install_codex
   install_opencode
+  symlink_opencode_ai_dirs
 
   # Phase 8 — macOS Configuration (optional)
   apply_macos_defaults

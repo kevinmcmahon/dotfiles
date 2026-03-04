@@ -151,8 +151,6 @@ print_next_steps() {
   log "       export NTFY_TOPIC=\"your-unique-topic\""
   log ""
   log "NOTE: If you saw any warnings above, review them before proceeding."
-  log "Optional: Install keychain manually if you need SSH key management:"
-  log "  sudo apt-get install -y keychain"
 }
 
 # ==============================================================================
@@ -190,9 +188,7 @@ install_extras_optional() {
     tree \
     neofetch || true
 
-  # keychain is optional because it may prompt for SSH passphrase during bootstrap
-  # Uncomment if you want it installed automatically:
-  # sudo apt-get install -y keychain
+  sudo apt-get install -y keychain
 }
 
 # ==============================================================================

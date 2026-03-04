@@ -109,7 +109,7 @@ check_symlink "$LOCAL_BIN/bat" "$(command -v batcat 2>/dev/null || echo "batcat"
 
 # --- Optional packages ---
 section "Optional Packages"
-optional_cmds=(eza zoxide tree)
+optional_cmds=(eza zoxide tree keychain)
 for cmd in "${optional_cmds[@]}"; do
   if command -v "$cmd" >/dev/null 2>&1; then
     pass "$cmd: $(command -v "$cmd")"

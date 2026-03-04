@@ -1,5 +1,12 @@
 # ~/.zshenv
 
+# Terminal fallback: Kitty sets TERM=xterm-kitty, but remote hosts may lack
+# the terminfo entry, causing tput (and anything using terminfo) to fail.
+# Fall back to xterm-256color only when the entry is genuinely missing.
+if [ "${TERM:-}" = "xterm-kitty" ] && ! infocmp xterm-kitty >/dev/null 2>&1; then
+  export TERM=xterm-256color
+fi
+
 # Basic locale setup (safe to always apply)
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"

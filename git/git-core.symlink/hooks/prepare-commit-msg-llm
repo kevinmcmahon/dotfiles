@@ -20,6 +20,14 @@ NC='\033[0m'
 # Create a log file for debugging if needed
 LOG_FILE="/tmp/git-commit-hook-$$.log"
 
+# Guard tput: only use cursor control when tput is available and the
+# terminal is recognized (avoids "unknown terminal" errors on hosts
+# missing the xterm-kitty terminfo entry).
+_has_tput=false
+if command -v tput >/dev/null 2>&1 && tput colors >/dev/null 2>&1; then
+  _has_tput=true
+fi
+
 # Function to display a spinning animation during the LLM processing
 spin_animation() {
   # Array of spinner characters for the animation
@@ -27,11 +35,11 @@ spin_animation() {
   # Infinite loop to keep the animation running
   while true; do
     for i in "${spinner[@]}"; do
-      tput civis  # Hide the cursor to enhance the animation appearance
-      tput el1    # Clear the line from the cursor to the beginning to display the spinner
+      $_has_tput && tput civis  # Hide the cursor to enhance the animation appearance
+      $_has_tput && tput el1    # Clear the line from the cursor to the beginning to display the spinner
       printf "\\r%s Generating LLM commit message..." "$i"  # Print the spinner and message without color codes
       sleep 0.1   # Delay to control the speed of the animation
-      tput cub 32 # Move the cursor back 32 columns to reset the spinner position
+      $_has_tput && tput cub 32 # Move the cursor back 32 columns to reset the spinner position
     done
   done
 }
@@ -83,7 +91,7 @@ wait $spin_pid 2>/dev/null  # Wait for the process to terminate and suppress err
 log "Spinner stopped"
 
 # Finalizing output
-tput cnorm  # Show the cursor again
+$_has_tput && tput cnorm  # Show the cursor again
 echo  # Move the cursor to the next line
 
 # Check if generation was successful

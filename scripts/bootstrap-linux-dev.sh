@@ -83,7 +83,8 @@ apt_install_base() {
     ripgrep fd-find bat \
     xclip \
     dirmngr gpg gawk \
-    locales
+    locales \
+    kitty-terminfo
 
   # Note: dirmngr, gpg, gawk are useful for GPG key management and general scripting
 

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# ABOUTME: Pre-push hook that runs tests and lint for Go projects.
+# ABOUTME: Skips silently for non-Go repos.
+set -euo pipefail
+
+# Only run for Go projects
+if [ ! -f "go.mod" ]; then
+    exit 0
+fi
+
+echo "pre-push: running tests..."
+go test ./...
+
+echo "pre-push: running linter..."
+if command -v golangci-lint &>/dev/null; then
+    golangci-lint run
+else
+    echo "pre-push: golangci-lint not found, skipping"
+fi
+
+echo "pre-push: all checks passed"

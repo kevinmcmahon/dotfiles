@@ -27,6 +27,10 @@ DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 LOCAL_BIN="${LOCAL_BIN:-$HOME/.local/bin}"
 CONFIG_DIR="${CONFIG_DIR:-$HOME/.config}"
 INSTALL_NODE="${INSTALL_NODE:-0}"
+export DEBIAN_FRONTEND=noninteractive
+
+# Wrapper: ensures DEBIAN_FRONTEND survives sudo's env_reset
+sudo_apt() { sudo DEBIAN_FRONTEND=noninteractive apt-get "$@"; }
 
 log() { printf "\n\033[1;34m==>\033[0m %s\n" "$*"; }
 warn() { printf "\033[1;33mWARN:\033[0m %s\n" "$*"; }
@@ -54,12 +58,27 @@ ensure_local_bin_in_path() {
   fi
 }
 
+ensure_local_bin_persistent() {
+  log "Ensuring ~/.local/bin is in PATH for future login shells"
+  local line='export PATH="$HOME/.local/bin:$PATH"'
+  if ! grep -qF '.local/bin' "$HOME/.profile" 2>/dev/null; then
+    echo "$line" >> "$HOME/.profile"
+    log "Added ~/.local/bin to ~/.profile"
+  else
+    log "~/.local/bin already in ~/.profile"
+  fi
+}
+
 apt_install_base() {
+  log "Updating package index and upgrading existing packages"
+  sudo_apt update -y
+  sudo_apt upgrade -y
+
   log "Installing base packages via apt"
-  sudo apt-get update -y
-  sudo apt-get install -y \
-    ca-certificates curl wget unzip xz-utils tar \
-    git git-lfs git-secrets jq make gcc g++ pkg-config \
+  sudo_apt install -y \
+    build-essential ca-certificates curl wget unzip xz-utils tar \
+    git git-lfs git-secrets jq pkg-config \
+    libssl-dev libgraphite2-dev \
     zsh tmux \
     ripgrep fd-find bat \
     xclip \
@@ -82,7 +101,7 @@ apt_install_base() {
 install_extras_optional() {
   # Keep optional extras separate so you can comment out easily.
   log "Installing optional quality-of-life tools (apt)"
-  sudo apt-get install -y \
+  sudo_apt install -y \
     eza zoxide \
     tree \
     neofetch || true
@@ -195,7 +214,7 @@ install_go_official() {
   url="https://go.dev/dl/${filename}"
 
   tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' EXIT
+  trap 'rm -rf "$tmpdir"' RETURN
 
   log "Downloading $url"
   curl -fL "$url" -o "$tmpdir/$filename"
@@ -356,6 +375,12 @@ install_neovim_appimage() {
   # If you prefer "stable latest", set NVIM_VERSION="stable" and change URL logic accordingly.
   NVIM_VERSION="${NVIM_VERSION:-v0.11.5}"
 
+  # Skip if already installed at desired version
+  if need_cmd nvim && nvim --version 2>/dev/null | head -n 1 | grep -qF "$NVIM_VERSION"; then
+    log "Neovim $NVIM_VERSION already installed"
+    return 0
+  fi
+
   # Map arch to appimage naming
   arch="$(uname -m)"
   case "$arch" in
@@ -380,6 +405,11 @@ install_neovim_appimage() {
 install_lazygit() {
   log "Installing lazygit into ~/.local/bin"
 
+  if need_cmd lazygit; then
+    log "lazygit already installed: $(lazygit --version | head -n 1)"
+    return 0
+  fi
+
   # Detect arch
   arch="$(uname -m)"
   case "$arch" in
@@ -397,7 +427,7 @@ install_lazygit() {
     jq -r '.tag_name' | sed 's/^v//')"
 
   tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' EXIT
+  trap 'rm -rf "$tmpdir"' RETURN
 
   tarball="lazygit_${version}_Linux_${lazygit_arch}.tar.gz"
   url="https://github.com/jesseduffield/lazygit/releases/download/v${version}/${tarball}"
@@ -456,9 +486,14 @@ install_rust_and_cargo_tools() {
   if need_cmd tectonic; then
     log "tectonic already installed: $(tectonic --version | head -n 1)"
   else
-    log "Installing tectonic..."
-    cargo install tectonic
-    log "tectonic installed: $(tectonic --version | head -n 1)"
+    log "Installing tectonic (trying apt first)..."
+    if sudo_apt install -y tectonic; then
+      log "tectonic installed via apt: $(tectonic --version | head -n 1)"
+    else
+      log "apt package unavailable, falling back to cargo install..."
+      cargo install tectonic --locked
+      log "tectonic installed via cargo: $(tectonic --version | head -n 1)"
+    fi
   fi
 }
 
@@ -483,12 +518,13 @@ install_fzf() {
 
   if [[ -d "$HOME/.fzf" ]]; then
     log "Updating existing ~/.fzf"
-    git -C "$HOME/.fzf" pull
+    git -C "$HOME/.fzf" pull --quiet
   else
-    git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+    git clone --depth 1 --quiet https://github.com/junegunn/fzf.git "$HOME/.fzf"
   fi
 
-  "$HOME/.fzf/install" --key-bindings --completion --no-update-rc
+  # --bin: install binary only; no shell config, no prompts, no rc file modifications
+  "$HOME/.fzf/install" --bin
 
   log "fzf installed: $("$HOME/.fzf/bin/fzf" --version | head -n 1)"
 }
@@ -733,8 +769,7 @@ EOF
 
 install_ruby_build_deps() {
   log "Installing Ruby build dependencies"
-  sudo apt-get update -y
-  sudo apt-get install -y \
+  sudo_apt install -y \
     build-essential curl git \
     libssl-dev libreadline-dev zlib1g-dev libyaml-dev \
     libffi-dev libgdbm-dev libncurses5-dev \
@@ -759,8 +794,7 @@ install_ruby_install() {
   log "Downloading ruby-install v${RUBY_INSTALL_VERSION}"
   curl -fsSL "$url" -o "$tmpdir/ruby-install.tar.gz"
   tar -xzf "$tmpdir/ruby-install.tar.gz" -C "$tmpdir"
-  cd "$tmpdir/ruby-install-${RUBY_INSTALL_VERSION}"
-  sudo make install
+  sudo make -C "$tmpdir/ruby-install-${RUBY_INSTALL_VERSION}" install
 
   if need_cmd ruby-install; then
     log "ruby-install installed: $(ruby-install --version | head -n 1)"
@@ -787,8 +821,7 @@ install_chruby() {
   log "Downloading chruby v${CHRUBY_VERSION}"
   curl -fsSL "$url" -o "$tmpdir/chruby.tar.gz"
   tar -xzf "$tmpdir/chruby.tar.gz" -C "$tmpdir"
-  cd "$tmpdir/chruby-${CHRUBY_VERSION}"
-  sudo make install
+  sudo make -C "$tmpdir/chruby-${CHRUBY_VERSION}" install
 
   if [[ -f /usr/local/share/chruby/chruby.sh ]]; then
     log "chruby installed: /usr/local/share/chruby/chruby.sh"
@@ -833,8 +866,8 @@ change_shell_to_zsh() {
     echo "$zsh_path" | sudo tee -a /etc/shells
   fi
 
-  log "Changing default shell to zsh (will prompt for password)"
-  if chsh -s "$zsh_path"; then
+  log "Changing default shell to zsh"
+  if sudo chsh -s "$zsh_path" "$USER"; then
     log "Default shell changed to zsh. Log out and back in for it to take effect."
   else
     warn "Failed to change default shell. You can do it manually with: chsh -s $zsh_path"
@@ -878,8 +911,15 @@ main() {
     die "Do not run this bootstrap with sudo. Run as your user; the script uses sudo internally."
   fi
 
+  # Sudo warmup: prompt once, then keep timestamp alive
+  sudo -v
+  while true; do sudo -n true; sleep 60; done 2>/dev/null &
+  SUDO_KEEPALIVE_PID=$!
+  trap 'kill "$SUDO_KEEPALIVE_PID" 2>/dev/null' EXIT
+
   ensure_dirs
   ensure_local_bin_in_path
+  ensure_local_bin_persistent
 
   apt_install_base
   install_extras_optional

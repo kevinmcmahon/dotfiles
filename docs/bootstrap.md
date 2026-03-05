@@ -257,6 +257,31 @@ Linux counterpart of the macOS audit. Same pass/fail/warn framework, same helper
 
 Output: pass/fail/warn counts with a summary. Exit code 1 if any failures.
 
+## Linux Peripherals
+
+### Printer (HP Color LaserJet M255dw)
+
+The printer setup is handled automatically by `install_printer_optional` in `platform-linux.sh` during the foundation phase. It:
+
+1. Installs `cups` and `hplip`
+2. Copies `linux/HP_M255dw.ppd` to `/etc/cups/ppd/`
+3. Adds the printer via `lpadmin` pointing at `ipp://192.168.7.59/ipp/print`
+
+The PPD file is committed at `linux/HP_M255dw.ppd`. **Do not use the `everywhere` driverless driver** — it fails over Tailscale routing. The HP PPD via hplip is required.
+
+To set up manually:
+
+```bash
+bash linux/printing.sh
+```
+
+To verify:
+
+```bash
+lpstat -p HP_M255dw
+echo "Test" | lp -d HP_M255dw
+```
+
 ## Design History
 
 The original bootstrap used two separate scripts (`bootstrap-mac.sh` and `bootstrap-linux-dev.sh`) that shared ~450 lines of duplicated logic. This created drift risk: adding a tool to one script and forgetting the other.

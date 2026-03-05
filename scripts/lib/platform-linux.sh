@@ -189,6 +189,30 @@ install_extras_optional() {
     neofetch || true
 
   sudo apt-get install -y keychain
+
+  # Printer setup (HP M255dw via CUPS)
+  install_printer_optional
+}
+
+install_printer_optional() {
+  local DOTFILES_ROOT
+  DOTFILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+  local PPD="$DOTFILES_ROOT/linux/HP_M255dw.ppd"
+
+  if [[ ! -f "$PPD" ]]; then
+    log "Skipping printer setup — no PPD found at linux/HP_M255dw.ppd"
+    return 0
+  fi
+
+  log "Setting up HP M255dw printer..."
+  sudo apt-get install -y cups hplip
+  sudo cp "$PPD" /etc/cups/ppd/HP_M255dw.ppd
+  sudo chmod 644 /etc/cups/ppd/HP_M255dw.ppd
+  sudo lpadmin -p HP_M255dw \
+    -v ipp://192.168.7.59/ipp/print \
+    -P /etc/cups/ppd/HP_M255dw.ppd \
+    -E || true
+  log "Printer HP_M255dw configured (ipp://192.168.7.59/ipp/print)"
 }
 
 # ==============================================================================

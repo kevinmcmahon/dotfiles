@@ -75,6 +75,15 @@ install_rust_and_cargo_tools() {
     log "yazi installed: $(yazi --version | head -n 1)"
   fi
 
+  # --- ast-grep (structural search/replace) ---
+  if need_cmd sg; then
+    log "ast-grep already installed: $(sg --version | head -n 1)"
+  else
+    log "Installing ast-grep..."
+    cargo install ast-grep --locked
+    log "ast-grep installed: $(sg --version | head -n 1)"
+  fi
+
   # --- viu (terminal image viewer) ---
   if need_cmd viu; then
     log "viu already installed: $(viu --version | head -n 1)"
@@ -128,6 +137,7 @@ post_checks_platform() {
   need_cmd lazygit  || warn "lazygit missing"
   need_cmd starship || warn "starship missing"
   need_cmd yazi     || warn "yazi missing"
+  need_cmd sg       || warn "ast-grep (sg) missing"
   need_cmd eza      || warn "eza missing"
   need_cmd zoxide   || warn "zoxide missing"
 }

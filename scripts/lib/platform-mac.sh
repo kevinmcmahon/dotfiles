@@ -59,6 +59,15 @@ install_rust_and_cargo_tools() {
     log "tree-sitter installed: $(tree-sitter --version | head -n 1)"
   fi
 
+  # --- ast-grep (structural search/replace) ---
+  if need_cmd sg; then
+    log "ast-grep already installed: $(sg --version | head -n 1)"
+  else
+    log "Installing ast-grep via Homebrew..."
+    brew install ast-grep
+    log "ast-grep installed: $(sg --version | head -n 1)"
+  fi
+
   # --- viu (terminal image viewer) ---
   if need_cmd viu; then
     log "viu already installed: $(viu --version | head -n 1)"
@@ -67,8 +76,6 @@ install_rust_and_cargo_tools() {
     cargo install viu
     log "viu installed: $(viu --version | head -n 1)"
   fi
-
-
 }
 
 set_default_shell_zsh() {
@@ -92,6 +99,7 @@ post_checks_platform() {
   # common.sh already checks: git, tmux, nvim, rg, fd, fzf, bat, rustc,
   # cargo, uv, deno, fnm, node.
   need_cmd brew     || die "brew missing"
+  need_cmd sg       || warn "ast-grep (sg) missing"
   need_cmd eza      || warn "eza missing"
   need_cmd zoxide   || warn "zoxide missing"
   need_cmd lazygit  || warn "lazygit missing"

@@ -21,6 +21,7 @@ brew "wget"
 brew "zoxide"
 
 # --- Dev tools ---
+brew "ast-grep"
 brew "lazygit"
 brew "neovim"
 brew "starship"

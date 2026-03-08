@@ -32,42 +32,28 @@
 ## Code Quality Rules
 
 ### Style & Naming
+
 - Prefer simple, readable, maintainable code over clever or concise code.
 - Match the style of surrounding code, even if it differs from standard guides. Consistency within a file wins.
 - Never name things "improved", "new", "enhanced", etc. Names should be evergreen.
 
 ### Comments
+
 - NEVER remove code comments unless you can prove they are factually incorrect.
 - Write evergreen comments. Don't reference "recent refactors" or temporal context — describe the code as it is.
 
 ### Scope Discipline
-- NEVER make code changes unrelated to the current task. If you spot something that needs fixing, document it as an issue/TODO instead.
+
 - NEVER disable functionality instead of fixing the root cause.
+- NEVER make code changes unrelated to the current task. If you spot something that needs fixing, document it as an issue/TODO instead.
 - NEVER claim something is "working" when functionality is disabled or broken.
 
 ### Debugging & Fixing
+
 - When fixing a bug, NEVER throw away the old implementation and rewrite from scratch without my explicit permission. Try to fix what's there first.
 - NEVER create duplicate files/templates to work around issues — fix the original.
 - Treat every failure as a learning opportunity. Read the error, understand it, then fix it.
 - NEVER ignore test output or logs — they often contain critical information.
-
-## Git Discipline
-
-### Forbidden
-- `--no-verify`, `--no-hooks`, `--no-pre-commit-hook` — NEVER use these flags.
-
-### When Pre-Commit Hooks Fail
-1. Read and explain the full error output
-2. Identify which tool failed and why
-3. Explain the fix and why it addresses the root cause
-4. Apply the fix and re-run hooks
-5. Only commit after all hooks pass
-6. If you can't fix the hooks, ask me for help
-
-### Before Any Git Command, Ask Yourself
-- "Am I bypassing a safety mechanism?"
-- "Am I choosing convenience over quality?"
-If yes — stop and talk to me first.
 
 ## Testing
 
@@ -86,4 +72,4 @@ If yes — stop and talk to me first.
 - @~/.claude/docs/python.md
 - @~/.claude/docs/using-uv.md
 - @~/.claude/docs/docker-uv.md
-
+- @~/.claude/docs/perplexity.md

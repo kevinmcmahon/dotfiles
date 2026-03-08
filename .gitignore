@@ -40,3 +40,6 @@ claude/skills/
 opencode/commands/
 opencode/docs/
 opencode/skills/
+
+# Override global gitignore for files we want versioned
+!CLAUDE.md

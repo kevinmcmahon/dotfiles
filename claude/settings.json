@@ -119,7 +119,18 @@
     "gopls-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "linear@claude-plugins-official": true
+    "linear@claude-plugins-official": true,
+    "modern-python@trailofbits": true,
+    "second-opinion@trailofbits": true,
+    "workflow-skill-design@trailofbits": true
+  },
+  "extraKnownMarketplaces": {
+    "trailofbits": {
+      "source": {
+        "source": "github",
+        "repo": "trailofbits/skills"
+      }
+    }
   },
   "alwaysThinkingEnabled": true,
   "skipDangerousModePermissionPrompt": true

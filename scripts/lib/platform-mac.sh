@@ -59,15 +59,6 @@ install_rust_and_cargo_tools() {
     log "tree-sitter installed: $(tree-sitter --version | head -n 1)"
   fi
 
-  # --- ast-grep (structural search/replace) ---
-  if need_cmd sg; then
-    log "ast-grep already installed: $(sg --version | head -n 1)"
-  else
-    log "Installing ast-grep via Homebrew..."
-    brew install ast-grep
-    log "ast-grep installed: $(sg --version | head -n 1)"
-  fi
-
   # --- viu (terminal image viewer) ---
   if need_cmd viu; then
     log "viu already installed: $(viu --version | head -n 1)"

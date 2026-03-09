@@ -19,6 +19,8 @@ set -g mouse on
 # Increase scrollback
 set -g history-limit 50000
 
+set -g exit-empty off
+
 ##### Terminal / colors (tmux 3.4 + Kitty truecolor) #####
 
 # Stable terminfo inside tmux
@@ -32,6 +34,8 @@ set -sa terminal-features ",tmux-256color:RGB"
 # Make Neovim happier: allow focus events so autoread etc works
 set -g focus-events on
 
+# Make sure SSH agent env vars survive into panes
+set -g update-environment "SSH_AUTH_SOCK SSH_AGENT_PID SSH_ASKPASS SSH_CONNECTION"
 
 ##### Splits / bindings #####
 
@@ -47,6 +51,13 @@ bind -n M-j select-pane -D
 bind -n M-k select-pane -U
 bind -n M-l select-pane -R
 
+bind d detach-client # Ctrl-a d (detach)
+bind k confirm-before -p "kill-windows #W? (y/n)" kill-window # Ctrl-a k (kill window)
+
+# Pane navigation
+bind tab select-pane -t :.+     # Ctrl-a Tab (cycle panes)
+
+
 # Reload config
 bind r source-file ~/.tmux.conf \; display "Reloaded!"
 
@@ -55,7 +66,8 @@ bind r source-file ~/.tmux.conf \; display "Reloaded!"
 
 # Set terminal title
 set -g set-titles on
-set -g set-titles-string "#S / #W"
+#set -g set-titles-string "#S / #W"
+set -g set-titles-string '#S:#W [#I.#P]'
 
 # Status bar (keep your simple styling)
 set -g status-style "bg=#333333 fg=#ffffff"
@@ -73,3 +85,5 @@ set -g allow-passthrough on
 
 setw -g monitor-activity on
 set -g visual-activity off
+
+

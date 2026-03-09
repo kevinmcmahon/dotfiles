@@ -8,11 +8,7 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
-    "allow": [
-      "Bash(ls:*)",
-      "Bash(ripgrep:*)",
-      "Bash(grep:*)"
-    ],
+    "allow": ["Bash(ls:*)", "Bash(sg:*)"],
     "deny": [
       "Bash(rm -rf *)",
       "Bash(rm -fr *)",

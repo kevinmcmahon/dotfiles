@@ -453,5 +453,4 @@
     "claudeCode.preferredLocation": "panel",
     "sonarlint.pathToNodeExecutable": "/Users/kevin/.fnm/aliases/default/bin/node",
     "aws.cloudformation.telemetry.enabled": false,
-    "ltex.java.path": "/home/ubuntu/.local/share/java/jdk-21.0.10+7",
 }

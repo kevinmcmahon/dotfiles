@@ -1,0 +1,1 @@
+Now do a fresh-pass self review of all the new code you just wrote and any existing code you modified. Look very carefully for obvious bugs, logic errors, edge cases, confusing naming, missing tests, and anything that feels off. Rewrite or annotate anything that you would question if you were reviewing someone else’s PR.

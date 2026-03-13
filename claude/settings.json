@@ -8,10 +8,7 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
-    "allow": [
-      "Bash(ls:*)",
-      "Bash(sg:*)"
-    ],
+    "allow": ["Bash(ls:*)", "Bash(sg:*)"],
     "deny": [
       "Bash(rm -rf *)",
       "Bash(rm -fr *)",
@@ -125,14 +122,21 @@
     "typescript-lsp@claude-plugins-official": true,
     "linear@claude-plugins-official": true,
     "second-opinion@trailofbits": true,
+    "swift-lsp@claude-plugins-official": true,
     "workflow-skill-design@trailofbits": true,
-    "swift-lsp@claude-plugins-official": true
+    "astral@astral-sh": true
   },
   "extraKnownMarketplaces": {
     "trailofbits": {
       "source": {
         "source": "github",
         "repo": "trailofbits/skills"
+      }
+    },
+    "astral-sh": {
+      "source": {
+        "source": "github",
+        "repo": "astral-sh/claude-code-plugins"
       }
     }
   },

@@ -69,6 +69,10 @@
 5. Refactor while keeping tests green
 6. Repeat
 
+## Writing Conventions
+
+- @~/.claude/docs/tropes.md
+
 ## Tools & Conventions  
 
 - @~/.claude/docs/python.md

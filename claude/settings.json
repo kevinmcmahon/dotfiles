@@ -115,7 +115,7 @@
   },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
-    "context7@claude-plugins-official": false,
+    "context7@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
     "playwright@claude-plugins-official": true,
     "claude-mem@thedotmack": true,
@@ -124,7 +124,6 @@
     "pyright-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "linear@claude-plugins-official": true,
-    "modern-python@trailofbits": true,
     "second-opinion@trailofbits": true,
     "workflow-skill-design@trailofbits": true,
     "swift-lsp@claude-plugins-official": true

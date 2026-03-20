@@ -153,11 +153,11 @@ EOF
 }
 
 symlink_xdg_dirs() {
-  log "Symlinking XDG config directories (nvim, yazi, tmux, etc.)"
+  log "Symlinking XDG config directories (nvim, yazi, starship, etc.)"
 
   mkdir -p "$CONFIG_DIR"
 
-  local topics="nvim yazi tmux starship git"
+  local topics="nvim yazi starship git"
   [[ "$PLATFORM" == "Darwin" ]] && topics="$topics kitty"
 
   for d in $topics; do
@@ -174,11 +174,6 @@ symlink_xdg_dirs() {
     fi
   done
 
-  # tmux expects ~/.tmux.conf by default
-  if [ -f "$DOTFILES_DIR/tmux/tmux.conf.symlink" ]; then
-    ln -sf "$DOTFILES_DIR/tmux/tmux.conf.symlink" "$HOME/.tmux.conf"
-    log "Linked ~/.tmux.conf -> $DOTFILES_DIR/tmux/tmux.conf.symlink"
-  fi
 }
 
 symlink_claude_config() {
@@ -321,6 +316,54 @@ install_rustup() {
 # ==============================================================================
 # Cross-platform Installers
 # ==============================================================================
+
+install_tmux_plugins() {
+  log "Setting up tmux (XDG layout)"
+
+  local tmux_config_dir="$CONFIG_DIR/tmux"
+  local tmux_conf_src="$DOTFILES_DIR/tmux/tmux.conf"
+  local tmux_conf_dst="$tmux_config_dir/tmux.conf"
+  local tpm_dir="$tmux_config_dir/plugins/tpm"
+
+  mkdir -p "$tmux_config_dir/plugins"
+
+  # Symlink tmux.conf
+  if [ -f "$tmux_conf_src" ]; then
+    if [ -L "$tmux_conf_dst" ] && [ "$(readlink "$tmux_conf_dst")" = "$tmux_conf_src" ]; then
+      : # already correct
+    else
+      if [ -e "$tmux_conf_dst" ] || [ -L "$tmux_conf_dst" ]; then
+        local backup="${tmux_conf_dst}.bak.$(date +%Y%m%d-%H%M%S)"
+        warn "Backing up existing $tmux_conf_dst -> $backup"
+        mv "$tmux_conf_dst" "$backup"
+      fi
+      ln -sf "$tmux_conf_src" "$tmux_conf_dst"
+      log "Linked $tmux_conf_dst -> $tmux_conf_src"
+    fi
+  fi
+
+  # Clone TPM if missing
+  if [ ! -d "$tpm_dir/.git" ]; then
+    log "Cloning TPM into $tpm_dir"
+    git clone --depth 1 https://github.com/tmux-plugins/tpm "$tpm_dir"
+  fi
+
+  # Install plugins (non-interactive, safe if tmux isn't running)
+  if [ -x "$tpm_dir/bin/install_plugins" ]; then
+    log "Installing tmux plugins via TPM"
+    "$tpm_dir/bin/install_plugins" || warn "TPM install_plugins returned non-zero (may be fine if tmux isn't running)"
+  fi
+
+  # Clean up legacy ~/.tmux.conf if it's a stale symlink to old dotfiles path
+  if [ -L "$HOME/.tmux.conf" ]; then
+    local old_target
+    old_target="$(readlink "$HOME/.tmux.conf")"
+    if [[ "$old_target" == *"dotfiles/tmux"* ]]; then
+      rm "$HOME/.tmux.conf"
+      log "Removed stale legacy symlink ~/.tmux.conf -> $old_target"
+    fi
+  fi
+}
 
 install_uv() {
   log "Installing uv (Python package manager)"

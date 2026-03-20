@@ -53,6 +53,9 @@ main() {
   ensure_git_identity_templates
   symlink_xdg_dirs
 
+  # Phase 2.5 — tmux (XDG config + TPM plugin bootstrap)
+  install_tmux_plugins
+
   # Phase 3 — Platform Packages (brew bundle needs BootstrapBrewfile symlink)
   install_platform_packages
 

@@ -17,10 +17,12 @@ The script auto-detects macOS or Linux and is safe to re-run (idempotent).
 ## What Gets Installed
 
 - **Shell** — zsh, starship prompt, fzf, tmux
-- **Editors** — Neovim, Helix, VS Code config
-- **Runtimes** — Rust, Python (uv), Deno, optionally Node.js (fnm)
-- **CLI tools** — yazi, lazygit, ripgrep, bat, and more via Homebrew/apt
-- **AI tools** — Claude Code, llm, OpenCode
+- **Editors** — Neovim, Helix (config only), VS Code (config only)
+- **Terminals** — kitty (macOS), ghostty (config only)
+- **Runtimes** — Rust, Go, Python (uv), Deno, Ruby (chruby + ruby-install), optionally Node.js (fnm)
+- **CLI tools** — yazi, lazygit, ripgrep, bat, fd, jq, jless, ast-grep, tree-sitter, viu, croc, ttyd, eza, zoxide, and more via Homebrew/apt/cargo
+- **AI tools** — Claude Code, Codex, Gemini CLI, OpenCode, llm (with plugins)
+- **Python tooling** — ruff, Neovim Python venv (pynvim)
 
 ## How It Works
 
@@ -41,13 +43,33 @@ dotfiles/
 │   │   └── platform-linux.sh  # Linux-specific installs
 │   ├── audit-mac.sh           # verify macOS install state
 │   └── audit-linux.sh         # verify Linux install state
+├── ai/                        # shared AI resources (prompts, templates)
+├── bash/                      # bash config
 ├── claude/                    # Claude Code config (CLAUDE.md, hooks, settings)
+├── codex/                     # OpenAI Codex CLI config
+├── cursor/                    # Cursor editor config
+├── gemini/                    # Google Gemini CLI config
+├── ghostty/                   # Ghostty terminal config
 ├── git/                       # git config + hooks
-├── zsh/                       # shell config
+├── goose/                     # Goose AI config
+├── helix/                     # Helix editor config (XDG)
+├── iterm2/                    # iTerm2 config (macOS)
+├── kitty/                     # Kitty terminal config (macOS, XDG)
+├── linux/                     # Linux-specific files (PPD, scripts)
+├── lldb/                      # LLDB debugger config
+├── llm/                       # llm tool config + templates
+├── node/                      # Node.js installer (fnm)
 ├── nvim/                      # Neovim config (XDG)
-├── kitty/                     # terminal config (XDG)
-├── tmux/                      # tmux config
+├── opencode/                  # OpenCode config
 ├── osx/                       # Brewfiles + macOS defaults
+├── rvm/                       # Ruby version manager config
+├── starship/                  # Starship prompt config (XDG)
+├── tmux/                      # tmux config
+├── tools/                     # misc tool configs (*.symlink)
+├── vale/                      # Vale prose linter config
+├── vscode/                    # VS Code config
+├── yazi/                      # Yazi file manager config (XDG)
+├── zsh/                       # shell config
 └── docs/                      # detailed documentation
 ```
 
@@ -57,9 +79,14 @@ dotfiles/
 
 | Variable | Default | Effect |
 |----------|---------|--------|
+| `DOTFILES_DIR` | `$HOME/dotfiles` | Root of the dotfiles repo |
+| `LOCAL_BIN` | `$HOME/.local/bin` | User-local binaries (added to PATH) |
+| `CONFIG_DIR` | `$HOME/.config` | XDG config base directory |
 | `INSTALL_NODE` | `0` | Set to `1` to install Node.js LTS via fnm |
 | `SKIP_DEFAULTS` | `0` | Set to `1` to skip macOS `defaults write` commands |
 | `NTFY_TOPIC` | *(unset)* | Set to enable ntfy push notifications for Claude Code hooks |
+| `NTFY_SERVER` | `https://ntfy.sh` | ntfy server URL (for self-hosted instances) |
+| `NTFY_PRIORITY` | `high` | ntfy notification priority level |
 
 ### Adding a New Tool
 
@@ -81,3 +108,7 @@ scripts/audit-linux.sh   # Linux
 - [Bootstrap System](docs/bootstrap.md) — full architecture, install phases, platform contract
 - [macOS Setup](docs/mac-setup.md) — macOS-specific notes and manual steps
 - [Linux Networking](docs/linux-networking-setup.md) — Tailscale, firewall, mosh setup
+- [Claude Code on Oracle Cloud](docs/claude-code-oracle-cloud-setup.md) — remote Claude Code setup
+- [Oracle Cloud CLI](docs/oracle-cloud-cli.md) — OCI CLI installation
+- [Oracle Cloud Terraform](docs/oracle-cloud-terraform.md) — Terraform for OCI provisioning
+- [Mutagen + Electron](docs/mutagen-electron-setup.md) — remote Electron development

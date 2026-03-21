@@ -143,7 +143,7 @@ A topic directory can contain any combination of:
   <config files>     # XDG config (symlinked to ~/.config/<topic>/)
 ```
 
-Current topics: `bash`, `claude`, `codex`, `cursor`, `gemini`, `git`, `goose`, `helix`, `iterm2`, `kitty`, `lldb`, `llm`, `node`, `nvim`, `opencode`, `osx`, `starship`, `tmux`, `tools`, `vale`, `vscode`, `yazi`, `zsh`
+Current topics: `ai`, `bash`, `claude`, `codex`, `cursor`, `gemini`, `ghostty`, `git`, `goose`, `helix`, `iterm2`, `kitty`, `linux`, `lldb`, `llm`, `node`, `nvim`, `opencode`, `osx`, `rvm`, `starship`, `tmux`, `tools`, `vale`, `vscode`, `yazi`, `zsh`
 
 ## Standalone Installers
 

@@ -90,6 +90,8 @@ post_checks_platform() {
   # common.sh already checks: git, tmux, nvim, rg, fd, fzf, bat, rustc,
   # cargo, uv, deno, fnm, node.
   need_cmd brew     || die "brew missing"
+  need_cmd croc     || warn "croc missing"
+  need_cmd ttyd     || warn "ttyd missing"
   need_cmd sg       || warn "ast-grep (sg) missing"
   need_cmd eza      || warn "eza missing"
   need_cmd zoxide   || warn "zoxide missing"

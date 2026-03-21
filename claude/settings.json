@@ -40,8 +40,10 @@
       "Read(~/.gem/credentials)",
       "Read(~/Library/Keychains/**)",
       "Read(~/Library/Application Support/**/metamask*/**)"
-    ]
+    ],
+    "defaultMode": "dontAsk"
   },
+  "model": "opus",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "PreToolUse": [
@@ -144,5 +146,5 @@
   },
   "alwaysThinkingEnabled": true,
   "skipDangerousModePermissionPrompt": true,
-  "model": "opus"
+  "effortLevel": "high"
 }

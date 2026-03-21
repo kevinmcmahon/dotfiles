@@ -80,6 +80,7 @@ main() {
   sync_ai_resources
   symlink_claude_config
   install_codex
+  install_gemini_cli
   install_opencode
   symlink_opencode_ai_dirs
 

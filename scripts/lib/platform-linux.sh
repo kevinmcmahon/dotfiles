@@ -41,6 +41,8 @@ install_platform_packages() {
   install_go_official
   install_fnm
   install_neovim_appimage
+  install_croc
+  install_ttyd
   install_lazygit
   install_starship
   install_fzf
@@ -142,6 +144,8 @@ post_checks_platform() {
   # Platform-specific checks not already covered by common.sh's post_checks.
   # common.sh already checks: git, tmux, nvim, rg, fd, fzf, bat, rustc,
   # cargo, uv, deno, fnm, node.
+  need_cmd croc     || warn "croc missing"
+  need_cmd ttyd     || warn "ttyd missing"
   need_cmd go       || warn "go missing"
   need_cmd lazygit  || warn "lazygit missing"
   need_cmd starship || warn "starship missing"
@@ -370,6 +374,47 @@ install_neovim_appimage() {
   ln -sf "$nvim_path" "$nvim_link"
 
   log "Neovim installed: $("$nvim_link" --version | head -n 1)"
+}
+
+install_ttyd() {
+  log "Installing ttyd (web terminal)"
+
+  if need_cmd ttyd; then
+    log "ttyd already installed: $(ttyd --version | head -n 1)"
+    return 0
+  fi
+
+  local arch ttyd_arch
+  arch="$(uname -m)"
+  case "$arch" in
+    aarch64|arm64) ttyd_arch="aarch64" ;;
+    x86_64|amd64)  ttyd_arch="x86_64" ;;
+    *) die "Unsupported architecture for ttyd: $arch" ;;
+  esac
+
+  local url="https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.${ttyd_arch}"
+  log "Downloading ttyd (${ttyd_arch})"
+  curl -fL "$url" -o "$LOCAL_BIN/ttyd"
+  chmod +x "$LOCAL_BIN/ttyd"
+
+  log "ttyd installed: $("$LOCAL_BIN/ttyd" --version | head -n 1)"
+}
+
+install_croc() {
+  log "Installing croc (file transfer)"
+
+  if need_cmd croc; then
+    log "croc already installed: $(croc --version | head -n 1)"
+    return 0
+  fi
+
+  curl -fsSL https://getcroc.schollz.com | bash
+
+  if need_cmd croc; then
+    log "croc installed: $(croc --version | head -n 1)"
+  else
+    warn "croc command not found after installation"
+  fi
 }
 
 install_lazygit() {

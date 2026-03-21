@@ -403,6 +403,56 @@ ensure_local_bin_in_path() {
   fi
 }
 
+install_gemini_cli() {
+  log "Installing Gemini CLI"
+
+  local prefix="${GEMINI_CLI_PREFIX:-$HOME/.local}"
+  local bin_dir="$prefix/bin"
+  local expected="$bin_dir/gemini"
+
+  if ! need_cmd node || ! need_cmd npm; then
+    warn "node/npm not found; skipping Gemini CLI install (install Node via fnm first)."
+    return 0
+  fi
+
+  mkdir -p "$bin_dir"
+
+  if need_cmd gemini; then
+    local found
+    found="$(command -v gemini 2>/dev/null || true)"
+    if [[ "$found" == "$expected" ]]; then
+      log "gemini already installed at expected path: $found"
+    else
+      warn "gemini already found on PATH: $found"
+      warn "Expected install location would be: $expected"
+    fi
+    log "gemini version: $(gemini --version 2>/dev/null | head -n 1 || echo 'unknown')"
+    return 0
+  fi
+
+  log "Installing Gemini CLI to: $expected"
+  log "Using per-install npm prefix (no global npm config changes)."
+
+  npm install -g --prefix "$prefix" @google/gemini-cli
+
+  if ! echo "$PATH" | tr ':' '\n' | grep -qx "$bin_dir"; then
+    export PATH="$bin_dir:$PATH"
+  fi
+
+  if [[ -x "$expected" ]]; then
+    log "Installed: $expected"
+  else
+    warn "Install completed but expected binary not found at: $expected"
+  fi
+
+  if need_cmd gemini; then
+    log "gemini version: $(gemini --version 2>/dev/null | head -n 1 || echo 'unknown')"
+  else
+    warn "gemini not found in PATH after install. Ensure $bin_dir is on PATH."
+    return 1
+  fi
+}
+
 install_codex() {
   log "Installing Codex CLI"
 
@@ -683,5 +733,6 @@ post_checks() {
   # Platform-specific post-checks (defined by platform modules)
   post_checks_platform
 
+  need_cmd gemini || warn "gemini CLI missing"
   need_cmd node || log "Node.js not yet installed (run: fnm install --lts, or INSTALL_NODE=1)"
 }

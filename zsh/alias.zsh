@@ -7,12 +7,12 @@ alias ohmyzsh="vi ~/.oh-my-zsh"
 # Recursively delete `.DS_Store` files
 alias cleanup="find . -name '*.DS_Store' -type f -ls -delete"
 #
-# cleanup repomix outputs 
+# cleanup repomix outputs
 alias rmrepomix="find . -name 'repomix-output*' -type f -ls -delete"
 
 # more tidying up scripts
 alias rmorig='find . -name "*.orig" -print0 | xargs -0 rm -rf'
- 
+
 # llm and agents
 alias llmg='llm -m gemini-3-flash-preview'
 alias l32='llm -m mlx-community/Llama-3.2-3B-Instruct-4bit'
@@ -31,35 +31,22 @@ alias eslint='npx eslint@latest'
 alias cls="clear"
 alias dl='cd ~/Downloads'
 alias p='cd ~/projects'
-alias o='open .'
 alias work='cd ~/work'
 alias blog='cd ~/projects/blog'
 alias f='fzf'
 alias y='yazi'
 
-alias ip="echo Your ip is; dig +short myip.opendns.com @resolver1.opendns.com;"
 
 # bat!
 alias cat='bat'
 alias bcat='/bin/cat'
-
-# Applications
-alias marked='open -a Marked\ 2'
-
-# In VS Code do `Cmd+Shift+P` then `Shell Command: Install 'code' command in PATH`
-alias ci='/usr/local/bin/code-insiders'
-alias code='/usr/local/bin/code-insiders'
-
-# Hide/show all desktop icons (useful when presenting)
-alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
-alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
 
 alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
 
 # remove any existing la/ll
 unalias la ll 2>/dev/null
 
-# long listing, human-readable sizes, “almost all” entries, with colors & icons
+# long listing, human-readable sizes, "almost all" entries, with colors & icons
 alias ll='eza --long --color=always --icons=always --no-user'
 
 # git aliases
@@ -74,16 +61,8 @@ alias pop='git stash pop'
 alias gldk='git lgdk'
 alias gdiff='g difftool'
 
-# Toggle wifi (add on or off after command)
-alias wifi="networksetup -setairportpower en0"
-
 # Get current external IP
 alias ip="curl icanhazip.com"
-
-# copy the working directory path
-alias cpwd='pwd|tr -d "\n"|pbcopy'
-
-alias ded='rm -rf ~/Library/Developer/Xcode/DerivedData/'
 
 # tmux
 
@@ -100,7 +79,6 @@ alias -s json=jless
 alias -s {yaml,yml}='bat -l yaml'
 alias -s md=bat
 alias -s py='uv run'
-alias -s {mov,mp4,png,pdf}=open
 
 # batch rename (noglob lets you use wildcards without quoting)
 alias mmv='noglob zmv -W'
@@ -109,9 +87,39 @@ alias mmv='noglob zmv -W'
 alias -g G='| rg'
 alias -g L='| less'
 alias -g J='| jq .'
-alias -g C='| pbcopy'
 alias -g W='| wc -l'
 alias -g H='| head'
 alias -g T='| tail'
 alias -g NUL='> /dev/null 2>&1'
 alias -g ERR='2>&1'
+
+# macOS-only aliases
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias o='open .'
+
+  # Applications
+  alias marked='open -a Marked\ 2'
+
+  # In VS Code do `Cmd+Shift+P` then `Shell Command: Install 'code' command in PATH`
+  alias ci='/usr/local/bin/code-insiders'
+  alias code='/usr/local/bin/code-insiders'
+
+  # Hide/show all desktop icons (useful when presenting)
+  alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+  alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+
+  # Toggle wifi (add on or off after command)
+  alias wifi="networksetup -setairportpower en0"
+
+  # copy the working directory path
+  alias cpwd='pwd|tr -d "\n"|pbcopy'
+
+  # Xcode derived data cleanup
+  alias ded='rm -rf ~/Library/Developer/Xcode/DerivedData/'
+
+  # suffix: open media/docs by extension
+  alias -s {mov,mp4,png,pdf}=open
+
+  # global: pipe to clipboard
+  alias -g C='| pbcopy'
+fi

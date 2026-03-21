@@ -198,6 +198,7 @@ apt_install_base() {
     zsh tmux \
     ripgrep fd-find bat \
     xclip \
+    libxcb1-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
     dirmngr gpg gawk \
     locales
 

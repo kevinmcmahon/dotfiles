@@ -56,6 +56,12 @@ install_platform_packages() {
 install_rust_and_cargo_tools() {
   log "Installing Rust toolchain and cargo tools"
 
+  # Prevent cargo/rustc from querying terminal capabilities during builds.
+  # In tmux with allow-passthrough, terminal responses (Kitty graphics, XTVERSION)
+  # leak into stdout and corrupt terminal state.
+  local _saved_term="${TERM:-}"
+  export TERM=dumb
+
   install_rustup
 
   # --- tree-sitter CLI ---
@@ -104,6 +110,9 @@ install_rust_and_cargo_tools() {
     cargo install viu
     log "viu installed: $(viu --version | head -n 1)"
   fi
+
+  # Restore original TERM
+  export TERM="${_saved_term}"
 }
 
 set_default_shell_zsh() {

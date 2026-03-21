@@ -94,3 +94,24 @@ alias tdev='tmux attach -t dev 2>/dev/null || tmux new -s dev'
 alias tfix='sess="main-$(hostname -s)"; tmux detach-client -a 2>/dev/null; tmux switch-client -t "$sess" 2>/dev/null || tmux attach -t "$sess" 2>/dev/null || tmux new -s "$sess"'
 
 alias claude-mem='bun "$HOME/.claude/plugins/marketplaces/thedotmack/plugin/scripts/worker-service.cjs"'
+
+# suffix aliases (open files by extension: e.g. `./data.json` opens in jless)
+alias -s json=jless
+alias -s {yaml,yml}='bat -l yaml'
+alias -s md=bat
+alias -s py='uv run'
+alias -s {mov,mp4,png,pdf}=open
+
+# batch rename (noglob lets you use wildcards without quoting)
+alias mmv='noglob zmv -W'
+
+# global aliases (expand anywhere in a command)
+alias -g G='| rg'
+alias -g L='| less'
+alias -g J='| jq .'
+alias -g C='| pbcopy'
+alias -g W='| wc -l'
+alias -g H='| head'
+alias -g T='| tail'
+alias -g NUL='> /dev/null 2>&1'
+alias -g ERR='2>&1'

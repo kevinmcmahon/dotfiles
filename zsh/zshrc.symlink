@@ -262,6 +262,7 @@ autoload -Uz ai-sync
 autoload -Uz npmg
 autoload -Uz npmug
 autoload -Uz npmlsg
+autoload -U zmv
 add-zsh-hook precmd update_kitty_tab_title
 
 

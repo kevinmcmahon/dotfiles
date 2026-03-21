@@ -84,6 +84,7 @@ Each `lib/platform-*.sh` must define these 8 functions:
 | starship | Homebrew | `starship.rs` installer |
 | fzf | Homebrew | Git clone + install script |
 | yazi | Homebrew | `cargo install` |
+| jless | Homebrew | `cargo install` |
 
 | Go | Homebrew | Official tarball to `/usr/local/go` |
 | Ruby | `brew install chruby ruby-install` | Manual install from source |

@@ -285,6 +285,7 @@ fi
 section "Cargo / Brew-installed Tools"
 check_cmd tree-sitter "tree-sitter"
 check_cmd viu "viu"
+check_cmd jless "jless"
 
 
 # --- Python tooling ---

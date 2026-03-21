@@ -84,6 +84,15 @@ install_rust_and_cargo_tools() {
     log "ast-grep installed: $(sg --version | head -n 1)"
   fi
 
+  # --- jless (JSON viewer) ---
+  if need_cmd jless; then
+    log "jless already installed: $(jless --version | head -n 1)"
+  else
+    log "Installing jless..."
+    cargo install jless
+    log "jless installed: $(jless --version | head -n 1)"
+  fi
+
   # --- viu (terminal image viewer) ---
   if need_cmd viu; then
     log "viu already installed: $(viu --version | head -n 1)"

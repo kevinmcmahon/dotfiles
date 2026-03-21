@@ -17,6 +17,13 @@ LOCAL_BIN="${LOCAL_BIN:-$HOME/.local/bin}"
 CONFIG_DIR="${CONFIG_DIR:-$HOME/.config}"
 INSTALL_NODE="${INSTALL_NODE:-0}"
 
+# --- Log capture: tee all output to a timestamped file ---
+LOG_DIR="${LOG_DIR:-/tmp/dotfiles-bootstrap}"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/bootstrap-$(date +%Y%m%d-%H%M%S).log"
+exec > >(tee -a "$LOG_FILE") 2>&1
+printf "\n\033[1;34m==>\033[0m Bootstrap log: %s\n" "$LOG_FILE"
+
 SCRIPTS_DIR="$DOTFILES_DIR/scripts"
 PLATFORM="$(uname -s)"
 # shellcheck disable=SC2034  # ARCH is used by sourced platform modules

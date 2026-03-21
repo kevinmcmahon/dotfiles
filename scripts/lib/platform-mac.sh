@@ -134,6 +134,9 @@ print_next_steps() {
   log "       export NTFY_TOPIC=\"your-unique-topic\""
   log ""
   log "NOTE: If you saw any warnings above, review them before proceeding."
+  if [[ -n "${LOG_FILE:-}" ]]; then
+    log "Full bootstrap log saved to: $LOG_FILE"
+  fi
 }
 
 # ==============================================================================

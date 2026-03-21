@@ -183,6 +183,9 @@ print_next_steps() {
   log "       export NTFY_TOPIC=\"your-unique-topic\""
   log ""
   log "NOTE: If you saw any warnings above, review them before proceeding."
+  if [[ -n "${LOG_FILE:-}" ]]; then
+    log "Full bootstrap log saved to: $LOG_FILE"
+  fi
 }
 
 # ==============================================================================
@@ -194,7 +197,7 @@ apt_install_base() {
   sudo apt-get update -y
   sudo apt-get install -y \
     ca-certificates curl wget unzip xz-utils tar \
-    git git-lfs git-secrets jq make gcc g++ pkg-config \
+    git git-lfs git-secrets jq make gcc g++ pkg-config libclang-dev \
     zsh tmux \
     ripgrep fd-find bat \
     xclip \

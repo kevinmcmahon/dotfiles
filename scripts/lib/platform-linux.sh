@@ -78,7 +78,8 @@ install_rust_and_cargo_tools() {
   fi
 
   # --- ast-grep (structural search/replace) ---
-  if need_cmd sg; then
+  # need_cmd sg is insufficient: /usr/bin/sg (shadow-utils) shadows ast-grep's sg
+  if sg --version 2>&1 | grep -q "ast-grep"; then
     log "ast-grep already installed: $(sg --version | head -n 1)"
   else
     log "Installing ast-grep..."
@@ -150,7 +151,7 @@ post_checks_platform() {
   need_cmd lazygit  || warn "lazygit missing"
   need_cmd starship || warn "starship missing"
   need_cmd yazi     || warn "yazi missing"
-  need_cmd sg       || warn "ast-grep (sg) missing"
+  sg --version 2>&1 | grep -q "ast-grep" || warn "ast-grep (sg) missing"
   need_cmd eza      || warn "eza missing"
   need_cmd zoxide   || warn "zoxide missing"
 }

@@ -92,7 +92,7 @@ post_checks_platform() {
   need_cmd brew     || die "brew missing"
   need_cmd croc     || warn "croc missing"
   need_cmd ttyd     || warn "ttyd missing"
-  need_cmd sg       || warn "ast-grep (sg) missing"
+  sg --version 2>&1 | grep -q "ast-grep" || warn "ast-grep (sg) missing"
   need_cmd eza      || warn "eza missing"
   need_cmd zoxide   || warn "zoxide missing"
   need_cmd lazygit  || warn "lazygit missing"

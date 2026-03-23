@@ -185,9 +185,10 @@ symlink_claude_config() {
   mkdir -p "$claude_dst"
 
   # Symlink individual items — NOT the whole directory, because ~/.claude
-  # also contains machine-local state (mcp.json, settings.local.json,
-  # credentials, cache, history, etc.).
-  local items="CLAUDE.md settings.json claude_desktop_config.json mcp.json commands docs hooks skills scripts"
+  # also contains machine-local state (settings.local.json, credentials,
+  # cache, history, etc.). Machine-local configs (mcp.json,
+  # claude_desktop_config.json) are copied as templates, not symlinked.
+  local items="CLAUDE.md settings.json commands docs hooks skills scripts"
 
   for item in $items; do
     local src="$claude_src/$item"
@@ -205,6 +206,75 @@ symlink_claude_config() {
       log "Linked $dst -> $src"
     fi
   done
+
+  # Machine-local configs: copy repo defaults as starting templates.
+  # If dst is a symlink (leftover from older bootstrap), replace it with
+  # a real copy so local edits stay local. If dst is already a regular
+  # file, leave it alone — never overwrite local customizations.
+  for tmpl in mcp.json claude_desktop_config.json; do
+    local src="$claude_src/$tmpl"
+    local dst="$claude_dst/$tmpl"
+    if [[ -L "$dst" ]]; then
+      # Migrate: dereference the symlink into a regular file
+      local content
+      content="$(cat "$dst" 2>/dev/null)" || content=""
+      rm "$dst"
+      if [[ -n "$content" ]]; then
+        printf '%s\n' "$content" > "$dst"
+        log "Converted $tmpl symlink to local file (preserved content)"
+      elif [[ -f "$src" ]]; then
+        cp "$src" "$dst"
+        log "Replaced dangling $tmpl symlink with default template"
+      fi
+    elif [[ ! -e "$dst" ]] && [[ -f "$src" ]]; then
+      cp "$src" "$dst"
+      log "Copied default $tmpl to $dst (edit for this machine)"
+    fi
+  done
+}
+
+verify_claude_setup() {
+  log "Verifying Claude Code setup"
+  local claude_dst="$HOME/.claude"
+  local errors=0
+
+  # Check symlinks resolve
+  for item in CLAUDE.md settings.json commands docs hooks skills scripts; do
+    local path="$claude_dst/$item"
+    if [[ -L "$path" && ! -e "$path" ]]; then
+      warn "Broken symlink: $path -> $(readlink "$path")"
+      errors=$((errors + 1))
+    fi
+  done
+
+  # Check hooks are executable (including through symlink chains)
+  for hook in "$claude_dst"/hooks/*.sh; do
+    [[ -e "$hook" || -L "$hook" ]] || continue
+    if [[ -L "$hook" && ! -e "$hook" ]]; then
+      warn "Broken hook symlink: $hook -> $(readlink "$hook")"
+      errors=$((errors + 1))
+    elif [[ ! -x "$hook" ]]; then
+      warn "Hook not executable: $hook"
+      errors=$((errors + 1))
+    fi
+  done
+
+  # Check tools required by hooks/statusline
+  for cmd in jq curl; do
+    need_cmd "$cmd" || { warn "$cmd not found (needed by Claude hooks)"; errors=$((errors + 1)); }
+  done
+
+  # Check mcp.json exists (as a regular file, not a symlink)
+  if [[ ! -f "$claude_dst/mcp.json" ]]; then
+    warn "mcp.json missing -- copy from $DOTFILES_DIR/claude/mcp.json or claude/mcp.json.example"
+    errors=$((errors + 1))
+  fi
+
+  if (( errors > 0 )); then
+    warn "Claude setup: $errors issue(s) above"
+  else
+    log "Claude Code setup OK"
+  fi
 }
 
 sync_ai_resources() {

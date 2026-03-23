@@ -49,7 +49,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/ntfy-notify.sh question"
+            "command": "$HOME/.claude/hooks/ntfy-notify.sh question"
           }
         ]
       },
@@ -58,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/block-git.sh"
+            "command": "$HOME/.claude/hooks/block-git.sh"
           }
         ]
       }
@@ -69,7 +69,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/ntfy-notify.sh permission"
+            "command": "$HOME/.claude/hooks/ntfy-notify.sh permission"
           }
         ]
       },
@@ -78,7 +78,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/ntfy-notify.sh idle"
+            "command": "$HOME/.claude/hooks/ntfy-notify.sh idle"
           }
         ]
       }
@@ -89,7 +89,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/ntfy-notify.sh complete"
+            "command": "$HOME/.claude/hooks/ntfy-notify.sh complete"
           }
         ]
       }
@@ -108,7 +108,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.claude/scripts/statusline.sh",
+    "command": "bash $HOME/.claude/scripts/statusline.sh",
     "padding": 0
   },
   "enabledPlugins": {

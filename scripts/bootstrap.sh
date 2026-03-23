@@ -86,6 +86,7 @@ main() {
   install_claude_code
   sync_ai_resources
   symlink_claude_config
+  verify_claude_setup
   install_codex
   install_gemini_cli
   install_opencode

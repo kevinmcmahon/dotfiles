@@ -8,10 +8,7 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
-    "allow": [
-      "Bash(ls:*)",
-      "Bash(sg:*)"
-    ],
+    "allow": ["Bash(ls:*)", "Bash(sg:*)"],
     "deny": [
       "Bash(rm -rf *)",
       "Bash(rm -fr *)",
@@ -43,6 +40,7 @@
     ],
     "defaultMode": "dontAsk"
   },
+  "model": "opus[1m]",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "PreToolUse": [
@@ -127,7 +125,8 @@
     "second-opinion@trailofbits": true,
     "swift-lsp@claude-plugins-official": true,
     "workflow-skill-design@trailofbits": true,
-    "astral@astral-sh": true
+    "astral@astral-sh": true,
+    "telegram@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "trailofbits": {
@@ -145,5 +144,7 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "autoUpdatesChannel": "latest",
+  "channelsEnabled": true
 }

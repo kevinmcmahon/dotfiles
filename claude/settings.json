@@ -126,7 +126,7 @@
     "swift-lsp@claude-plugins-official": true,
     "workflow-skill-design@trailofbits": true,
     "astral@astral-sh": true,
-    "telegram@claude-plugins-official": true
+    "telegram@claude-plugins-official": false
   },
   "extraKnownMarketplaces": {
     "trailofbits": {

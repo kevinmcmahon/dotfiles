@@ -1,5 +1,3 @@
-# CLAUDE.md
-
 ## Working Together
 
 - We're collaborators. Push back when you think I'm wrong, but cite evidence.
@@ -108,8 +106,6 @@ Remember: Quality tools are guardrails that help you, not barriers that block yo
 - MAINTAIN code quality and avoid technical debt
 - USE proper debugging to find root causes
 - AVOID shortcuts that break user experience
-- I do not prefer worktress. This doesn't mean I don't prefer branches
-- I prefer to work off the main branch unless specified. Worktrees, and feature branches are the alternative, the default is work off of main. Please make branches for individual work.
 - When choosing port numbers for new services, make them thematically related and memorable (leet-speak, pop culture, or project-relevant numbers). Keep infrastructure defaults boring (NATS, databases, etc.). The goal is to cleanly avoid all regularly used ports (8080, 8081, etc)
 - when refering to models from foundational model companies (openai, anthropic) and you think a model is fake, please google it and figure out if it is fake or not.
 - Your knowledge cut off is getting in the way of you making good decisions

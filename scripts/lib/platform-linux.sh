@@ -146,8 +146,39 @@ set_default_shell_zsh() {
 }
 
 apply_platform_config() {
-  # No platform-level config needed on Linux
-  return 0
+  configure_userns_for_bwrap
+}
+
+# ------------------------------------------------------------------------------
+# configure_userns_for_bwrap — allow unprivileged user namespaces (bubblewrap)
+#
+# Ubuntu 23.10+ ships kernel.apparmor_restrict_unprivileged_userns=1, which
+# blocks bwrap (bubblewrap) even when unprivileged_userns_clone is enabled.
+# This breaks tools that rely on sandboxing (e.g. Claude Code's Codex reviewer).
+#
+# Only applied when the kernel parameter exists on the running system.
+# ------------------------------------------------------------------------------
+configure_userns_for_bwrap() {
+  local sysctl_key="kernel.apparmor_restrict_unprivileged_userns"
+  local conf="/etc/sysctl.d/99-userns.conf"
+
+  # Only act if this kernel parameter exists (Ubuntu 23.10+)
+  if ! sysctl "$sysctl_key" &>/dev/null; then
+    log "Skipping userns config — $sysctl_key not present on this kernel"
+    return 0
+  fi
+
+  local current
+  current="$(sysctl -n "$sysctl_key" 2>/dev/null)"
+  if [[ "$current" == "0" ]]; then
+    log "User namespaces already unrestricted ($sysctl_key=0)"
+    return 0
+  fi
+
+  log "Configuring $sysctl_key=0 for bubblewrap sandbox support"
+  echo "${sysctl_key}=0" | sudo tee "$conf" >/dev/null
+  sudo sysctl -p "$conf"
+  log "Applied $conf — bwrap sandboxing should now work"
 }
 
 post_checks_platform() {

@@ -4,6 +4,7 @@
 
 # --- CLI essentials ---
 brew "bat"
+brew "chafa"
 brew "coreutils"
 brew "croc"
 brew "curl"

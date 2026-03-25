@@ -238,6 +238,7 @@ apt_install_base() {
   sudo apt-get update -y
   sudo apt-get install -y \
     ca-certificates curl wget unzip xz-utils tar \
+    chafa \
     git git-lfs git-secrets jq make gcc g++ pkg-config libclang-dev \
     zsh tmux \
     ripgrep fd-find bat \

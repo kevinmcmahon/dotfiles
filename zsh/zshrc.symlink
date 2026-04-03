@@ -267,7 +267,7 @@ add-zsh-hook precmd update_terminal_tab_title
 autoload -Uz terminal-theme
 autoload -Uz glight
 autoload -Uz gdark
-
+autoload -Uz gtoggle
 
 # For direnv (independent of starship)
 command -v direnv >/dev/null && zsh-defer eval "$(direnv hook zsh)"

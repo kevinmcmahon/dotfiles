@@ -33,6 +33,9 @@ kitty/themes/
 kitty/current-theme.conf
 *.bak
 
+# Ghostty 
+ghostty/local.conf
+
 # Generated AI symlink farms (built by scripts/ai-sync.sh)
 claude/commands/
 claude/docs/

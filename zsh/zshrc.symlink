@@ -255,7 +255,6 @@ autoload -Uz ssh-autoload
 autoload -Uz listening
 autoload -Uz h
 autoload -Uz mdview
-autoload -Uz kitty-themes-fzf
 autoload -Uz add-zsh-hook
 autoload -Uz reload
 autoload -Uz ai-sync
@@ -263,7 +262,8 @@ autoload -Uz npmg
 autoload -Uz npmug
 autoload -Uz npmlsg
 autoload -U zmv
-add-zsh-hook precmd update_kitty_tab_title
+autoload -Uz cmux-themes-fzf
+add-zsh-hook precmd update_terminal_tab_title
 
 
 # For direnv (independent of starship)

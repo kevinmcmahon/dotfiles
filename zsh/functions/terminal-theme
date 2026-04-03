@@ -1,0 +1,26 @@
+function terminal-theme() {
+  emulate -L zsh
+  setopt pipefail
+
+  local appearance_file="$HOME/.config/ghostty/appearance.conf"
+  local theme_name="${1:-}"
+
+  if [[ -z "$theme_name" ]]; then
+    echo "usage: terminal-theme <theme-name>" >&2
+    return 1
+  fi
+
+  if [[ ! -f "$appearance_file" ]]; then
+    echo "appearance config not found: $appearance_file" >&2
+    return 1
+  fi
+
+  if [[ ! -f "$HOME/.config/ghostty/themes/$theme_name" ]]; then
+    echo "theme not found: $theme_name" >&2
+    return 1
+  fi
+
+  perl -0pi -e 's/^theme = .*$/theme = '"$theme_name"'/m' "$appearance_file" || return 1
+
+  echo "terminal theme set to: $theme_name"
+}

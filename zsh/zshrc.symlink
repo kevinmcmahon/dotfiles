@@ -264,6 +264,9 @@ autoload -Uz npmlsg
 autoload -U zmv
 autoload -Uz cmux-themes-fzf
 add-zsh-hook precmd update_terminal_tab_title
+autoload -Uz terminal-theme
+autoload -Uz glight
+autoload -Uz gdark
 
 
 # For direnv (independent of starship)

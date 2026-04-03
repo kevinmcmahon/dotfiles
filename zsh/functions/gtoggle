@@ -1,0 +1,17 @@
+function gtoggle() {
+  emulate -L zsh
+
+  local appearance_file="$HOME/.config/ghostty/appearance.conf"
+  local current
+
+  current=$(sed -n 's/^theme = //p' "$appearance_file" | head -n1)
+
+  case "$current" in
+    Snazzy) terminal-theme Sunlight ;;
+    Sunlight) terminal-theme Snazzy ;;
+    *)
+      echo "unknown current theme: ${current:-<none>}" >&2
+      return 1
+      ;;
+  esac
+}

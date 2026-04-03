@@ -1,0 +1,3 @@
+function glight() {
+  terminal-theme Sunlight
+}

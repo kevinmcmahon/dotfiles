@@ -1,0 +1,3 @@
+function gdark() {
+  terminal-theme Snazzy
+}

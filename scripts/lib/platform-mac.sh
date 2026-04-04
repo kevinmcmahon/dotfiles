@@ -11,6 +11,9 @@
 #   log, warn, die, need_cmd, install_rustup
 
 SKIP_DEFAULTS="${SKIP_DEFAULTS:-0}"
+CMUX_DMG_URL="${CMUX_DMG_URL:-https://github.com/manaflow-ai/cmux/releases/latest/download/cmux-macos.dmg}"
+CMUX_APP_PATH="${CMUX_APP_PATH:-/Applications/cmux.app}"
+CMUX_CLI_LINK="${CMUX_CLI_LINK:-$LOCAL_BIN/cmux}"
 
 # ==============================================================================
 # Platform Contract — Public Functions
@@ -42,6 +45,7 @@ install_platform_foundation() {
 
 install_platform_packages() {
   brew_bundle
+  install_cmux_app
   install_cask_apps
 }
 
@@ -90,6 +94,7 @@ post_checks_platform() {
   # common.sh already checks: git, tmux, nvim, rg, fd, fzf, bat, rustc,
   # cargo, uv, deno, fnm, node.
   need_cmd brew     || die "brew missing"
+  need_cmd cmux     || warn "cmux missing"
   need_cmd croc     || warn "croc missing"
   need_cmd ttyd     || warn "ttyd missing"
   sg --version 2>&1 | grep -q "ast-grep" || warn "ast-grep (sg) missing"
@@ -105,31 +110,32 @@ print_next_steps() {
   log ""
   log "Next steps:"
   log "  1. Open a new shell (or exec zsh) so PATH updates apply"
-  log "  2. Open Tailscale from Applications and sign in"
-  log "  3. Configure your Git identity (REQUIRED for commits):"
+  log "  2. Open cmux from Applications once and confirm the identified developer prompt if macOS asks"
+  log "  3. Open Tailscale from Applications and sign in"
+  log "  4. Configure your Git identity (REQUIRED for commits):"
   log "     Edit ~/.gituserconfig and uncomment/set your name and email"
   log "     (Optional) Edit ~/.gituserconfig.kmc and ~/.gituserconfig.nsv"
   log "     for project-specific identities"
-  log "  4. Install Python versions with uv:"
+  log "  5. Install Python versions with uv:"
   log "     uv python install 3.12"
   log "     uv python install 3.11"
   if [[ "$INSTALL_NODE" != "1" ]]; then
-    log "  5. Install Node.js with fnm and enable corepack:"
+    log "  6. Install Node.js with fnm and enable corepack:"
     log "     fnm install --lts"
     log "     fnm use lts-latest"
     log "     fnm default lts-latest"
     log "     corepack enable"
     log "     (or re-run with INSTALL_NODE=1 to automate this)"
   fi
-  log "  6. Install Ruby with ruby-install:"
+  log "  7. Install Ruby with ruby-install:"
   log "     ruby-install ruby 3.3.6"
-  log "  7. Set up LLM API keys:"
+  log "  8. Set up LLM API keys:"
   log "     llm keys set anthropic"
   log "     llm keys set openai"
   log "     llm keys set gemini"
-  log "  8. (Optional) Install remaining Brewfile apps:"
+  log "  9. (Optional) Install remaining Brewfile apps:"
   log "     brew bundle --file=~/.Brewfile"
-  log "  9. (Optional) Set up ntfy push notifications for Claude Code:"
+  log "  10. (Optional) Set up ntfy push notifications for Claude Code:"
   log "     Add to ~/.zsh/env/optional/private.zsh:"
   log "       export NTFY_TOPIC=\"your-unique-topic\""
   log ""
@@ -225,7 +231,6 @@ install_cask_apps() {
   log "Installing GUI applications via Homebrew Cask"
 
   local casks=(
-    kitty
     tailscale
   )
 
@@ -239,6 +244,82 @@ install_cask_apps() {
     fi
   done
   unset HOMEBREW_NO_AUTO_UPDATE
+}
+
+install_cmux_app() {
+  log "Installing cmux from the official DMG"
+
+  local app_path="$CMUX_APP_PATH"
+  local app_cli="$app_path/Contents/Resources/bin/cmux"
+  local cli_link="$CMUX_CLI_LINK"
+
+  if [[ -d "$app_path" ]]; then
+    log "cmux already installed: $app_path"
+  else
+    local tmpdir dmg_path mount_point mounted_app mounted=0
+    tmpdir="$(mktemp -d "${TMPDIR:-/tmp}/cmux-install.XXXXXX")"
+    dmg_path="$tmpdir/cmux-macos.dmg"
+    mount_point="$tmpdir/mount"
+    mounted_app="$mount_point/cmux.app"
+    mkdir -p "$mount_point"
+
+    log "Downloading cmux DMG"
+    if ! curl -fL "$CMUX_DMG_URL" -o "$dmg_path"; then
+      rm -rf "$tmpdir"
+      die "Failed to download cmux from $CMUX_DMG_URL"
+    fi
+
+    log "Mounting cmux DMG"
+    if ! hdiutil attach "$dmg_path" -nobrowse -quiet -mountpoint "$mount_point"; then
+      rm -rf "$tmpdir"
+      die "Failed to mount cmux DMG"
+    fi
+    mounted=1
+
+    if [[ ! -d "$mounted_app" ]]; then
+      hdiutil detach "$mount_point" -quiet || warn "Failed to detach $mount_point"
+      rm -rf "$tmpdir"
+      die "cmux.app not found in mounted DMG"
+    fi
+
+    log "Copying cmux.app to $app_path"
+    if ! ditto "$mounted_app" "$app_path" 2>/dev/null; then
+      log "Retrying cmux install with sudo for /Applications access"
+      if ! sudo ditto "$mounted_app" "$app_path"; then
+        if [[ "$mounted" -eq 1 ]]; then
+          hdiutil detach "$mount_point" -quiet || warn "Failed to detach $mount_point"
+        fi
+        rm -rf "$tmpdir"
+        die "Failed to copy cmux.app to $app_path"
+      fi
+    fi
+
+    if [[ "$mounted" -eq 1 ]]; then
+      hdiutil detach "$mount_point" -quiet || warn "Failed to detach $mount_point"
+    fi
+    rm -rf "$tmpdir"
+
+    log "Installed cmux: $app_path"
+  fi
+
+  if [[ ! -x "$app_cli" ]]; then
+    die "cmux CLI not found at $app_cli"
+  fi
+
+  mkdir -p "$(dirname "$cli_link")"
+  if [[ -L "$cli_link" ]] && [[ "$(readlink "$cli_link")" == "$app_cli" ]]; then
+    log "cmux CLI symlink already correct: $cli_link -> $app_cli"
+    return 0
+  fi
+
+  if [[ -e "$cli_link" ]] || [[ -L "$cli_link" ]]; then
+    local backup="${cli_link}.bak.$(date +%Y%m%d-%H%M%S)"
+    warn "Backing up existing $cli_link -> $backup"
+    mv "$cli_link" "$backup"
+  fi
+
+  ln -sf "$app_cli" "$cli_link"
+  log "Linked $cli_link -> $app_cli"
 }
 
 # ==============================================================================

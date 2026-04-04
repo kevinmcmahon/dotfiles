@@ -22,9 +22,15 @@ This repo follows the [holman/dotfiles](https://github.com/holman/dotfiles) conv
 Key design decisions:
 
 - **`*.symlink` files** are symlinked into `$HOME` as dotfiles (e.g., `git/gitconfig.symlink` -> `~/.gitconfig`)
-- **XDG config directories** are symlinked into `~/.config/` (e.g., `nvim/` -> `~/.config/nvim/`)
+- **Repo-owned static XDG config** is symlinked into `~/.config/` (e.g., `nvim/` -> `~/.config/nvim/`)
+- **Mutable local state stays local** — if a tool needs plugins, caches, or generated state beside its config, bootstrap creates a real local directory and symlinks only the repo-owned files into it
 - **Dotfile management is separate from provisioning** — the bootstrap scripts handle tool installation, while the topic directories hold configuration. They meet at the symlink phase.
 - **Templates for secrets** — files containing personal data (git identity) use `.template` files that are copied (not symlinked) and `.gitignore`'d, so they never leak into the repo
+
+Current examples:
+
+- `ghostty/` is pure repo-owned config, so the whole topic is symlinked to `~/.config/ghostty`
+- `tmux` needs a writable local plugin directory for TPM, so bootstrap manages a real `~/.config/tmux/` directory and symlinks `tmux/tmux.conf` into it
 
 ## Architecture
 
@@ -88,9 +94,10 @@ Each `lib/platform-*.sh` must define these 8 functions:
 
 | Go | Homebrew | Official tarball to `/usr/local/go` |
 | Ruby | `brew install chruby ruby-install` | Manual install from source |
-| GUI apps | Homebrew Cask (kitty, tailscale) | N/A (server environment) |
+| Terminal app | Official cmux DMG -> `/Applications/cmux.app` + `~/.local/bin/cmux` symlink | N/A |
+| GUI apps | Homebrew Cask (tailscale) | N/A (server environment) |
 | macOS defaults | `defaults write` | N/A |
-| XDG dirs | nvim, yazi, tmux, starship, git, kitty | Same minus kitty |
+| XDG dirs | nvim, yazi, starship, git, ghostty; tmux uses a managed `~/.config/tmux/` dir with symlinked `tmux.conf` | Same |
 | fd/bat | Homebrew (`fd`, `bat`) | apt (`fdfind`, `batcat`) + symlinks |
 | fnm | Homebrew | curl installer -> `~/.local/bin` |
 | pbcopy/pbpaste | Native | xclip wrapper scripts |
@@ -103,11 +110,12 @@ Each `lib/platform-*.sh` must define these 8 functions:
 | `git/*.symlink` | `~/.<name>` | `git/gitconfig.symlink` -> `~/.gitconfig` |
 | `osx/*.symlink` | `~/.<name>` | `osx/Brewfile.symlink` -> `~/.Brewfile` |
 | `git/git-core.symlink/` | `~/.git-core/` | Hooks and secrets directory |
-| `tmux/tmux.conf.symlink` | `~/.tmux.conf` | tmux expects this path by default |
+| `/Applications/cmux.app/Contents/Resources/bin/cmux` | `~/.local/bin/cmux` | cmux CLI symlink for shell use |
 | `zsh/zshrc.symlink` | `~/.zshrc` | Handled by `zsh/install.sh` |
 | `zsh/zshenv.symlink` | `~/.zshenv` | Handled by `zsh/install.sh` |
 | `zsh/zprofile.symlink` | `~/.zprofile` | Handled by `zsh/install.sh` |
 | XDG topic dirs | `~/.config/<topic>/` | `nvim/` -> `~/.config/nvim/` |
+| `tmux/tmux.conf` | `~/.config/tmux/tmux.conf` | tmux uses a real XDG dir so plugins can live beside the symlinked config |
 | `zsh/env/` | `~/.zsh/env/` | Layered zsh environment |
 | `llm/templates.symlink/` | `<llm-data>/templates/` | llm template directory |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Claude Code global instructions |
@@ -140,8 +148,10 @@ A topic directory can contain any combination of:
   *.symlink          # Symlinked to ~/.<name> by bootstrap
   install.sh         # Standalone installer (can run independently)
   README.md          # Documentation for the topic
-  <config files>     # XDG config (symlinked to ~/.config/<topic>/)
+  <config files>     # Repo-owned XDG config (whole-dir symlink when the tool supports it)
 ```
+
+If a tool writes mutable state inside its config directory, keep the local directory real and symlink only the repo-owned files into it. `tmux` is the current example of this exception.
 
 Current topics: `ai`, `bash`, `claude`, `codex`, `cursor`, `gemini`, `ghostty`, `git`, `goose`, `helix`, `iterm2`, `kitty`, `linux`, `lldb`, `llm`, `node`, `nvim`, `opencode`, `osx`, `rvm`, `starship`, `tmux`, `tools`, `vale`, `vscode`, `yazi`, `zsh`
 
@@ -196,11 +206,12 @@ Git identity uses a layered include system to support multiple identities (perso
 ## Adding a New Tool
 
 1. **Create a topic directory**: `mkdir <tool>/`
-2. **Add config files** — these get symlinked to `~/.config/<tool>/` if you add the topic to the XDG list in the bootstrap scripts
-3. **Add `*.symlink` files** — for files that need to live at `~/.<name>`
-4. **Optionally add `install.sh`** — if the tool needs a standalone installer
-5. **Update the bootstrap** — add the install function to `lib/common.sh` (if cross-platform) or the appropriate `lib/platform-*.sh` (if platform-specific), and call it from `main()` in `bootstrap.sh`. If it needs XDG symlinking, add the topic name to the `symlink_xdg_dirs` loop in `common.sh`.
-6. **Update the audit scripts** — add checks for the new tool's commands, symlinks, and config to both `audit-mac.sh` and `audit-linux.sh`
+2. **Add config files** — if the tool's XDG directory is pure repo-owned config, add the topic to the shared XDG list so it symlinks to `~/.config/<tool>/`
+3. **Handle mutable state explicitly** — if the tool keeps plugins, caches, or generated state inside its config directory, create a real local XDG directory and symlink only the repo-owned files into it
+4. **Add `*.symlink` files** — for files that need to live at `~/.<name>`
+5. **Optionally add `install.sh`** — if the tool needs a standalone installer
+6. **Update the bootstrap** — add the install function to `lib/common.sh` (if cross-platform) or the appropriate `lib/platform-*.sh` (if platform-specific), and call it from `main()` in `bootstrap.sh`. If it uses whole-dir XDG symlinking, add the topic name to `symlink_xdg_dirs` in `common.sh`.
+7. **Update the audit scripts** — add checks for the new tool's commands, symlinks, and config to both `audit-mac.sh` and `audit-linux.sh`, including any special-case local-state layout
 
 ## Auditing
 
@@ -216,9 +227,11 @@ It checks:
 - Platform and architecture
 - Xcode CLT and Homebrew installation
 - All expected brew formulae and casks
+- cmux app install and CLI symlink
 - Nerd fonts
 - Every `*.symlink` file has a correct symlink in place
 - XDG config directory symlinks
+- tmux XDG layout (`~/.config/tmux/`, symlinked `tmux.conf`, TPM plugin dir)
 - Zsh environment (oh-my-zsh, plugins, shell symlinks)
 - Git identity files (existence + whether name/email are set)
 - Language runtimes (rust, go, uv, deno, fnm, chruby, node)
@@ -242,7 +255,8 @@ Linux counterpart of the macOS audit. Same pass/fail/warn framework, same helper
 - fd/bat wrapper symlinks in `~/.local/bin`
 - Optional packages (eza, zoxide, tree — warns if missing)
 - Every `*.symlink` file has a correct symlink in place
-- XDG config directory symlinks (no kitty)
+- XDG config directory symlinks
+- tmux XDG layout (`~/.config/tmux/`, symlinked `tmux.conf`, TPM plugin dir)
 - Zsh environment (oh-my-zsh, plugins, shell symlinks)
 - Git identity files (existence + whether name/email are set)
 - Language runtimes (rust, go, uv, deno, fnm, chruby, ruby-install)

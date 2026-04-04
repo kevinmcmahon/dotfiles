@@ -55,6 +55,10 @@ Personal dotfiles repo: modular, symlink-friendly, terminal-first config for mac
 - Never rename, relocate, or replace `*.symlink` files without calling it out
 - Never convert symlink-managed files into copied files
 - `claude/` is symlinked to `~/.claude/` — `claude/CLAUDE.md` is the user-level global config, not this file
+- Prefer whole-directory XDG symlinks for pure repo-owned config
+- If a tool needs mutable local state inside its XDG directory, keep the local directory real and symlink only the repo-owned files into it
+- `ghostty/` is the current whole-directory XDG example
+- `tmux/` is the current exception: bootstrap keeps a real `~/.config/tmux/` so TPM/plugins stay local, and symlinks `tmux/tmux.conf` into it
 
 ## Zsh Architecture
 

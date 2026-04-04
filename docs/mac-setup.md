@@ -8,9 +8,10 @@ The `bootstrap.sh` script auto-detects macOS and configures a complete developme
 
 - **Xcode Command Line Tools** (no Apple ID needed)
 - **Homebrew** and core CLI packages
-- **Dotfile symlinks** (zsh, git, nvim, tmux, kitty, etc.)
+- **Dotfile symlinks** (zsh, git, nvim, tmux, ghostty, etc.)
 - **Shell environment** (oh-my-zsh, plugins, starship prompt)
-- **GUI apps**: kitty (terminal) and Tailscale (VPN)
+- **cmux terminal app** via official DMG, with CLI linked into `~/.local/bin/cmux`
+- **GUI apps**: Tailscale (VPN)
 - **Go** via Homebrew
 - **Rust** toolchain and cargo tools (viu)
 - **Python** tooling via uv (package manager, ruff, pynvim)
@@ -56,7 +57,6 @@ exec zsh
 
 | App | Purpose |
 |-----|---------|
-| kitty | GPU-accelerated terminal emulator |
 | Tailscale | Zero-config VPN for secure remote access |
 
 ### Via Cargo
@@ -64,6 +64,12 @@ exec zsh
 | Tool | Purpose |
 |------|---------|
 | viu | Terminal image viewer |
+
+### Via Direct Download
+
+| App | Purpose |
+|-----|---------|
+| cmux | Native macOS terminal app, installed from the official DMG with Sparkle auto-updates |
 
 ### Via Installers
 
@@ -83,10 +89,14 @@ exec zsh
 |--------|--------|
 | `*.symlink` (root, git/, osx/) | `~/.<name>` |
 | `git/git-core.symlink/` | `~/.git-core` |
-| `nvim/`, `yazi/`, `tmux/`, `starship/`, `git/`, `kitty/` | `~/.config/<name>` |
+| `nvim/`, `yazi/`, `starship/`, `git/`, `ghostty/` | `~/.config/<name>` |
+| `tmux/tmux.conf` | `~/.config/tmux/tmux.conf` |
+| `/Applications/cmux.app/Contents/Resources/bin/cmux` | `~/.local/bin/cmux` |
 | `zsh/*.symlink` | `~/.zshrc`, `~/.zshenv`, `~/.zprofile` |
 | `llm/templates.symlink` | `~/.config/io.datasette.llm/templates` |
 | `claude/CLAUDE.md`, `commands/`, `docs/`, `hooks/`, `settings.json` | `~/.claude/<name>` |
+
+`ghostty` is treated as pure repo-owned XDG config, so the whole topic symlinks into `~/.config/ghostty`. `tmux` is the main exception: bootstrap keeps a real `~/.config/tmux/` directory so TPM plugins can stay local, and only symlinks `tmux/tmux.conf` into that directory.
 
 ## Post-Install Configuration
 

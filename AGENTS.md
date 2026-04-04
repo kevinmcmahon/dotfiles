@@ -98,6 +98,14 @@ Symlink-oriented installation is part of the design.
 - Do not convert symlink-managed files into copied files.
 - Any change affecting symlink targets or bootstrap expectations should be called out explicitly.
 
+### Repo-owned config vs local state
+
+- Prefer whole-directory XDG symlinks for pure repo-owned config.
+- If a tool needs mutable local state inside its XDG directory, keep the local directory real and symlink only the repo-owned files into it.
+- `ghostty/` is the current whole-directory XDG example.
+- `tmux/` is the current exception: bootstrap manages a real `~/.config/tmux/` so TPM/plugins stay local, and symlinks `tmux/tmux.conf` into that directory.
+- Do not "simplify" these cases into a single pattern unless the tool's state model actually supports it.
+
 ## Zsh architecture rules
 
 `zsh/` is a deliberate layered system. Preserve it.
@@ -212,6 +220,7 @@ Rules:
 - Prefer one-shot, rerunnable setup flows.
 - Avoid unnecessary interactive steps.
 - Avoid requiring manual edits in multiple places when the repo can encode the behavior once.
+- Keep repo-owned config separate from mutable machine-local state when designing bootstrap layout.
 - Update docs when setup behavior changes.
 
 ## Neovim rules

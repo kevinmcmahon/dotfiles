@@ -76,6 +76,24 @@ check_dir_exists() {
   fi
 }
 
+get_default_shell_macos() {
+  local shell_path
+
+  shell_path="$(dscacheutil -q user -a name "$USER" 2>/dev/null | awk -F': ' '$1 == "shell" { print $2; exit }')"
+  if [[ -n "$shell_path" ]]; then
+    printf '%s\n' "$shell_path"
+    return 0
+  fi
+
+  shell_path="$(id -P "$USER" 2>/dev/null | awk -F: '{ print $10 }')"
+  if [[ -n "$shell_path" ]]; then
+    printf '%s\n' "$shell_path"
+    return 0
+  fi
+
+  return 1
+}
+
 # ==============================================================================
 # Checks
 # ==============================================================================
@@ -132,9 +150,9 @@ done
 
 # --- Brew Cask apps ---
 section "Brew Cask Apps"
-cask_apps=(kitty tailscale)
+cask_apps=(tailscale)
 for app in "${cask_apps[@]}"; do
-  # Capitalise first letter for /Applications check (e.g. kitty → Kitty)
+  # Capitalise first letter for /Applications check
   app_name="$(tr '[:lower:]' '[:upper:]' <<< "${app:0:1}")${app:1}"
   if brew list --cask "$app" &>/dev/null 2>&1; then
     pass "$app"
@@ -144,6 +162,12 @@ for app in "${cask_apps[@]}"; do
     fail "$app not installed"
   fi
 done
+
+# --- Terminal applications ---
+section "Terminal Applications"
+check_dir_exists "/Applications/cmux.app" "/Applications/cmux.app"
+check_file_exists "/Applications/cmux.app/Contents/Resources/bin/cmux" "cmux bundled CLI"
+check_symlink "$LOCAL_BIN/cmux" "/Applications/cmux.app/Contents/Resources/bin/cmux" "~/.local/bin/cmux"
 
 # --- Brew Cask fonts ---
 section "Fonts"
@@ -185,14 +209,17 @@ check_symlink "$HOME/.git-core" "$DOTFILES_DIR/git/git-core.symlink" "~/.git-cor
 
 # --- XDG config directories ---
 section "XDG Config Directories (~/.config)"
-for d in nvim yazi tmux starship git kitty; do
+for d in nvim yazi starship git ghostty; do
   check_symlink "$CONFIG_DIR/$d" "$DOTFILES_DIR/$d" "~/.config/$d"
 done
+check_file_exists "$CONFIG_DIR/ghostty/appearance.conf" "~/.config/ghostty/appearance.conf"
 
-# tmux.conf at $HOME
-if [[ -f "$DOTFILES_DIR/tmux/tmux.conf.symlink" ]]; then
-  check_symlink "$HOME/.tmux.conf" "$DOTFILES_DIR/tmux/tmux.conf.symlink" "~/.tmux.conf"
-fi
+# --- tmux XDG layout ---
+section "tmux XDG Layout"
+check_dir_exists "$CONFIG_DIR/tmux" "~/.config/tmux"
+check_symlink "$CONFIG_DIR/tmux/tmux.conf" "$DOTFILES_DIR/tmux/tmux.conf" "~/.config/tmux/tmux.conf"
+check_dir_exists "$CONFIG_DIR/tmux/plugins" "~/.config/tmux/plugins"
+check_dir_exists "$CONFIG_DIR/tmux/plugins/tpm" "~/.config/tmux/plugins/tpm"
 
 # --- Zsh symlinks ---
 section "Zsh Environment"
@@ -359,11 +386,14 @@ check_dir_exists "$CONFIG_DIR" "~/.config"
 
 # --- Default shell ---
 section "Shell"
-current_shell="$(dscl . -read /Users/"$USER" UserShell 2>/dev/null | awk '{print $2}')"
-if [[ "$current_shell" == *"zsh"* ]]; then
-  pass "Default shell is zsh: $current_shell"
+if current_shell="$(get_default_shell_macos)"; then
+  if [[ "$current_shell" == *"zsh"* ]]; then
+    pass "Default shell is zsh: $current_shell"
+  else
+    warn "Default shell is not zsh: $current_shell"
+  fi
 else
-  warn "Default shell is not zsh: $current_shell"
+  warn "Unable to determine default shell"
 fi
 
 # --- macOS Defaults (spot-check key settings) ---

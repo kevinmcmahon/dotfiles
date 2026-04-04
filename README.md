@@ -18,7 +18,7 @@ The script auto-detects macOS or Linux and is safe to re-run (idempotent).
 
 - **Shell** — zsh, starship prompt, fzf, tmux
 - **Editors** — Neovim, Helix (config only), VS Code (config only)
-- **Terminals** — kitty (macOS), ghostty (config only)
+- **Terminals** — cmux app on macOS with Ghostty config under `~/.config/ghostty`
 - **Runtimes** — Rust, Go, Python (uv), Deno, Ruby (chruby + ruby-install), optionally Node.js (fnm)
 - **CLI tools** — yazi, lazygit, ripgrep, bat, fd, jq, jless, ast-grep, tree-sitter, viu, croc, ttyd, eza, zoxide, and more via Homebrew/apt/cargo
 - **AI tools** — Claude Code, Codex, Gemini CLI, OpenCode, llm (with plugins)
@@ -28,7 +28,8 @@ The script auto-detects macOS or Linux and is safe to re-run (idempotent).
 
 - **Topic directories** (`git/`, `zsh/`, `nvim/`, etc.) hold per-tool config
 - **`*.symlink` files** are linked into `$HOME` as dotfiles (e.g. `git/gitconfig.symlink` → `~/.gitconfig`)
-- **XDG config dirs** are linked into `~/.config/` (e.g. `kitty/` → `~/.config/kitty/`)
+- **Repo-owned static XDG config** is linked into `~/.config/` (e.g. `ghostty/` → `~/.config/ghostty/`)
+- **Mutable local state stays local** — `tmux` is managed as a real `~/.config/tmux/` directory with a symlinked `tmux.conf`, so TPM plugins do not live inside the repo
 - **Platform auto-detection** — a single `bootstrap.sh` entry point delegates to `lib/platform-mac.sh` or `lib/platform-linux.sh`
 
 ## Repository Structure
@@ -54,7 +55,7 @@ dotfiles/
 ├── goose/                     # Goose AI config
 ├── helix/                     # Helix editor config (XDG)
 ├── iterm2/                    # iTerm2 config (macOS)
-├── kitty/                     # Kitty terminal config (macOS, XDG)
+├── kitty/                     # Kitty terminal config (historical/reference)
 ├── linux/                     # Linux-specific files (PPD, scripts)
 ├── lldb/                      # LLDB debugger config
 ├── llm/                       # llm tool config + templates
@@ -91,8 +92,9 @@ dotfiles/
 ### Adding a New Tool
 
 1. Create a topic directory (e.g. `mytool/`)
-2. Add config files — use `*.symlink` for `$HOME` dotfiles, or the directory itself for XDG config
-3. If it needs installation logic, add it to the appropriate phase in `scripts/bootstrap.sh`
+2. Decide whether it is pure repo-owned config or needs mutable local state
+3. Add config files — use `*.symlink` for `$HOME` dotfiles, a whole topic directory for pure XDG config, or file-level symlinks inside a real local dir for mutable-state tools
+4. If it needs installation logic, add it to the appropriate phase in `scripts/bootstrap.sh`
 
 ## Auditing
 

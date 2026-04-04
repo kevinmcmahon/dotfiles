@@ -157,8 +157,7 @@ symlink_xdg_dirs() {
 
   mkdir -p "$CONFIG_DIR"
 
-  local topics="nvim yazi starship git"
-  [[ "$PLATFORM" == "Darwin" ]] && topics="$topics kitty"
+  local topics="nvim yazi starship git ghostty"
 
   for d in $topics; do
     local src="$DOTFILES_DIR/$d"

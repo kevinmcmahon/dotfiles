@@ -1,5 +1,8 @@
-# Linux specific environment variables
-export DISPLAY=:0
+# Linux-specific environment variables
+#
+# Most Linux usage here is remote and headless over SSH/tmux, so avoid forcing
+# DISPLAY globally. Add GUI-specific overrides in ~/.zsh/env/optional/local.zsh
+# on machines that actually need them.
 
 # keychain: SSH/GPG agent manager - reuses agents across shell sessions
 # Only run if keychain is installed and we have SSH identities

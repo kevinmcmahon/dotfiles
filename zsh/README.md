@@ -10,6 +10,8 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 2. Remove stock zprofile and zshrc
 ```
 rm ~/.zprofile ~/.zshrc ~/.zshenv 2>/dev/null
+rm -f ~/.zsh 2>/dev/null
+mkdir -p ~/.zsh
 ```
 
 3. Symlink zsh config files
@@ -17,7 +19,7 @@ rm ~/.zprofile ~/.zshrc ~/.zshenv 2>/dev/null
 ln -s ~/dotfiles/zsh/zprofile.symlink ~/.zprofile
 ln -s ~/dotfiles/zsh/zshrc.symlink ~/.zshrc
 ln -s ~/dotfiles/zsh/zshenv.symlink ~/.zshenv
-ln -s ~/dotfiles/zsh/env ~/.zsh
+ln -s ~/dotfiles/zsh/env ~/.zsh/env
 ```
 
 4. Add custom aliases to oh-my-zsh

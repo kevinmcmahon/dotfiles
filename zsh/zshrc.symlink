@@ -39,10 +39,9 @@ elif [[ ${IS_LINUX:-0} -eq 1 ]]; then
   load_env_file "${ZSH_ENV_ROOT}/platform/linux.zsh"
 fi
 
-# Load optional configurations last
-# - private.zsh: secrets / unversioned
-# - local.zsh: machine-local config (non-secret) / unversioned
-load_env_file "${ZSH_ENV_ROOT}/optional/private.zsh"
+# Load optional interactive configuration last.
+# private.zsh is already loaded from ~/.zshenv so non-interactive shells get it.
+# local.zsh is for machine-local interactive tweaks.
 load_env_file "${ZSH_ENV_ROOT}/optional/local.zsh"
 
 unset CORE_FUNCS
@@ -154,6 +153,22 @@ fi
 zstyle :omz:plugins:ssh-agent lazy yes
 zstyle :omz:plugins:ssh-agent quiet yes
 
+# Completion and autoload paths must be ready before oh-my-zsh runs compinit.
+fpath=(
+    "${HOME}/dotfiles/zsh/functions"
+    "${HOME}/.zfunc"
+    "${HOME}/dotfiles/zsh/completions"
+    "${fpath[@]}"
+)
+
+# Add brew completions on macOS
+if [[ $IS_MACOS -eq 1 ]] && command -v brew >/dev/null; then
+    fpath=("$(brew --prefix)/share/zsh/site-functions" "${fpath[@]}")
+fi
+
+# Completion styling
+zstyle ':completion:*' menu select
+
 [[ -f $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh || echo "Warning: oh-my-zsh not found"
 
 # Re-apply PATH after oh-my-zsh (it may reset PATH)
@@ -187,29 +202,6 @@ export EDITOR='nvim'
 # -----------------------------
 # COMPLETIONS
 # -----------------------------
-# Initialize completion system
-
-# Add completion paths
-fpath=(
-    "${HOME}/dotfiles/zsh/functions"
-    "${HOME}/.zfunc"
-    "${HOME}/dotfiles/zsh/completions"
-    "${fpath[@]}"
-)
-
-# Add brew completions on macOS
-if [[ $IS_MACOS -eq 1 ]] && command -v brew >/dev/null; then
-    fpath=("$(brew --prefix)/share/zsh/site-functions" "${fpath[@]}")
-fi
-
-# Completion styling
-zstyle ':completion:*' menu select
-
-autoload -Uz compinit && compinit
-
-# Enable bash completion compatibility
-autoload -U +X bashcompinit && bashcompinit
-
 # Package manager completions
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . "${HOME}/.config/tabtab/zsh/__tabtab.zsh" || true
 
@@ -294,5 +286,4 @@ export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
 
 
-# NOTE: compinit already called above (line 202) and by oh-my-zsh — no need to repeat
-fpath+=~/.zfunc
+# NOTE: oh-my-zsh already ran compinit using the fpath prepared above.

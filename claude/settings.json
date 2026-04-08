@@ -97,6 +97,17 @@
         ]
       }
     ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/ntfy-notify.sh prompt"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "",
@@ -129,7 +140,9 @@
     "swift-lsp@claude-plugins-official": true,
     "workflow-skill-design@trailofbits": true,
     "astral@astral-sh": true,
-    "telegram@claude-plugins-official": false
+    "telegram@claude-plugins-official": false,
+    "codex@openai-codex": true,
+    "last30days@last30days-skill": true
   },
   "extraKnownMarketplaces": {
     "trailofbits": {
@@ -142,6 +155,18 @@
       "source": {
         "source": "github",
         "repo": "astral-sh/claude-code-plugins"
+      }
+    },
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
+    },
+    "last30days-skill": {
+      "source": {
+        "source": "github",
+        "repo": "mvanhorn/last30days-skill"
       }
     }
   },

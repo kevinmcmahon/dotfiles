@@ -1,3 +1,10 @@
+---
+paths:
+  - "**/*.py"
+  - "**/pyproject.toml"
+  - "**/uv.lock"
+---
+
 # Python Development
 
 - **Version**: Python 3.11+ with type annotations

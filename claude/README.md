@@ -31,9 +31,9 @@ claude/
 ├── skills/
 │   └── perplexity/            # Perplexity web search skill (symlink → ai/)
 └── docs/                      # Context docs loaded via @-references in CLAUDE.md
-    ├── python.md              # Python conventions (symlink → ai/)
     ├── using-uv.md            # uv package manager guide (symlink → ai/)
     ├── docker-uv.md           # Multistage Docker + uv (symlink → ai/)
+    ├── tropes.md              # AI writing tropes to avoid (symlink → ai/)
     └── perplexity.md          # Perplexity search docs (symlink → ai/)
 ```
 
@@ -140,7 +140,7 @@ Slash commands available as `/command-name` in Claude Code sessions. All symlink
 
 Referenced in `CLAUDE.md` via `@~/.claude/docs/filename.md`. These are injected into every Claude Code session as background context:
 
-- **python.md** — Python 3.11+ conventions, ruff, mypy, type hints
+- **tropes.md** — AI writing tropes to avoid
 - **using-uv.md** — uv package manager field manual
 - **docker-uv.md** — Multistage Dockerfile patterns with uv
 
@@ -155,8 +155,8 @@ Enabled in `settings.json`:
 | `frontend-design` | Enabled |
 | `feature-dev` | Enabled |
 | `playwright` | Enabled |
+| `context7` | Enabled |
 | `claude-mem` | Enabled |
-| `context7` | Disabled |
 
 ---
 

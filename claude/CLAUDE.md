@@ -27,7 +27,12 @@
 - Anything that could cause data loss
 - Architectural changes
 
-## Code Quality Rules
+## Code Quality
+
+- Prefer correct, complete implementations over minimal ones.
+- Use appropriate data structures and algorithms — don't brute-force what has known better solution.
+- When fixing a bug, fix the root cause, not the symptom.
+- If something I asked for requires error handling or validation to work reliably, include it without asking.
 
 ### Style & Naming
 
@@ -50,7 +55,7 @@
 
 - When fixing a bug, NEVER throw away the old implementation and rewrite from scratch without my explicit permission. Try to fix what's there first.
 - NEVER create duplicate files/templates to work around issues — fix the original.
-- Treat every failure as a learning opportunity. Read the error, understand it, then fix it.
+- Treat every failure as a learning opportunity. Read the error, understand it, and then fix it.
 - NEVER ignore test output or logs — they often contain critical information.
 
 ## Testing
@@ -58,25 +63,15 @@
 - Tests MUST cover the functionality being implemented.
 - Test output must be clean to pass. If logs are supposed to contain errors, capture and assert on them.
 
-### TDD Process
-
-1. Write a failing test that defines the desired behavior
-2. Run the test — confirm it fails as expected
-3. Write the minimum code to make the test pass
-4. Run the test — confirm it passes
-5. Refactor while keeping tests green
-6. Repeat
-
 ## Writing Conventions
 
 - @~/.claude/docs/tropes.md
 
 ## Tools & Conventions  
 
-- @~/.claude/docs/python.md
+- Use Perplexity for web search. We have a perplexity skill.
 - @~/.claude/docs/using-uv.md
 - @~/.claude/docs/docker-uv.md
-- @~/.claude/docs/perplexity.md
 
 ## Other Important Considerations
 
@@ -99,7 +94,7 @@ When encountering tool failures (biome, ruff, pytest, etc.):
 
 Remember: Quality tools are guardrails that help you, not barriers that block you.
 
-## Problem-Solving Approach:
+## Problem-Solving Approach
 
 - FIX problems, don't work around them
 - THIS IS IMPORTANT I highly prefer all work to be done via the subagent development skill
@@ -107,6 +102,5 @@ Remember: Quality tools are guardrails that help you, not barriers that block yo
 - USE proper debugging to find root causes
 - AVOID shortcuts that break user experience
 - When choosing port numbers for new services, make them thematically related and memorable (leet-speak, pop culture, or project-relevant numbers). Keep infrastructure defaults boring (NATS, databases, etc.). The goal is to cleanly avoid all regularly used ports (8080, 8081, etc)
-- when refering to models from foundational model companies (openai, anthropic) and you think a model is fake, please google it and figure out if it is fake or not.
+- when referring to models from foundational model companies (openai, anthropic) and you think a model is fake, please google it and figure out if it is fake or not.
 - Your knowledge cut off is getting in the way of you making good decisions
-- use the memory MCP server to remember various important things. Including preferences, and other important details. The memory is robust, and spans agents

@@ -1,0 +1,4 @@
+# Put machine-local, non-secret interactive Zsh config here
+# Examples:
+# alias work='cd ~/work'
+# export DEVBOX_NAME='mbp'

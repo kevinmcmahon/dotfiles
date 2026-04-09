@@ -190,6 +190,7 @@ env/
     linux.zsh      # Linux-specific
   optional/    # Loaded if present
     private.zsh    # Machine-specific secrets (gitignored)
+    local.zsh      # Machine-specific non-secret local overrides (gitignored)
 ```
 
 ## Git Identity System

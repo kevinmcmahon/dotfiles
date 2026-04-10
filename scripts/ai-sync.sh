@@ -5,7 +5,7 @@ set -euo pipefail
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 AI_DIR="$DOTFILES_DIR/ai"
-TOOLS=(claude opencode)
+TOOLS=(claude codex opencode)
 RESOURCES=(commands docs skills)
 
 # Counters
@@ -48,6 +48,58 @@ EOF
   exit 0
 }
 
+resolve_target_dir() {
+  local tool="$1"
+  local resource="$2"
+
+  case "$tool:$resource" in
+    claude:commands|claude:docs|claude:skills|opencode:commands|opencode:docs|opencode:skills)
+      printf "%s/%s/%s" "$DOTFILES_DIR" "$tool" "$resource"
+      ;;
+    codex:skills)
+      printf "%s/.codex/skills" "$HOME"
+      ;;
+    codex:commands|codex:docs)
+      return 1
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+relative_link_target() {
+  local src="$1"
+  local target_dir="$2"
+
+  python3 - "$src" "$target_dir" <<'PY'
+import os
+import sys
+
+src = os.path.abspath(sys.argv[1])
+target_dir = os.path.abspath(sys.argv[2])
+print(os.path.relpath(src, target_dir))
+PY
+}
+
+link_points_into_ai() {
+  local link="$1"
+
+  python3 - "$link" "$AI_DIR" <<'PY'
+import os
+import sys
+
+link = sys.argv[1]
+ai_dir = os.path.abspath(sys.argv[2])
+
+if not os.path.islink(link):
+    raise SystemExit(1)
+
+resolved = os.path.abspath(os.path.join(os.path.dirname(link), os.readlink(link)))
+raise SystemExit(0 if os.path.commonpath([resolved, ai_dir]) == ai_dir else 1)
+PY
+}
+
 # ==============================================================================
 # Parse arguments
 # ==============================================================================
@@ -74,7 +126,11 @@ done
 sync_resource() {
   local tool="$1"
   local resource="$2"
-  local target_dir="$DOTFILES_DIR/$tool/$resource"
+  local target_dir
+  if ! target_dir="$(resolve_target_dir "$tool" "$resource")"; then
+    verbose "skip: no target mapping for $tool/$resource"
+    return 0
+  fi
   local common_dir="$AI_DIR/$resource/common"
   local specific_dir="$AI_DIR/$resource/$tool"
 
@@ -85,14 +141,15 @@ sync_resource() {
     mkdir -p "$target_dir"
   fi
 
-  # Pass 1: common files (depth from tool/resource/ to repo root is always 2)
+  # Pass 1: common files
   if [[ -d "$common_dir" ]]; then
     for src in "$common_dir"/*; do
       [[ -e "$src" ]] || continue
       local name
       name="$(basename "$src")"
       local link="$target_dir/$name"
-      local rel_target="../../ai/$resource/common/$name"
+      local rel_target
+      rel_target="$(relative_link_target "$src" "$target_dir")"
 
       linked_names["$name"]="common"
 
@@ -123,7 +180,8 @@ sync_resource() {
       local name
       name="$(basename "$src")"
       local link="$target_dir/$name"
-      local rel_target="../../ai/$resource/$tool/$name"
+      local rel_target
+      rel_target="$(relative_link_target "$src" "$target_dir")"
 
       if [[ -n "${linked_names[$name]:-}" ]]; then
         verbose "override: $name ($tool-specific wins over common)"
@@ -157,11 +215,9 @@ sync_resource() {
       [[ -L "$link" ]] || continue
       local name
       name="$(basename "$link")"
-      local target_path
-      target_path="$(readlink "$link")"
 
       # Only clean up symlinks that point into ai/
-      if [[ "$target_path" == ../../ai/* ]]; then
+      if link_points_into_ai "$link"; then
         if [[ -z "${linked_names[$name]:-}" ]]; then
           verbose "stale: removing $link (target no longer in source)"
           if (( ! DRY_RUN )); then

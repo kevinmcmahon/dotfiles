@@ -72,6 +72,7 @@
 - Use Perplexity for web search. We have a perplexity skill.
 - @~/.claude/docs/using-uv.md
 - @~/.claude/docs/docker-uv.md
+- @~/.claude/docs/workflow-protocol.md
 
 ## Other Important Considerations
 

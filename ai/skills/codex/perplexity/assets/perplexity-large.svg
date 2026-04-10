@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" role="img" aria-label="Perplexity Search">
+  <rect width="320" height="120" rx="24" fill="#0F172A"/>
+  <g fill="#F8FAFC">
+    <path d="M36 28h56c26.51 0 48 21.49 48 48s-21.49 48-48 48H36V28zm42 24H64v48h14c13.255 0 24-10.745 24-24S91.255 52 78 52z"/>
+    <path d="M168 45h14l21 49h-15l-4-10h-22l-4 10h-15l25-49zm12 28-7-18-7 18h14z"/>
+    <path d="M212 45h14v37h23v12h-37V45z"/>
+    <path d="M257 45h14v49h-14V45z"/>
+  </g>
+</svg>

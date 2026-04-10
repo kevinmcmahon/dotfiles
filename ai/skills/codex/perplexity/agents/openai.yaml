@@ -1,0 +1,10 @@
+interface:
+  display_name: "Perplexity Search"
+  short_description: "Current web research via Perplexity"
+  icon_small: "./assets/perplexity-small.svg"
+  icon_large: "./assets/perplexity-large.svg"
+  brand_color: "#0F172A"
+  default_prompt: "Use $perplexity to research current information with source-backed results."
+
+policy:
+  allow_implicit_invocation: true

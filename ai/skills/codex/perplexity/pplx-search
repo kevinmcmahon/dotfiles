@@ -1,0 +1,207 @@
+#!/usr/bin/env python3
+"""
+pplx-search — lightweight Perplexity CLI for Codex.
+
+Usage:
+    pplx-search "your query here"
+    pplx-search --model sonar-pro "your query here"
+    pplx-search --deep "your query here"
+    pplx-search --reason "your query here"
+    echo "query" | pplx-search --stdin
+
+Requires: PERPLEXITY_API_KEY environment variable.
+No dependencies beyond Python 3.12+ stdlib.
+"""
+
+import argparse
+import json
+import os
+import sys
+import textwrap
+import urllib.error
+import urllib.request
+
+API_URL = "https://api.perplexity.ai/chat/completions"
+
+MODELS = {
+    "sonar": "sonar",
+    "sonar-pro": "sonar-pro",
+    "deep-research": "sonar-deep-research",
+    "reasoning": "sonar-reasoning-pro",
+}
+
+DEFAULT_MODEL = os.environ.get("PPLX_SEARCH_DEFAULT_MODEL", "sonar-pro")
+DEFAULT_SYSTEM_PROMPT = os.environ.get(
+    "PPLX_SEARCH_DEFAULT_SYSTEM_PROMPT",
+    (
+        "Be precise and concise. Prefer primary sources when available. "
+        "For time-sensitive claims, include concrete dates. "
+        "Separate confirmed facts from inference. "
+        "Cite sources clearly and note uncertainty when evidence is mixed. "
+        "Use markdown formatting."
+    ),
+)
+
+
+def get_api_key():
+    key = os.environ.get("PERPLEXITY_API_KEY")
+    if not key:
+        print("ERROR: PERPLEXITY_API_KEY environment variable not set.", file=sys.stderr)
+        print("Get a key at: https://www.perplexity.ai/settings/api", file=sys.stderr)
+        sys.exit(1)
+    return key
+
+
+def health_check() -> int:
+    issues = []
+    key = os.environ.get("PERPLEXITY_API_KEY")
+    if not key:
+        issues.append("PERPLEXITY_API_KEY is not set")
+    elif not key.startswith("pplx-"):
+        issues.append("PERPLEXITY_API_KEY does not start with 'pplx-'")
+
+    print("pplx-search health")
+    print(f"- python: {sys.version.split()[0]}")
+    print(f"- api_key: {'present' if key else 'missing'}")
+    print(f"- api_url: {API_URL}")
+    print(f"- default_model: {DEFAULT_MODEL}")
+
+    if issues:
+        for issue in issues:
+            print(f"- issue: {issue}")
+        return 1
+
+    print("- status: ok")
+    return 0
+
+
+def search(query: str, model: str = DEFAULT_MODEL, system_prompt: str | None = None) -> dict:
+    api_key = get_api_key()
+
+    if system_prompt is None:
+        system_prompt = DEFAULT_SYSTEM_PROMPT
+
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": query},
+        ],
+    }
+
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        API_URL,
+        data=data,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        print(f"ERROR: Perplexity API returned {e.code}: {body}", file=sys.stderr)
+        sys.exit(1)
+    except urllib.error.URLError as e:
+        print(f"ERROR: Could not reach Perplexity API: {e.reason}", file=sys.stderr)
+        sys.exit(1)
+
+
+def format_response(resp: dict) -> str:
+    lines = []
+
+    content = resp.get("choices", [{}])[0].get("message", {}).get("content", "")
+    if not content:
+        return "No response received."
+
+    lines.append(content.strip())
+
+    citations = resp.get("citations", [])
+    if citations:
+        lines.append("")
+        lines.append("---")
+        lines.append("**Sources:**")
+        for i, url in enumerate(citations, 1):
+            lines.append(f"  [{i}] {url}")
+
+    usage = resp.get("usage", {})
+    if usage:
+        prompt_tok = usage.get("prompt_tokens", 0)
+        completion_tok = usage.get("completion_tokens", 0)
+        lines.append("")
+        lines.append(f"_[tokens: {prompt_tok} in / {completion_tok} out]_")
+
+    return "\n".join(lines)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Search the web via Perplexity AI.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=textwrap.dedent(
+            """\
+            models:
+              sonar             fast search
+              sonar-pro         general search
+              deep-research     comprehensive multi-step research
+              reasoning         analytical / reasoning tasks
+
+            examples:
+              pplx-search "latest rust async improvements"
+              pplx-search --model sonar "quick fact check"
+              pplx-search --deep "comprehensive comparison of state management in React 2025"
+              pplx-search --reason "why is borrow checker needed if we have lifetimes"
+            """
+        ),
+    )
+    parser.add_argument("query", nargs="*", help="Search query")
+    parser.add_argument("-m", "--model", choices=list(MODELS.keys()), default=None)
+    parser.add_argument("--deep", action="store_true", help="Use deep-research model")
+    parser.add_argument("--reason", action="store_true", help="Use reasoning model")
+    parser.add_argument("--stdin", action="store_true", help="Read query from stdin")
+    parser.add_argument("--json", action="store_true", help="Output raw JSON response")
+    parser.add_argument("--health", action="store_true", help="Check local setup and exit")
+    parser.add_argument("--system", type=str, default=None, help="Custom system prompt")
+
+    args = parser.parse_args()
+
+    if args.health:
+        sys.exit(health_check())
+
+    if args.deep:
+        model = MODELS["deep-research"]
+    elif args.reason:
+        model = MODELS["reasoning"]
+    elif args.model:
+        model = MODELS[args.model]
+    else:
+        model = MODELS[DEFAULT_MODEL]
+
+    if args.stdin:
+        query = sys.stdin.read().strip()
+    elif args.query:
+        query = " ".join(args.query)
+    else:
+        parser.print_help()
+        sys.exit(1)
+
+    if not query:
+        print("ERROR: Empty query.", file=sys.stderr)
+        sys.exit(1)
+
+    resp = search(query, model=model, system_prompt=args.system)
+
+    if args.json:
+        print(json.dumps(resp, indent=2))
+    else:
+        print(format_response(resp))
+
+
+if __name__ == "__main__":
+    main()

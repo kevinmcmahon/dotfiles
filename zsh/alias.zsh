@@ -23,6 +23,9 @@ alias cld='claude'
 alias cldy='claude --dangerously-skip-permissions'
 alias ccusage='npx ccusage@latest'
 
+alias codexy='codex --dangerously-bypass-approvals-and-sandbox'
+
+
 alias repomix='npx repomix@latest'
 alias cdk='npx aws-cdk@latest'
 alias eslint='npx eslint@latest'

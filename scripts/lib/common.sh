@@ -673,13 +673,13 @@ install_llm() {
 
   if ! need_cmd llm; then
     if need_cmd uv; then
-      uv tool install llm
+      uv tool install llm --python 3.12
     elif need_cmd pipx; then
       pipx install llm
     else
       warn "Neither uv nor pipx found; installing llm via uv after uv install"
       install_uv
-      uv tool install llm
+      uv tool install llm --python 3.12
     fi
 
     export PATH="$HOME/.local/bin:$PATH"

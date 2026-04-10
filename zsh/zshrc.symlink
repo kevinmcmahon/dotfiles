@@ -287,3 +287,4 @@ export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
 
 
 # NOTE: oh-my-zsh already ran compinit using the fpath prepared above.
+

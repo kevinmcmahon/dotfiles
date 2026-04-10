@@ -45,3 +45,4 @@ fi
 
 # Don't let interactive Zsh config re-run this stuff
 export ZSHENV_LOADED=1
+. "$HOME/.cargo/env"

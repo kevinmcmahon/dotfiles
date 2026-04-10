@@ -265,7 +265,7 @@ if command -v node >/dev/null 2>&1; then
     warn "pnpm not available (run: corepack enable)"
   fi
 else
-  warn "node not installed (run: fnm install --lts, or INSTALL_NODE=1)"
+  warn "node not installed (run: fnm install --lts)"
 fi
 
 # --- Cargo tools ---

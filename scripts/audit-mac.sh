@@ -280,7 +280,7 @@ check_cmd deno "deno"
 check_cmd fnm "fnm"
 check_cmd chruby-exec "chruby"
 
-# Optional: node (installed via fnm post-bootstrap or INSTALL_NODE=1)
+# Optional: node (installed via fnm during bootstrap unless INSTALL_NODE=0)
 if command -v node >/dev/null 2>&1; then
   pass "node: $(node --version)"
 
@@ -305,7 +305,7 @@ if command -v node >/dev/null 2>&1; then
     warn "pnpm not available (run: corepack enable)"
   fi
 else
-  warn "node not installed (run: fnm install --lts, or INSTALL_NODE=1)"
+  warn "node not installed (run: fnm install --lts)"
 fi
 
 # --- Cargo tools ---

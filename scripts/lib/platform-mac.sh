@@ -125,7 +125,7 @@ print_next_steps() {
     log "     fnm use lts-latest"
     log "     fnm default lts-latest"
     log "     corepack enable"
-    log "     (or re-run with INSTALL_NODE=1 to automate this)"
+    log "     (Node was skipped because INSTALL_NODE=0)"
   fi
   log "  7. Install Ruby with ruby-install:"
   log "     ruby-install ruby 3.3.6"

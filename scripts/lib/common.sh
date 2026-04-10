@@ -580,7 +580,7 @@ install_codex() {
 
 setup_node() {
   if [[ "$INSTALL_NODE" != "1" ]]; then
-    log "Skipping Node.js setup (set INSTALL_NODE=1 to enable)"
+    log "Skipping Node.js setup (INSTALL_NODE=0)"
     return 0
   fi
 
@@ -743,19 +743,19 @@ install_opencode() {
     export PATH="$HOME/.opencode/bin:$PATH"
     log "opencode already installed: $(opencode --version | head -n 1)"
   else
-    curl -fsSL https://opencode.ai/install | bash
-
-    # The installer adds a PATH line to ~/.zshrc; remove it (we manage PATH in path.zsh)
+    # The installer modifies ~/.zshrc to add PATH — snapshot and restore to block it
     local zshrc_real
     zshrc_real="$(readlink -f "$HOME/.zshrc" 2>/dev/null || echo "$HOME/.zshrc")"
+    local zshrc_snapshot=""
     if [[ -f "$zshrc_real" ]]; then
-      if [[ "$PLATFORM" == "Darwin" ]]; then
-        sed -i '' '/^# opencode$/d' "$zshrc_real"
-        sed -i '' '/\.opencode\/bin/d' "$zshrc_real"
-      else
-        sed -i '/^# opencode$/d' "$zshrc_real"
-        sed -i '/\.opencode\/bin/d' "$zshrc_real"
-      fi
+      zshrc_snapshot="$(cat "$zshrc_real")"
+    fi
+
+    curl -fsSL https://opencode.ai/install | bash
+
+    # Restore .zshrc — we manage PATH ourselves
+    if [[ -n "$zshrc_snapshot" && -f "$zshrc_real" ]]; then
+      printf '%s\n' "$zshrc_snapshot" > "$zshrc_real"
     fi
 
     export PATH="$HOME/.opencode/bin:$PATH"
@@ -803,5 +803,5 @@ post_checks() {
   post_checks_platform
 
   need_cmd gemini || warn "gemini CLI missing"
-  need_cmd node || log "Node.js not yet installed (run: fnm install --lts, or INSTALL_NODE=1)"
+  need_cmd node || log "Node.js not yet installed (run: fnm install --lts)"
 }

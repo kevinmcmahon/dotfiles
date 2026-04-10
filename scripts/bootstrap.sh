@@ -8,14 +8,14 @@ set -euo pipefail
 #
 # Usage:
 #   scripts/bootstrap.sh
-#   INSTALL_NODE=1 scripts/bootstrap.sh    # also install Node.js LTS
+#   INSTALL_NODE=0 scripts/bootstrap.sh    # skip Node.js LTS install
 #   SKIP_DEFAULTS=1 scripts/bootstrap.sh   # skip macOS system defaults
 # ------------------------------------------------------------------------------
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 LOCAL_BIN="${LOCAL_BIN:-$HOME/.local/bin}"
 CONFIG_DIR="${CONFIG_DIR:-$HOME/.config}"
-INSTALL_NODE="${INSTALL_NODE:-0}"
+INSTALL_NODE="${INSTALL_NODE:-1}"
 
 # --- Log capture: tee all output to a timestamped file ---
 LOG_DIR="${LOG_DIR:-/tmp/dotfiles-bootstrap}"
@@ -60,11 +60,11 @@ main() {
   ensure_git_identity_templates
   symlink_xdg_dirs
 
-  # Phase 2.5 — tmux (XDG config + TPM plugin bootstrap)
-  install_tmux_plugins
-
   # Phase 3 — Platform Packages (brew bundle needs BootstrapBrewfile symlink)
   install_platform_packages
+
+  # Phase 3.5 — tmux (XDG config + TPM plugin bootstrap; after brew so tmux is available)
+  install_tmux_plugins
 
   # Phase 4 — Shell Environment
   install_zsh_environment

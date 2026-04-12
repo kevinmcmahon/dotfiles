@@ -221,7 +221,6 @@ command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
 command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
 command -v ngrok &>/dev/null && eval "$(ngrok completion)"
 command -v deno >/dev/null && eval "$(deno completions zsh)"
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # Machine-local completions (not versioned)
 [[ -f "$HOME/.zsh/env/optional/local_completions.zsh" ]] && source "$HOME/.zsh/env/optional/local_completions.zsh"
@@ -288,3 +287,4 @@ export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
 
 # NOTE: oh-my-zsh already ran compinit using the fpath prepared above.
 
+alias claude-mem='bun "$HOME/.claude/plugins/cache/thedotmack/claude-mem/12.1.0/scripts/worker-service.cjs"'

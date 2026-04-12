@@ -1,2 +1,2 @@
 # ABOUTME: Bun shell completions
-[[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
+command -v bun >/dev/null && eval "$(bun completions 2>/dev/null)"

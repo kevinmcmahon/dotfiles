@@ -168,6 +168,18 @@
         "source": "github",
         "repo": "mvanhorn/last30days-skill"
       }
+    },
+    "thedotmack": {
+      "source": {
+        "source": "github",
+        "repo": "thedotmack/claude-mem"
+      }
+    },
+    "goland-claude-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "JetBrains/go-modern-guidelines"
+      }
     }
   },
   "alwaysThinkingEnabled": true,

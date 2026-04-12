@@ -277,6 +277,7 @@ check_cmd cargo "cargo"
 check_cmd go "go"
 check_cmd uv "uv"
 check_cmd deno "deno"
+check_cmd bun "bun"
 check_cmd fnm "fnm"
 check_cmd chruby-exec "chruby"
 

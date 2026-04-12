@@ -207,6 +207,7 @@ check_cmd rustc "rustc"
 check_cmd cargo "cargo"
 check_cmd uv "uv"
 check_cmd deno "deno"
+check_cmd bun "bun"
 check_cmd fnm "fnm"
 
 # --- Go ---

@@ -57,7 +57,7 @@ scripts/
 | 2. Dotfile Symlinks | `*.symlink` -> `~/.<name>`, git identity templates, XDG config dirs | `common.sh` |
 | 3. Platform Packages | Remaining platform tools (brew bundle, cask apps / go, nvim, lazygit, etc.) | `platform-*.sh` |
 | 4. Shell Environment | oh-my-zsh, plugins, shell symlinks, set default shell | `common.sh` + `platform-*.sh` |
-| 5. Language Runtimes | Rust/rustup, uv, Deno, optionally Node.js (fnm + corepack) | `common.sh` + `platform-*.sh` |
+| 5. Language Runtimes | Rust/rustup, uv, Deno, Bun, optionally Node.js (fnm + corepack) | `common.sh` + `platform-*.sh` |
 | 6. Dev Tooling | Neovim Python venv, ruff, llm + plugins, llm templates | `common.sh` |
 | 7. AI/Dev CLIs | Claude Code, Claude config symlinks, OpenCode | `common.sh` |
 | 8. Platform Config | macOS system defaults + Spotlight exclusions (no-op on Linux) | `platform-*.sh` |

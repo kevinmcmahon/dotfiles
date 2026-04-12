@@ -40,6 +40,10 @@ if [[ -n "$MOSH" && -n "$KITTY_SHELL_INTEGRATION" ]]; then
   export KITTY_SHELL_INTEGRATION="$KITTY_SHELL_INTEGRATION no-keyboard"
 fi
 
+# PATH setup (sourced here so non-interactive shells like hooks get it too;
+# safe to re-source from .zshrc — typeset -U deduplicates)
+[[ -f "$HOME/.zsh/env/core/path.zsh" ]] && source "$HOME/.zsh/env/core/path.zsh"
+
 # Load private/unversioned env vars (needed by non-interactive shells like Claude hooks)
 [[ -f "$HOME/.zsh/env/optional/private.zsh" ]] && source "$HOME/.zsh/env/optional/private.zsh"
 

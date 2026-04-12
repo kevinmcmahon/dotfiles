@@ -463,6 +463,21 @@ install_deno() {
   log "deno installed: $(deno --version 2>/dev/null | head -n 1 || echo 'WARN: deno not found in PATH')"
 }
 
+install_bun() {
+  log "Installing Bun"
+  if need_cmd bun || [[ -x "$HOME/.bun/bin/bun" ]]; then
+    export PATH="$HOME/.bun/bin:$PATH"
+    log "bun already installed: $(bun --version)"
+    return 0
+  fi
+
+  curl -fsSL https://bun.sh/install | bash -s -- --no-modify-profile
+
+  export PATH="$HOME/.bun/bin:$PATH"
+
+  log "bun installed: $(bun --version 2>/dev/null || echo 'WARN: bun not found in PATH')"
+}
+
 ensure_local_bin_in_path() {
   log "Ensuring LOCAL_BIN is on PATH for this bootstrap run"
   if ! echo "$PATH" | tr ':' '\n' | grep -qx "$LOCAL_BIN"; then
@@ -797,6 +812,7 @@ post_checks() {
   need_cmd cargo || warn "cargo missing"
   need_cmd uv || warn "uv missing"
   need_cmd deno || warn "deno missing"
+  need_cmd bun || warn "bun missing"
   need_cmd fnm || warn "fnm missing"
 
   # Platform-specific post-checks (defined by platform modules)

@@ -74,6 +74,7 @@ main() {
   install_rust_and_cargo_tools
   install_uv
   install_deno
+  install_bun
   setup_node
 
   # Phase 6 — Dev Tooling

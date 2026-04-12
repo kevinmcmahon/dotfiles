@@ -235,7 +235,7 @@ It checks:
 - tmux XDG layout (`~/.config/tmux/`, symlinked `tmux.conf`, TPM plugin dir)
 - Zsh environment (oh-my-zsh, plugins, shell symlinks)
 - Git identity files (existence + whether name/email are set)
-- Language runtimes (rust, go, uv, deno, fnm, chruby, node)
+- Language runtimes (rust, go, uv, deno, bun, fnm, chruby, node)
 - Cargo/brew tools (viu)
 - Python tooling (ruff, neovim python venv)
 - LLM tool + plugins + template symlinks
@@ -260,7 +260,7 @@ Linux counterpart of the macOS audit. Same pass/fail/warn framework, same helper
 - tmux XDG layout (`~/.config/tmux/`, symlinked `tmux.conf`, TPM plugin dir)
 - Zsh environment (oh-my-zsh, plugins, shell symlinks)
 - Git identity files (existence + whether name/email are set)
-- Language runtimes (rust, go, uv, deno, fnm, chruby, ruby-install)
+- Language runtimes (rust, go, uv, deno, bun, fnm, chruby, ruby-install)
 - Binary installs in `~/.local/bin` (nvim AppImage, lazygit)
 - Starship and fzf (from non-brew sources)
 - Cargo tools (viu, yazi)

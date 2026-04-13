@@ -8,10 +8,7 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
-    "allow": [
-      "Bash(ls:*)",
-      "Bash(sg:*)"
-    ],
+    "allow": ["Bash(ls:*)", "Bash(sg:*)"],
     "deny": [
       "Bash(rm -rf *)",
       "Bash(rm -fr *)",
@@ -135,14 +132,12 @@
     "gopls-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "linear@claude-plugins-official": true,
     "second-opinion@trailofbits": true,
     "swift-lsp@claude-plugins-official": true,
     "workflow-skill-design@trailofbits": true,
     "astral@astral-sh": true,
-    "telegram@claude-plugins-official": false,
     "codex@openai-codex": true,
-    "last30days@last30days-skill": true
+    "telegram@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "trailofbits": {
@@ -161,12 +156,6 @@
       "source": {
         "source": "github",
         "repo": "openai/codex-plugin-cc"
-      }
-    },
-    "last30days-skill": {
-      "source": {
-        "source": "github",
-        "repo": "mvanhorn/last30days-skill"
       }
     },
     "thedotmack": {

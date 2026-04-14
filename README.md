@@ -62,7 +62,8 @@ dotfiles/
 ├── node/                      # Node.js installer (fnm)
 ├── nvim/                      # Neovim config (XDG)
 ├── opencode/                  # OpenCode config
-├── osx/                       # Brewfiles + macOS defaults
+├── homebrew/                  # Brewfiles (Bootstrap + full) + snapshots
+├── osx/                       # macOS defaults + spotlight config
 ├── rvm/                       # Ruby version manager config
 ├── starship/                  # Starship prompt config (XDG)
 ├── tmux/                      # tmux config

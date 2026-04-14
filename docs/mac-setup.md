@@ -87,7 +87,7 @@ exec zsh
 
 | Source | Target |
 |--------|--------|
-| `*.symlink` (root, git/, osx/) | `~/.<name>` |
+| `*.symlink` (root, git/, homebrew/) | `~/.<name>` |
 | `git/git-core.symlink/` | `~/.git-core` |
 | `nvim/`, `yazi/`, `starship/`, `git/`, `ghostty/` | `~/.config/<name>` |
 | `tmux/tmux.conf` | `~/.config/tmux/tmux.conf` |

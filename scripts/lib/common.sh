@@ -76,9 +76,9 @@ symlink_dotfiles_symlink_pattern() {
     log "Linked $target -> $f"
   done
 
-  # Symlink osx/*.symlink files (Brewfile, BootstrapBrewfile, etc.) — macOS only
+  # Symlink homebrew/*.symlink files (Brewfile, BootstrapBrewfile, etc.) — macOS only
   if [[ "$PLATFORM" == "Darwin" ]]; then
-    for f in "$DOTFILES_DIR"/osx/*.symlink; do
+    for f in "$DOTFILES_DIR"/homebrew/*.symlink; do
       base="$(basename "$f" .symlink)"
       target="$HOME/.${base}"
       if [ -L "$target" ] || [ -e "$target" ]; then

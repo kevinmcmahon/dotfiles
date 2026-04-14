@@ -108,7 +108,7 @@ Each `lib/platform-*.sh` must define these 8 functions:
 |---------------|------------|---------|
 | `<root>/*.symlink` | `~/.<name>` | `tools/aider.conf.yml.symlink` -> `~/.aider.conf.yml` |
 | `git/*.symlink` | `~/.<name>` | `git/gitconfig.symlink` -> `~/.gitconfig` |
-| `osx/*.symlink` | `~/.<name>` | `osx/Brewfile.symlink` -> `~/.Brewfile` |
+| `homebrew/*.symlink` | `~/.<name>` | `homebrew/Brewfile.symlink` -> `~/.Brewfile` |
 | `git/git-core.symlink/` | `~/.git-core/` | Hooks and secrets directory |
 | `/Applications/cmux.app/Contents/Resources/bin/cmux` | `~/.local/bin/cmux` | cmux CLI symlink for shell use |
 | `zsh/zshrc.symlink` | `~/.zshrc` | Handled by `zsh/install.sh` |

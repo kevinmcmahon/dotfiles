@@ -247,6 +247,7 @@ autoload -Uz listening
 autoload -Uz h
 autoload -Uz mdview
 autoload -Uz add-zsh-hook
+autoload -Uz fixmouse
 autoload -Uz reload
 autoload -Uz ai-sync
 autoload -Uz npmg

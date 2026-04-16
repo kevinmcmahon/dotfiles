@@ -139,7 +139,8 @@
     "workflow-skill-design@trailofbits": true,
     "astral@astral-sh": true,
     "codex@openai-codex": true,
-    "telegram@claude-plugins-official": true
+    "telegram@claude-plugins-official": true,
+    "clangd-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "trailofbits": {

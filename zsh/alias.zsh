@@ -38,7 +38,7 @@ alias work='cd ~/work'
 alias blog='cd ~/projects/blog'
 alias f='fzf'
 alias y='yazi'
-
+alias croc='croc --yes'
 
 # bat!
 alias cat='bat'
@@ -51,6 +51,8 @@ unalias la ll 2>/dev/null
 
 # long listing, human-readable sizes, "almost all" entries, with colors & icons
 alias ll='eza --long --color=always --icons=always --no-user'
+
+alias la='ll --no-time --group-directories-first --all'
 
 # git aliases
 alias g='git'

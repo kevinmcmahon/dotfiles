@@ -8,7 +8,10 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
-    "allow": ["Bash(ls:*)", "Bash(sg:*)"],
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(sg:*)"
+    ],
     "deny": [
       "Bash(rm -rf *)",
       "Bash(rm -fr *)",
@@ -175,5 +178,6 @@
   "autoUpdatesChannel": "latest",
   "channelsEnabled": true,
   "autoDreamEnabled": true,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "model": "opus[1m]"
 }

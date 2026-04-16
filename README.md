@@ -43,7 +43,9 @@ dotfiles/
 │   │   ├── platform-mac.sh    # macOS-specific installs
 │   │   └── platform-linux.sh  # Linux-specific installs
 │   ├── audit-mac.sh           # verify macOS install state
-│   └── audit-linux.sh         # verify Linux install state
+│   ├── audit-linux.sh         # verify Linux install state
+│   ├── claude-migrate-backup.sh   # bundle Claude memory + per-host config
+│   └── claude-migrate-restore.sh  # restore bundle on a new host
 ├── ai/                        # shared AI resources (prompts, templates)
 ├── bash/                      # bash config
 ├── claude/                    # Claude Code config (CLAUDE.md, hooks, settings)

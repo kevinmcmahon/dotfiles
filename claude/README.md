@@ -41,6 +41,27 @@ Most files are symlinks into `~/dotfiles/ai/` — the shared source for AI tool 
 
 ---
 
+## Migration
+
+Move Claude memory and per-host config (claude-mem DB + vector store, auto-memory MD files, `~/.claude.json`, `~/.claude/settings.local.json`) between hosts.
+
+```bash
+# source host (quit all CC sessions first)
+~/dotfiles/scripts/claude-migrate-backup.sh
+# -> writes ~/claude-migration-<host>-<ts>.tar.gz
+# (set CLAUDE_MIGRATE_DIR to drop into a synced folder, e.g. Resilio)
+
+# destination host
+~/dotfiles/scripts/claude-migrate-restore.sh [bundle.tar.gz]
+# no arg = newest bundle in $CLAUDE_MIGRATE_DIR (default $HOME)
+```
+
+Existing destination files are stashed as `*.pre-migrate-<ts>` — never clobbered. Auto-memory subdir name is derived from the destination `$HOME`, so a bundle from `/Users/kevin` restores correctly under `/root` on a VPS.
+
+Plugins are not bundled — reinstall via `/plugin` on the destination.
+
+---
+
 ## Settings (`settings.json`)
 
 | Key | Value | Purpose |

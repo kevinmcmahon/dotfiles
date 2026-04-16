@@ -1,11 +1,1 @@
-#!/usr/bin/env bash
-
-# If this repo has any 'filter=lfs' entries in its .gitattributes, enable LFS
-REPO_ROOT=$(git rev-parse --show-toplevel)
-ATTRFILE="$REPO_ROOT/.gitattributes"
-
-if command -v git-lfs >/dev/null 2>&1 &&
-  [ -f "$ATTRFILE" ] &&
-  grep -q 'filter=lfs' "$ATTRFILE"; then
-  git lfs install --local >/dev/null
-fi
+_dispatcher

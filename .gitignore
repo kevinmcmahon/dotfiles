@@ -32,6 +32,8 @@ claude/mcp.json
 kitty/themes/
 kitty/current-theme.conf
 *.bak
+*.bak.*/
+
 
 # Ghostty 
 ghostty/local.conf

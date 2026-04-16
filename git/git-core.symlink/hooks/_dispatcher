@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# ABOUTME: Universal git-hook dispatcher. Every hook file in this directory
+# ABOUTME: is a symlink to this script; basename $0 tells us which hook ran.
+#
+# Responsibilities:
+#   1. Run universal per-hook logic (git-secrets, LFS, LLM commit-msg).
+#   2. If the current repo has a lefthook.yml, dispatch to lefthook for
+#      project-specific checks (shellcheck, hadolint, go test, etc.).
+#
+# Layering: universal logic runs first; lefthook runs on top. Failures at
+# either layer abort the git operation (set -e + explicit exit propagation).
+set -eu
+
+hook="$(basename "$0")"
+
+# ---------------------------------------------------------------------------
+# Universal per-hook logic
+# ---------------------------------------------------------------------------
+
+case "$hook" in
+  pre-commit|commit-msg|prepare-commit-msg)
+    # git-secrets hook names: pre_commit_hook, commit_msg_hook, prepare_commit_msg_hook
+    if command -v git-secrets >/dev/null 2>&1; then
+      git secrets --"${hook//-/_}_hook" -- "$@"
+    fi
+    ;;
+esac
+
+case "$hook" in
+  prepare-commit-msg)
+    # LLM commit-message generator (stderr suppressed, non-blocking by design)
+    llm_hook="$(dirname "$0")/prepare-commit-msg-llm"
+    if [ -x "$llm_hook" ]; then
+      "$llm_hook" "$@" 2>/dev/null || true
+    fi
+    ;;
+  post-checkout|post-commit|post-merge|pre-push)
+    # LFS subcommand names mirror hook names: git lfs pre-push, etc.
+    # We invoke LFS directly rather than letting it install its own stubs,
+    # so that a single dispatcher owns the full hook surface.
+    if command -v git-lfs >/dev/null 2>&1; then
+      git lfs "$hook" "$@"
+    fi
+    ;;
+esac
+
+# ---------------------------------------------------------------------------
+# Project-specific checks via lefthook (opt-in via lefthook.yml presence)
+# ---------------------------------------------------------------------------
+
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+if [ -n "$repo_root" ] && \
+   [ -f "$repo_root/lefthook.yml" ] && \
+   command -v lefthook >/dev/null 2>&1; then
+  (cd "$repo_root" && lefthook run "$hook" -- "$@")
+fi

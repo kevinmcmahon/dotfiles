@@ -11,6 +11,7 @@
 #   log, warn, die, need_cmd, install_rustup
 
 SKIP_DEFAULTS="${SKIP_DEFAULTS:-0}"
+SKIP_NAS_MOUNT="${SKIP_NAS_MOUNT:-0}"
 CMUX_DMG_URL="${CMUX_DMG_URL:-https://github.com/manaflow-ai/cmux/releases/latest/download/cmux-macos.dmg}"
 CMUX_APP_PATH="${CMUX_APP_PATH:-/Applications/cmux.app}"
 CMUX_CLI_LINK="${CMUX_CLI_LINK:-$LOCAL_BIN/cmux}"
@@ -81,12 +82,13 @@ set_default_shell_zsh() {
 
 apply_platform_config() {
   if [[ "$SKIP_DEFAULTS" == "1" ]]; then
-    log "Skipping macOS platform config (SKIP_DEFAULTS=1)"
-    return 0
+    log "Skipping macOS defaults (SKIP_DEFAULTS=1)"
+  else
+    apply_macos_defaults
+    apply_spotlight_configs
   fi
 
-  apply_macos_defaults
-  apply_spotlight_configs
+  install_nas_mount_agent
 }
 
 post_checks_platform() {
@@ -427,4 +429,14 @@ apply_spotlight_configs() {
   touch ~/Library/Developer/.metadata_never_index
 
   log "Spotlight index exclusions set"
+}
+
+install_nas_mount_agent() {
+  if [[ "$SKIP_NAS_MOUNT" == "1" ]]; then
+    log "Skipping NAS mount LaunchAgent (SKIP_NAS_MOUNT=1)"
+    return 0
+  fi
+
+  log "Installing NAS mount LaunchAgent"
+  bash "$DOTFILES_DIR/osx/install-nas-mount.sh"
 }

@@ -1,6 +1,7 @@
 CODE_REVIEW.md
 CLAUDE.local.md
 CLAUDE.md
+AGENTS.md
 *~
 .DS_Store
 .AppleDouble
@@ -23,3 +24,4 @@ vendor/bundle
 .aider*
 .mcp.json
 .claude/
+.codex/

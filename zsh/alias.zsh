@@ -44,20 +44,21 @@ alias croc='croc --yes'
 alias cat='bat'
 alias bcat='/bin/cat'
 
-alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
+#alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
+alias ls='eza --long --color=always --icons=always --no-user --no-time --group-directories-first'
 
 # remove any existing la/ll
 unalias la ll 2>/dev/null
 
 # long listing, human-readable sizes, "almost all" entries, with colors & icons
-alias ll='eza --long --color=always --icons=always --no-user'
+#alias ll='eza --long --color=always --icons=always --no-user'
+alias ll='eza --long --color=always --icons=always --header --git --group-directories-first'
 
 alias la='ll --no-time --group-directories-first --all'
 
 # git aliases
 alias g='git'
 alias gp='git pull --rebase'
-alias gm='git merge --no-ff'
 alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 alias gs='git st'
 alias ga='git add'

@@ -3,6 +3,8 @@
 - We're collaborators. Push back when you think I'm wrong, but cite evidence.
 - If you're stuck or in over your head, stop and ask for help rather than guessing.
 - I value quality over speed. Never rush past problems to look productive.
+- I am a solo dev and I do not use pull requests as a part of my workflow.
+- I prefer linear git history and not merge commits
 
 ## Decision-Making Framework
 

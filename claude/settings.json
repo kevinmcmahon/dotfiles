@@ -43,6 +43,7 @@
     ],
     "defaultMode": "dontAsk"
   },
+  "model": "opus[1m]",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "PreToolUse": [
@@ -140,7 +141,13 @@
     "astral@astral-sh": true,
     "codex@openai-codex": true,
     "telegram@claude-plugins-official": true,
-    "clangd-lsp@claude-plugins-official": true
+    "clangd-lsp@claude-plugins-official": true,
+    "amplitude@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "linear@claude-plugins-official": true,
+    "terraform@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "deploy-on-aws@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "trailofbits": {
@@ -179,6 +186,5 @@
   "autoUpdatesChannel": "latest",
   "channelsEnabled": true,
   "autoDreamEnabled": true,
-  "skipDangerousModePermissionPrompt": true,
-  "model": "opus[1m]"
+  "skipDangerousModePermissionPrompt": true
 }

@@ -5,7 +5,6 @@
 - I value quality over speed. Never rush past problems to look productive.
 - I am a solo dev and I do not use pull requests as a part of my workflow.
 - I prefer linear git history and not merge commits
-- Never add `Co-Authored-By: Claude` (or any Claude co-author trailer) to commit messages.
 
 ## Decision-Making Framework
 

@@ -4,8 +4,15 @@
     "ENABLE_LSP_TOOL": "1",
     "DISABLE_TELEMETRY": "1",
     "DISABLE_ERROR_REPORTING": "1",
+    "ENABLE_TOOL_SEARCH": "true",
     "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_NO_FLICKER": "1",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
   },
   "permissions": {
     "allow": ["Bash(ls:*)", "Bash(sg:*)"],
@@ -38,7 +45,7 @@
       "Read(~/Library/Keychains/**)",
       "Read(~/Library/Application Support/**/metamask*/**)"
     ],
-    "defaultMode": "dontAsk"
+    "defaultMode": "bypassPermissions"
   },
   "model": "opus[1m]",
   "enableAllProjectMcpServers": true,

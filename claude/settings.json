@@ -8,10 +8,7 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
-    "allow": [
-      "Bash(ls:*)",
-      "Bash(sg:*)"
-    ],
+    "allow": ["Bash(ls:*)", "Bash(sg:*)"],
     "deny": [
       "Bash(rm -rf *)",
       "Bash(rm -fr *)",
@@ -53,15 +50,6 @@
           {
             "type": "command",
             "command": "$HOME/.claude/hooks/ntfy-notify.sh question"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/block-git.sh"
           }
         ]
       }
@@ -140,14 +128,14 @@
     "workflow-skill-design@trailofbits": true,
     "astral@astral-sh": true,
     "codex@openai-codex": true,
-    "telegram@claude-plugins-official": true,
+    "telegram@claude-plugins-official": false,
     "clangd-lsp@claude-plugins-official": true,
     "amplitude@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
     "linear@claude-plugins-official": true,
     "terraform@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
-    "deploy-on-aws@claude-plugins-official": true
+    "deploy-on-aws@claude-plugins-official": false
   },
   "extraKnownMarketplaces": {
     "trailofbits": {

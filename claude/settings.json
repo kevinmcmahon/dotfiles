@@ -15,7 +15,10 @@
     "pr": ""
   },
   "permissions": {
-    "allow": ["Bash(ls:*)", "Bash(sg:*)"],
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(sg:*)"
+    ],
     "deny": [
       "Bash(rm -rf *)",
       "Bash(rm -fr *)",
@@ -47,7 +50,6 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "opus[1m]",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "PreToolUse": [

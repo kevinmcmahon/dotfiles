@@ -194,6 +194,8 @@ post_checks_platform() {
   sg --version 2>&1 | grep -q "ast-grep" || warn "ast-grep (sg) missing"
   need_cmd eza      || warn "eza missing"
   need_cmd zoxide   || warn "zoxide missing"
+  need_cmd bfs      || warn "bfs missing"
+  need_cmd ugrep    || warn "ugrep missing"
 }
 
 print_next_steps() {
@@ -264,7 +266,12 @@ install_extras_optional() {
   sudo apt-get install -y \
     eza zoxide \
     tree \
+    ugrep \
     neofetch || true
+
+  # bfs: only in Ubuntu 23.04+ / Debian 12+ universe. Isolated so its
+  # absence on older distros does not abort the apt transaction above.
+  sudo apt-get install -y bfs || warn "bfs not available via apt (requires Ubuntu 23.04+ / Debian 12+)"
 
   sudo apt-get install -y keychain
 

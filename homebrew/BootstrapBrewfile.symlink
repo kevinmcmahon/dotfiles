@@ -4,6 +4,7 @@
 
 # --- CLI essentials ---
 brew "bat"
+brew "bfs"
 brew "chafa"
 brew "coreutils"
 brew "croc"
@@ -21,6 +22,7 @@ brew "shellcheck"
 brew "tmux"
 brew "tree"
 brew "ttyd"
+brew "ugrep"
 brew "wget"
 brew "zoxide"
 

@@ -276,6 +276,64 @@ verify_claude_setup() {
   fi
 }
 
+symlink_codex_config() {
+  log "Symlinking Codex config into ~/.codex"
+
+  local codex_src="$DOTFILES_DIR/codex"
+  local codex_dst="$HOME/.codex"
+  local item="AGENTS.md"
+  local src="$codex_src/$item"
+  local dst="$codex_dst/$item"
+
+  mkdir -p "$codex_dst"
+
+  # Only symlink repo-owned instructions. ~/.codex also contains auth, logs,
+  # sessions, caches, local config, and generated memory/state files.
+  if [[ ! -f "$src" ]]; then
+    warn "Codex instructions missing: $src"
+    return 0
+  fi
+
+  if [[ -L "$dst" && "$(readlink "$dst")" == "$src" ]]; then
+    return 0
+  fi
+
+  if [[ -e "$dst" ]] || [[ -L "$dst" ]]; then
+    local backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
+    warn "Backing up existing $dst -> $backup"
+    mv "$dst" "$backup"
+  fi
+
+  ln -snf "$src" "$dst"
+  log "Linked $dst -> $src"
+}
+
+verify_codex_setup() {
+  log "Verifying Codex setup"
+
+  local codex_dst="$HOME/.codex"
+  local agents="$codex_dst/AGENTS.md"
+  local expected="$DOTFILES_DIR/codex/AGENTS.md"
+  local errors=0
+
+  if [[ ! -L "$agents" ]]; then
+    warn "Codex AGENTS.md is not symlinked: $agents"
+    errors=$((errors + 1))
+  elif [[ "$(readlink "$agents")" != "$expected" ]]; then
+    warn "Codex AGENTS.md points to unexpected target: $(readlink "$agents")"
+    errors=$((errors + 1))
+  elif [[ ! -e "$agents" ]]; then
+    warn "Broken Codex AGENTS.md symlink: $agents -> $(readlink "$agents")"
+    errors=$((errors + 1))
+  fi
+
+  if (( errors > 0 )); then
+    warn "Codex setup: $errors issue(s) above"
+  else
+    log "Codex setup OK"
+  fi
+}
+
 sync_ai_resources() {
   log "Syncing AI resources from canonical ai/ directory"
 

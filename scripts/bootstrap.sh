@@ -89,6 +89,8 @@ main() {
   symlink_claude_config
   verify_claude_setup
   install_codex
+  symlink_codex_config
+  verify_codex_setup
   install_gemini_cli
   install_opencode
   symlink_opencode_ai_dirs

@@ -123,6 +123,7 @@ Each `lib/platform-*.sh` must define these 8 functions:
 | `claude/docs/` | `~/.claude/docs/` | Claude Code reference docs |
 | `claude/hooks/` | `~/.claude/hooks/` | Claude Code hook scripts |
 | `claude/settings.json` | `~/.claude/settings.json` | Claude Code settings (hooks, plugins) |
+| `codex/AGENTS.md` | `~/.codex/AGENTS.md` | Codex global instructions |
 
 Existing files are backed up with a `.bak.<timestamp>` suffix before being replaced.
 

@@ -59,7 +59,7 @@ scripts/
 | 4. Shell Environment | oh-my-zsh, plugins, shell symlinks, set default shell | `common.sh` + `platform-*.sh` |
 | 5. Language Runtimes | Rust/rustup, uv, Deno, Bun, optionally Node.js (fnm + corepack) | `common.sh` + `platform-*.sh` |
 | 6. Dev Tooling | Neovim Python venv, ruff, llm + plugins, llm templates | `common.sh` |
-| 7. AI/Dev CLIs | Claude Code, Claude config symlinks, OpenCode | `common.sh` |
+| 7. AI/Dev CLIs | Claude Code, Codex, OpenCode, AI config symlinks | `common.sh` |
 | 8. Platform Config | macOS system defaults + Spotlight exclusions (no-op on Linux) | `platform-*.sh` |
 | 9. Post-install | Sanity checks for expected commands | `common.sh` + `platform-*.sh` |
 
@@ -154,7 +154,7 @@ A topic directory can contain any combination of:
 
 If a tool writes mutable state inside its config directory, keep the local directory real and symlink only the repo-owned files into it. `tmux` is the current example of this exception.
 
-Current topics: `ai`, `bash`, `claude`, `codex`, `cursor`, `gemini`, `ghostty`, `git`, `goose`, `helix`, `iterm2`, `kitty`, `linux`, `lldb`, `llm`, `node`, `nvim`, `opencode`, `osx`, `rvm`, `starship`, `tmux`, `tools`, `vale`, `vscode`, `yazi`, `zsh`
+Current topics: `ai`, `bash`, `claude`, `codex`, `gemini`, `ghostty`, `git`, `helix`, `iterm2`, `kitty`, `linux`, `lldb`, `llm`, `node`, `nvim`, `opencode`, `osx`, `rvm`, `starship`, `tmux`, `tools`, `vale`, `vscode`, `yazi`, `zsh`
 
 ## Standalone Installers
 
@@ -240,7 +240,7 @@ It checks:
 - Cargo/brew tools (viu)
 - Python tooling (ruff, neovim python venv)
 - LLM tool + plugins + template symlinks
-- AI CLIs (claude, opencode) and Claude Code config symlinks
+- AI CLIs (claude, codex, opencode) and Claude/Codex config symlinks
 - Standard directories (`~/.local/bin`, `~/.config`)
 - Default shell
 - macOS defaults (spot-checks key settings)
@@ -267,7 +267,7 @@ Linux counterpart of the macOS audit. Same pass/fail/warn framework, same helper
 - Cargo tools (viu, yazi)
 - Python tooling (ruff, neovim python venv)
 - LLM tool + plugins + template symlinks (at `~/.config` path)
-- AI CLIs (claude, opencode) and Claude Code config symlinks
+- AI CLIs (claude, codex, opencode) and Claude/Codex config symlinks
 - Standard directories (`~/.local/bin`, `~/.config`)
 - Default shell (via `getent passwd`)
 - pbcopy/pbpaste wrapper scripts

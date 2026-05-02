@@ -16,7 +16,7 @@ The `bootstrap.sh` script auto-detects macOS and configures a complete developme
 - **Rust** toolchain and cargo tools (viu)
 - **Python** tooling via uv (package manager, ruff, pynvim)
 - **Deno** runtime
-- **AI CLIs** (Claude Code, OpenCode, llm)
+- **AI CLIs** (Claude Code, Codex, OpenCode, llm)
 - **macOS system defaults** (Finder, keyboard, trackpad, screenshots)
 
 ## Prerequisites

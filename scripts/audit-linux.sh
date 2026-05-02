@@ -66,6 +66,30 @@ check_file_exists() {
   fi
 }
 
+check_file_starts_with() {
+  local target="$1"
+  local expected="$2"
+  local label="${3:-$target}"
+
+  if [[ ! -f "$target" ]]; then
+    fail "$label missing (expected content from $expected)"
+    return
+  fi
+
+  if [[ ! -f "$expected" ]]; then
+    fail "$label expected source missing: $expected"
+    return
+  fi
+
+  local expected_bytes
+  expected_bytes="$(wc -c < "$expected" | tr -d ' ')"
+  if head -c "$expected_bytes" "$target" | cmp -s - "$expected"; then
+    pass "$label starts with $expected"
+  else
+    fail "$label does not start with $expected"
+  fi
+}
+
 check_dir_exists() {
   local path="$1"
   local label="${2:-$path}"
@@ -320,9 +344,14 @@ for item in CLAUDE.md commands docs hooks settings.json; do
   check_symlink "$HOME/.claude/$item" "$DOTFILES_DIR/claude/$item" "~/.claude/$item"
 done
 
+# --- Codex config ---
+section "Codex Config"
+check_file_starts_with "$HOME/.codex/AGENTS.md" "$DOTFILES_DIR/codex/AGENTS.md" "~/.codex/AGENTS.md"
+
 # --- AI CLIs ---
 section "AI CLIs"
 check_cmd claude "Claude Code"
+check_cmd codex "Codex CLI"
 
 if command -v opencode >/dev/null 2>&1 || [[ -x "$HOME/.opencode/bin/opencode" ]]; then
   pass "opencode installed"

@@ -50,11 +50,9 @@ dotfiles/
 ├── bash/                      # bash config
 ├── claude/                    # Claude Code config (CLAUDE.md, hooks, settings)
 ├── codex/                     # OpenAI Codex CLI config
-├── cursor/                    # Cursor editor config
 ├── gemini/                    # Google Gemini CLI config
 ├── ghostty/                   # Ghostty terminal config
 ├── git/                       # git config + hooks
-├── goose/                     # Goose AI config
 ├── helix/                     # Helix editor config (XDG)
 ├── iterm2/                    # iTerm2 config (macOS)
 ├── kitty/                     # Kitty terminal config (historical/reference)

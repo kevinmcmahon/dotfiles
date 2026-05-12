@@ -1,0 +1,8 @@
+# ~/.gitconfig-local
+# Machine-local work Git routing. Edit paths and identity file names as needed.
+#
+# No fallback personal identity is configured. Repos that do not match a work
+# route must set identity locally or commits will fail.
+
+[includeIf "gitdir:__HOME__/work/**"]
+	path = ~/.gituserconfig.work

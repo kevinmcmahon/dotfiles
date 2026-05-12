@@ -1,0 +1,88 @@
+[include]
+	path = ~/.gitconfig-local
+
+[column]
+	ui = auto
+
+[branch]
+	autosetuprebase = always
+	sort = -committerdate
+
+[tag]
+	sort = version:refname
+
+[init]
+	defaultBranch = main
+
+[rerere]
+	enabled = true
+	autoupdate = true
+
+[alias]
+	aa = add --all
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
+	lgdk = log --decorate --graph --oneline
+	st = status -s
+	ci = commit -v
+	br = branch
+	co = checkout
+	df = diff
+	amend = commit -v --amend --reuse-message=HEAD
+	tags = tag -l
+	remotes = remote -v
+
+[color]
+	ui = auto
+	branch = auto
+	diff = auto
+	status = auto
+
+[help]
+	autocorrect = prompt
+
+[commit]
+	verbose = true
+
+[core]
+	autocrlf = input
+	editor = vim
+	excludesfile = ~/.gitignore_global
+	hooksPath = ~/.git-core/hooks
+	untrackedCache = true
+
+[push]
+	default = simple
+	autoSetupRemote = true
+	followTags = true
+
+[pull]
+	rebase = true
+
+[rebase]
+	autoStash = true
+	autoSquash = true
+	updateRefs = true
+
+[diff]
+	algorithm = histogram
+	colorMoved = plain
+	mnemonicPrefix = true
+	renames = true
+
+[merge]
+	ff = only
+	conflictstyle = zdiff3
+
+[fetch]
+	prune = true
+	pruneTags = true
+	all = true
+
+[include]
+	path = ~/.gitconfig-secrets
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

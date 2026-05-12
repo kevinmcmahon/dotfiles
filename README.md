@@ -4,6 +4,9 @@ Personal dev environment for macOS and Linux. One command, zero to usable.
 
 Follows [holman/dotfiles](https://github.com/holman/dotfiles) topic-based organization — each tool gets its own directory with its configuration alongside it.
 
+Work WSL is intentionally separate: do not clone this personal repo onto a work
+machine. Use the generated mirror flow in [Work WSL Mirror](docs/work-wsl.md).
+
 ## Quick Start
 
 ```bash
@@ -70,6 +73,7 @@ dotfiles/
 ├── tools/                     # misc tool configs (*.symlink)
 ├── vale/                      # Vale prose linter config
 ├── vscode/                    # VS Code config
+├── work-wsl/                  # generated work-safe WSL mirror inputs
 ├── yazi/                      # Yazi file manager config (XDG)
 ├── zsh/                       # shell config
 └── docs/                      # detailed documentation
@@ -109,6 +113,7 @@ scripts/audit-linux.sh   # Linux
 ## Documentation
 
 - [Bootstrap System](docs/bootstrap.md) — full architecture, install phases, platform contract
+- [Work WSL Mirror](docs/work-wsl.md) — generated enterprise-safe WSL setup
 - [macOS Setup](docs/mac-setup.md) — macOS-specific notes and manual steps
 - [Linux Networking](docs/linux-networking-setup.md) — Tailscale, firewall, mosh setup
 - [Claude Code on Oracle Cloud](docs/claude-code-oracle-cloud-setup.md) — remote Claude Code setup

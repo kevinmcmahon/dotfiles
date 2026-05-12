@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -eu
+
+hook="$(basename "$0")"
+
+case "$hook" in
+  pre-commit|commit-msg|prepare-commit-msg)
+    if command -v git-secrets >/dev/null 2>&1; then
+      git secrets --"${hook//-/_}_hook" -- "$@"
+    fi
+    ;;
+esac
+
+case "$hook" in
+  post-checkout|post-commit|post-merge|pre-push)
+    if command -v git-lfs >/dev/null 2>&1; then
+      git lfs "$hook" "$@"
+    fi
+    ;;
+esac
+
+repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [[ -n "$repo_root" && -f "$repo_root/lefthook.yml" ]] && command -v lefthook >/dev/null 2>&1; then
+  (cd "$repo_root" && lefthook run "$hook" -- "$@")
+fi

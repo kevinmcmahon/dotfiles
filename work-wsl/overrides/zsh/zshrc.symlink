@@ -1,0 +1,46 @@
+# ~/.zshrc
+
+if [[ -z "${ZSHENV_LOADED:-}" ]]; then
+  echo "Warning: .zshenv was not sourced. Some variables may be missing."
+fi
+
+export ZSH_ENV_ROOT="${HOME}/.zsh/env"
+
+if [[ ! -d "$ZSH_ENV_ROOT" ]]; then
+  echo "Warning: expected $ZSH_ENV_ROOT to exist"
+  return 0 2>/dev/null || exit 0
+fi
+
+CORE_FUNCS="${ZSH_ENV_ROOT}/core/functions.zsh"
+if [[ -f "$CORE_FUNCS" ]]; then
+  source "$CORE_FUNCS"
+else
+  echo "Warning: Core functions not found: $CORE_FUNCS"
+  return 0 2>/dev/null || exit 0
+fi
+
+load_env_dir "${ZSH_ENV_ROOT}/core"
+load_env_file "${ZSH_ENV_ROOT}/platform/linux.zsh"
+load_env_file "${ZSH_ENV_ROOT}/optional/local.zsh"
+load_env_dir "${ZSH_ENV_ROOT}/tools"
+
+unset CORE_FUNCS
+
+fpath=("$HOME/.zsh/functions" "$HOME/.zsh/completions" "${fpath[@]}")
+autoload -Uz compinit
+compinit
+
+[[ -f "$HOME/.zsh/alias.zsh" ]] && source "$HOME/.zsh/alias.zsh"
+
+autoload -U zmv
+
+command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
+command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
+command -v direnv >/dev/null && eval "$(direnv hook zsh)"
+command -v zoxide >/dev/null && eval "$(zoxide init --cmd cd zsh)"
+command -v fzf >/dev/null && fzf --zsh >/dev/null 2>&1 && eval "$(fzf --zsh)"
+command -v starship >/dev/null && eval "$(starship init zsh)"
+
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"

@@ -1,0 +1,22 @@
+# ~/.zshenv
+
+export LANG="${LANG:-en_US.UTF-8}"
+export LC_ALL="${LC_ALL:-en_US.UTF-8}"
+
+export IS_MACOS=0
+export IS_LINUX=0
+export IS_ARM=0
+
+case "$OSTYPE" in
+  linux*)
+    export IS_LINUX=1
+    [[ "$(uname -m)" =~ ^(arm|aarch) ]] && export IS_ARM=1
+    ;;
+esac
+
+export EDITOR="${EDITOR:-vim}"
+export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+
+[[ -f "$HOME/.zsh/env/core/path.zsh" ]] && source "$HOME/.zsh/env/core/path.zsh"
+
+export ZSHENV_LOADED=1

@@ -8,6 +8,10 @@ INSTALL_NODE=1 scripts/bootstrap.sh      # also install Node.js LTS
 SKIP_DEFAULTS=1 scripts/bootstrap.sh     # skip macOS system defaults
 ```
 
+> **Work WSL is different.** Do not use this personal bootstrap directly on a
+> work-owned WSL machine. Generate and clone the work-safe mirror described in
+> [Work WSL Mirror](work-wsl.md) instead.
+
 ## Goals
 
 - **One command** — a fresh machine goes from zero to usable dev environment
@@ -45,6 +49,9 @@ scripts/
     platform-linux.sh       # Linux-specific: apt, appimage, manual binaries
   audit-mac.sh              # macOS environment audit
   audit-linux.sh            # Linux environment audit
+work-wsl/
+  export-manifest.txt       # tracked-file allowlist for the work WSL mirror
+  overrides/                # work-safe generated replacements
 ```
 
 `bootstrap.sh` detects the platform via `uname -s`, sources `lib/common.sh` for shared logic, then sources the appropriate `lib/platform-*.sh`. The install order is defined exactly once in `bootstrap.sh`'s `main()` function. Platform modules implement a contract of 8 functions that differ by OS; common.sh handles everything that works the same everywhere.
@@ -248,6 +255,27 @@ It checks:
 - ~/Library visibility
 
 Output: pass/fail/warn counts with a summary. Exit code 1 if any failures.
+
+### `scripts/audit-wsl-work.sh`
+
+This script lives in the generated work WSL mirror, not in the personal
+bootstrap path. It is exported from `work-wsl/overrides/scripts/` and checks the
+enterprise-safe WSL contract:
+
+- WSL 2 and Ubuntu 24.04.x
+- Required apt-only core packages
+- Generated Git, Zsh, tmux, and Starship symlinks
+- Work-only Git identity boundaries
+- Absence of excluded personal, notification, token, and AI-tool markers
+- Optional tools are present only when explicitly enabled
+
+Run it inside WSL after bootstrap:
+
+```bash
+scripts/audit-wsl-work.sh
+```
+
+See [Work WSL Mirror](work-wsl.md) for the full workflow.
 
 ### `scripts/audit-linux.sh`
 

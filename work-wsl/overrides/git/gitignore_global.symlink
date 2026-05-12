@@ -1,0 +1,15 @@
+*~
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+.envrc
+._*
+.Spotlight-V100
+.Trashes
+vendor/bundle
+*.iml
+*.ipr
+*.iws
+.idea/
+.mcp.json

@@ -92,11 +92,11 @@ main() {
   ensure_opencode_skills_dir
   sync_ai_resources
   symlink_claude_config
-  verify_claude_setup
-  symlink_codex_config
-  verify_codex_setup
   symlink_opencode_ai_dirs
   install_ai_skills
+  symlink_codex_config
+  verify_claude_setup
+  verify_codex_setup
 
   # Phase 8 — Platform Configuration
   apply_platform_config

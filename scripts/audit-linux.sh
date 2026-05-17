@@ -76,6 +76,21 @@ check_dir_exists() {
   fi
 }
 
+check_claude_mem_not_watching_codex() {
+  local watch_config="$HOME/.claude-mem/transcript-watch.json"
+
+  if [[ ! -f "$watch_config" ]]; then
+    pass "claude-mem transcript watch does not exist"
+    return
+  fi
+
+  if grep -q '~/.codex/' "$watch_config"; then
+    fail "claude-mem transcript watch references ~/.codex"
+  else
+    pass "claude-mem transcript watch does not reference ~/.codex"
+  fi
+}
+
 # ==============================================================================
 # Checks
 # ==============================================================================
@@ -340,6 +355,7 @@ done
 # --- Codex config ---
 section "Codex Config"
 check_symlink "$HOME/.codex/AGENTS.md" "$DOTFILES_DIR/codex/AGENTS.md" "~/.codex/AGENTS.md"
+check_claude_mem_not_watching_codex
 check_file_exists "$HOME/.codex/config.toml" "~/.codex/config.toml"
 check_file_exists "$HOME/.codex/rules/default.rules" "~/.codex/rules/default.rules"
 for skill in "${book_rule_skills[@]}"; do

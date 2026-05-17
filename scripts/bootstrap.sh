@@ -85,15 +85,18 @@ main() {
 
   # Phase 7 — AI/Dev CLIs
   install_claude_code
+  install_codex
+  install_gemini_cli
+  install_opencode
+  ensure_claude_skills_dir
+  ensure_opencode_skills_dir
   sync_ai_resources
   symlink_claude_config
   verify_claude_setup
-  install_codex
   symlink_codex_config
   verify_codex_setup
-  install_gemini_cli
-  install_opencode
   symlink_opencode_ai_dirs
+  install_ai_skills
 
   # Phase 8 — Platform Configuration
   apply_platform_config

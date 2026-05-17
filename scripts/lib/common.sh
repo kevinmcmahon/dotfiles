@@ -183,12 +183,13 @@ symlink_claude_config() {
   local claude_dst="$HOME/.claude"
 
   mkdir -p "$claude_dst"
+  ensure_claude_skills_dir
 
   # Symlink individual items — NOT the whole directory, because ~/.claude
   # also contains machine-local state (settings.local.json, credentials,
   # cache, history, etc.). Machine-local configs (mcp.json,
   # claude_desktop_config.json) are copied as templates, not symlinked.
-  local items="CLAUDE.md settings.json commands docs hooks skills scripts"
+  local items="CLAUDE.md settings.json commands docs hooks scripts"
 
   for item in $items; do
     local src="$claude_src/$item"
@@ -234,19 +235,64 @@ symlink_claude_config() {
   done
 }
 
+ensure_claude_skills_dir() {
+  local claude_dst="$HOME/.claude"
+  mkdir -p "$claude_dst"
+
+  # Skills are local mutable install state. Dotfiles-owned skills are injected
+  # into this real directory by ai-sync.sh; third-party skills may also live
+  # here when installed by the skills CLI.
+  local skills_dst="$claude_dst/skills"
+  if [[ -L "$skills_dst" ]]; then
+    local backup
+    backup="${skills_dst}.bak.$(date +%Y%m%d-%H%M%S)"
+    warn "Backing up old Claude skills symlink $skills_dst -> $backup"
+    mv "$skills_dst" "$backup"
+    mkdir -p "$skills_dst"
+    log "Created real local Claude skills directory: $skills_dst"
+  else
+    mkdir -p "$skills_dst"
+  fi
+}
+
+ensure_opencode_skills_dir() {
+  local opencode_dst="$HOME/.opencode"
+  mkdir -p "$opencode_dst"
+
+  local skills_dst="$opencode_dst/skills"
+  if [[ -L "$skills_dst" ]]; then
+    local backup
+    backup="${skills_dst}.bak.$(date +%Y%m%d-%H%M%S)"
+    warn "Backing up old OpenCode skills symlink $skills_dst -> $backup"
+    mv "$skills_dst" "$backup"
+    mkdir -p "$skills_dst"
+    log "Created real local OpenCode skills directory: $skills_dst"
+  else
+    mkdir -p "$skills_dst"
+  fi
+}
+
 verify_claude_setup() {
   log "Verifying Claude Code setup"
   local claude_dst="$HOME/.claude"
   local errors=0
 
   # Check symlinks resolve
-  for item in CLAUDE.md settings.json commands docs hooks skills scripts; do
+  for item in CLAUDE.md settings.json commands docs hooks scripts; do
     local path="$claude_dst/$item"
     if [[ -L "$path" && ! -e "$path" ]]; then
       warn "Broken symlink: $path -> $(readlink "$path")"
       errors=$((errors + 1))
     fi
   done
+
+  if [[ -L "$claude_dst/skills" ]]; then
+    warn "Claude skills should be a real local directory, not a symlink: $claude_dst/skills -> $(readlink "$claude_dst/skills")"
+    errors=$((errors + 1))
+  elif [[ ! -d "$claude_dst/skills" ]]; then
+    warn "Claude skills directory missing: $claude_dst/skills"
+    errors=$((errors + 1))
+  fi
 
   # Check generated common AI skills, including book-rule skills.
   local common_skills="book-refactoring-pass book-legacy-change book-reliability-review book-domain-modeling book-data-systems"
@@ -415,12 +461,31 @@ sync_ai_resources() {
   "$sync_script"
 }
 
+install_ai_skills() {
+  if [[ "${INSTALL_AI_SKILLS:-0}" != "1" ]]; then
+    log "Skipping third-party AI skills install (set INSTALL_AI_SKILLS=1 to enable)"
+    return 0
+  fi
+
+  log "Installing third-party AI skills from manifest"
+
+  local install_script="$DOTFILES_DIR/scripts/install-ai-skills.sh"
+  if [[ ! -x "$install_script" ]]; then
+    warn "install-ai-skills.sh not found or not executable, skipping"
+    return 0
+  fi
+
+  "$install_script"
+}
+
 symlink_opencode_ai_dirs() {
   log "Symlinking OpenCode AI directories into ~/.opencode"
 
   local opencode_dst="$HOME/.opencode"
 
-  for resource in commands docs skills; do
+  ensure_opencode_skills_dir
+
+  for resource in commands docs; do
     local src="$DOTFILES_DIR/opencode/$resource"
     local dst="$opencode_dst/$resource"
 

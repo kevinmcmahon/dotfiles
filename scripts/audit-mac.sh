@@ -361,9 +361,14 @@ check_symlink "$llm_data_dir/templates" "$DOTFILES_DIR/llm/templates.symlink" "l
 
 # --- Claude Code config ---
 section "Claude Code Config"
-for item in CLAUDE.md commands docs hooks settings.json skills; do
+for item in CLAUDE.md commands docs hooks settings.json scripts; do
   check_symlink "$HOME/.claude/$item" "$DOTFILES_DIR/claude/$item" "~/.claude/$item"
 done
+if [[ -L "$HOME/.claude/skills" ]]; then
+  fail "~/.claude/skills is a symlink (expected real local directory)"
+else
+  check_dir_exists "$HOME/.claude/skills" "~/.claude/skills"
+fi
 
 # Generated common skills
 book_rule_skills=(
@@ -409,6 +414,11 @@ fi
 # OpenCode config
 if [[ -f "$DOTFILES_DIR/opencode/opencode.json.symlink" ]]; then
   check_symlink "$CONFIG_DIR/opencode/opencode.json" "$DOTFILES_DIR/opencode/opencode.json.symlink" "opencode config"
+fi
+if [[ -L "$HOME/.opencode/skills" ]]; then
+  fail "~/.opencode/skills is a symlink (expected real local directory)"
+else
+  check_dir_exists "$HOME/.opencode/skills" "~/.opencode/skills"
 fi
 
 # --- Directories ---

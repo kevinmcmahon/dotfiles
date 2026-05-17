@@ -1,0 +1,76 @@
+# Desired third-party AI skills.
+#
+# This manifest declares intent only. The skills CLI owns resolution,
+# installation, and lock state in ~/.agents/.skill-lock.json.
+
+[[external]]
+name = "mattpocock-skills"
+source = "mattpocock/skills"
+agents = ["codex", "claude-code", "opencode"]
+skills = [
+  "caveman",
+  "diagnose",
+  "grill-me",
+  "grill-with-docs",
+  "handoff",
+  "improve-codebase-architecture",
+  "prototype",
+  "setup-matt-pocock-skills",
+  "tdd",
+  "to-issues",
+  "to-prd",
+  "triage",
+  "write-a-skill",
+  "zoom-out",
+]
+
+[[external]]
+name = "find-skills"
+source = "vercel-labs/skills"
+agents = ["codex", "claude-code", "opencode"]
+skills = ["find-skills"]
+
+[[external]]
+name = "likec4"
+source = "https://likec4.dev/.well-known/skills/likec4-dsl/SKILL.md"
+agents = ["codex", "claude-code", "opencode"]
+skills = ["likec4-dsl"]
+
+[[external]]
+name = "eraser-terraform"
+source = "eraserlabs/eraser-io"
+agents = ["codex", "claude-code", "opencode"]
+skills = ["terraform-diagrams"]
+
+[[local]]
+name = "perplexity"
+source = "ai/skills/{claude,codex}/perplexity"
+status = "move-to-skills-repo"
+notes = "Scrub hardcoded host paths before packaging."
+
+[[local]]
+name = "runpodctl"
+source = "ai/skills/common/runpodctl"
+status = "move-to-skills-repo"
+
+[[local]]
+name = "swift-best-practices"
+source = "ai/skills/common/swift-best-practices"
+status = "move-to-skills-repo"
+
+[[local]]
+name = "coding-best-practices"
+source = "ai/skills/common/coding-best-practices"
+status = "move-to-skills-repo"
+
+[[local]]
+name = "claude-codex"
+source = "ai/skills/claude/codex"
+status = "move-to-skills-repo"
+notes = "Remove local persona-specific wording before packaging."
+
+[[local]]
+name = "book-rule-skills"
+source = "ai/skills/common/book-*"
+status = "local-private"
+notes = "Keep local unless redistribution and provenance cleanup are explicitly handled."

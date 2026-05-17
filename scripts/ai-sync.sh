@@ -5,6 +5,7 @@ set -euo pipefail
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 AI_DIR="$DOTFILES_DIR/ai"
+SKILLS_MANIFEST="${SKILLS_MANIFEST:-$AI_DIR/skills-manifest.toml}"
 TOOLS=(claude codex opencode)
 RESOURCES=(commands docs skills)
 
@@ -53,8 +54,14 @@ resolve_target_dir() {
   local resource="$2"
 
   case "$tool:$resource" in
-    claude:commands|claude:docs|claude:skills|opencode:commands|opencode:docs|opencode:skills)
+    claude:commands|claude:docs|opencode:commands|opencode:docs)
       printf "%s/%s/%s" "$DOTFILES_DIR" "$tool" "$resource"
+      ;;
+    claude:skills)
+      printf "%s/.claude/skills" "$HOME"
+      ;;
+    opencode:skills)
+      printf "%s/.opencode/skills" "$HOME"
       ;;
     codex:skills)
       printf "%s/.agents/skills" "$HOME"
@@ -98,6 +105,45 @@ if not os.path.islink(link):
 resolved = os.path.abspath(os.path.join(os.path.dirname(link), os.readlink(link)))
 raise SystemExit(0 if os.path.commonpath([resolved, ai_dir]) == ai_dir else 1)
 PY
+}
+
+externally_managed_skill_names() {
+  [[ -f "$SKILLS_MANIFEST" ]] || return 0
+
+  python3 - "$SKILLS_MANIFEST" <<'PY' 2>/dev/null || true
+import re
+import sys
+from pathlib import Path
+
+manifest = Path(sys.argv[1])
+text = manifest.read_text()
+
+try:
+    import tomllib
+except ModuleNotFoundError:
+    # Minimal fallback for this repo's manifest shape.
+    names = set()
+    for match in re.finditer(r"(?ms)^\s*skills\s*=\s*\[(.*?)\]", text):
+        names.update(re.findall(r'"([^"]+)"', match.group(1)))
+    for name in sorted(names):
+        print(name)
+    raise SystemExit(0)
+
+data = tomllib.loads(text)
+names = set()
+for entry in data.get("external", []):
+    for name in entry.get("skills", []):
+        names.add(name)
+for name in sorted(names):
+    print(name)
+PY
+}
+
+EXTERNAL_SKILL_NAMES=$'\n'"$(externally_managed_skill_names)"$'\n'
+
+skill_is_externally_managed() {
+  local name="$1"
+  [[ "$EXTERNAL_SKILL_NAMES" == *$'\n'"$name"$'\n'* ]]
 }
 
 # ==============================================================================
@@ -151,6 +197,11 @@ sync_resource() {
       local rel_target
       rel_target="$(relative_link_target "$src" "$target_dir")"
 
+      if [[ "$resource" == "skills" ]] && skill_is_externally_managed "$name"; then
+        verbose "skip: $name is managed by skills-manifest external install"
+        continue
+      fi
+
       linked_names="${linked_names}${name}"$'\n'
 
       if [[ -L "$link" ]] && [[ "$(readlink "$link")" == "$rel_target" ]]; then
@@ -182,6 +233,11 @@ sync_resource() {
       local link="$target_dir/$name"
       local rel_target
       rel_target="$(relative_link_target "$src" "$target_dir")"
+
+      if [[ "$resource" == "skills" ]] && skill_is_externally_managed "$name"; then
+        verbose "skip: $name is managed by skills-manifest external install"
+        continue
+      fi
 
       if [[ "$linked_names" == *$'\n'"$name"$'\n'* ]]; then
         verbose "override: $name ($tool-specific wins over common)"

@@ -147,6 +147,11 @@ Slash commands available as `/command-name` in Claude Code sessions. All symlink
 | `/do-todo` | Work through `todo.md` checklist |
 | `/do-issues` | Pick and complete a GitHub issue |
 | `/gh-issue` | Open and work a specific GitHub issue |
+| `/book-refactor` | Refactor with the `$book-refactoring-pass` lens |
+| `/book-legacy-change` | Change weakly tested or hard-to-test code with the `$book-legacy-change` lens |
+| `/book-reliability-review` | Review or harden production failure modes with the `$book-reliability-review` lens |
+| `/book-domain-modeling` | Model domain language and boundaries with the `$book-domain-modeling` lens |
+| `/book-data-systems` | Design data ownership, consistency, events, replay, or derived data with the `$book-data-systems` lens |
 | `/code-review` | Review code for quality issues |
 | `/careful-review` | Deep review of recently written code |
 | `/security-review` | Security-focused code review |

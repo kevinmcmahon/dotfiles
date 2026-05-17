@@ -14,7 +14,43 @@ These skills turn selected `agent-rules-books` mini rule sets into on-demand len
 
 Use one primary book lens per task. Add a second only when it works at a different level.
 
-Good prompts:
+### Claude Code And OpenCode Slash Commands
+
+Common book-rule commands are available in Claude Code and OpenCode after running `scripts/ai-sync.sh`:
+
+| Command | Skill | Intent |
+|---------|-------|--------|
+| `/book-refactor` | `$book-refactoring-pass` | Behavior-preserving cleanup or preparatory refactoring |
+| `/book-legacy-change` | `$book-legacy-change` | Risky changes in weakly tested or hard-to-test code |
+| `/book-reliability-review` | `$book-reliability-review` | Production failure-mode review or reliability hardening |
+| `/book-domain-modeling` | `$book-domain-modeling` | Model/domain-language pass before implementation |
+| `/book-data-systems` | `$book-data-systems` | Data ownership, consistency, eventing, replay, or derived-data work |
+
+Examples:
+
+```text
+/book-refactor Improve this module's structure without changing behavior.
+```
+
+```text
+/book-legacy-change Add this feature with characterization tests first.
+```
+
+```text
+/book-reliability-review Review this worker for timeout, retry, backpressure, and observability risks.
+```
+
+```text
+/book-domain-modeling Help me model this billing workflow before we change the code.
+```
+
+```text
+/book-data-systems Design the event and replay behavior for this projection.
+```
+
+### Codex Prompt Snippets
+
+Codex does not currently have a slash-command sync target in this dotfiles layout. Use explicit prompt text instead:
 
 ```text
 Use $book-refactoring-pass. Improve this module's structure without changing behavior.
@@ -35,6 +71,8 @@ Use $book-domain-modeling. Help me model this billing workflow before we change 
 ```text
 Use $book-data-systems. Design the event and replay behavior for this projection.
 ```
+
+Default behavior for each snippet: select the named skill lens, briefly state the risk/check plan, then proceed with the requested work unless blocked by missing essential context. The book lens stays subordinate to user instructions, repository instructions, and project architecture.
 
 Good combinations:
 

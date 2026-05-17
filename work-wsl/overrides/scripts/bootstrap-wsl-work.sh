@@ -14,6 +14,7 @@ WITH_FZF=0
 WITH_STARSHIP=0
 WITH_LAZYGIT=0
 WITH_YAZI=0
+SKIP_APT=0
 
 log() { printf '\n==> %s\n' "$*"; }
 warn() { printf 'WARN: %s\n' "$*" >&2; }
@@ -34,6 +35,7 @@ Options:
   --with-starship  Install starship from its upstream installer
   --with-lazygit   Install lazygit from its upstream release archive
   --with-yazi      Install yazi with cargo; requires --with-rust or existing cargo
+  --skip-apt       Skip the core apt-get update/install step
   -h, --help       Show this help
 EOF
 }
@@ -47,6 +49,7 @@ while [[ $# -gt 0 ]]; do
     --with-starship) WITH_STARSHIP=1 ;;
     --with-lazygit) WITH_LAZYGIT=1 ;;
     --with-yazi) WITH_YAZI=1 ;;
+    --skip-apt) SKIP_APT=1 ;;
     -h|--help) usage; exit 0 ;;
     *) die "Unknown option: $1" ;;
   esac
@@ -67,6 +70,11 @@ preflight() {
   fi
 
   [[ "${EUID:-$(id -u)}" -ne 0 ]] || die "Run as your user, not with sudo."
+
+  if [[ ! -d "/run/user/$(id -u)" ]]; then
+    warn "XDG_RUNTIME_DIR (/run/user/$(id -u)) is missing - tools like fnm, gpg-agent, and systemctl --user may fail."
+    warn "Fix once with: sudo loginctl enable-linger $USER && wsl.exe --shutdown"
+  fi
 }
 
 record_tool() {
@@ -87,7 +95,8 @@ install_core_packages() {
     git git-lfs git-secrets \
     jq make gcc g++ pkg-config libclang-dev \
     zsh tmux ripgrep fd-find bat \
-    gpg gawk locales tree
+    gpg gawk locales tree \
+    keychain eza
 
   mkdir -p "$LOCAL_BIN"
   if need_cmd fdfind && ! need_cmd fd; then
@@ -158,6 +167,7 @@ install_dotfiles() {
   link_path "$DOTFILES_DIR/zsh/zshenv.symlink" "$HOME/.zshenv"
   link_path "$DOTFILES_DIR/zsh/env" "$HOME/.zsh/env"
   link_path "$DOTFILES_DIR/zsh/alias.zsh" "$HOME/.zsh/alias.zsh"
+  link_path "$DOTFILES_DIR/zsh/functions" "$HOME/.zsh/functions"
 
   mkdir -p "$CONFIG_DIR/tmux"
   link_path "$DOTFILES_DIR/tmux/tmux.conf" "$CONFIG_DIR/tmux/tmux.conf"
@@ -171,11 +181,13 @@ install_node_optional() {
     curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$LOCAL_BIN" --skip-shell
     export PATH="$LOCAL_BIN:$PATH"
   fi
-  eval "$(fnm env)"
   fnm install --lts
   fnm default lts-latest
-  fnm use lts-latest
-  corepack enable
+  fnm exec --using=default -- corepack enable
+  local fnm_default_bin="$HOME/.local/share/fnm/aliases/default/bin"
+  for tool in node npm npx corepack; do
+    [[ -e "$fnm_default_bin/$tool" ]] && ln -sf "$fnm_default_bin/$tool" "$LOCAL_BIN/$tool"
+  done
   record_tool node
 }
 
@@ -249,12 +261,12 @@ install_yazi_optional() {
   [[ "$WITH_YAZI" == "1" ]] || return 0
   log "Installing optional yazi"
   need_cmd cargo || die "cargo is required for yazi. Re-run with --with-rust --with-yazi."
-  cargo install --locked yazi-fm yazi-cli
+  cargo install --locked --force yazi-build
   record_tool yazi
 }
 
 preflight
-install_core_packages
+[[ "$SKIP_APT" == "1" ]] || install_core_packages
 install_dotfiles
 install_node_optional
 install_rust_optional

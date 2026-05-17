@@ -56,9 +56,15 @@ enabled_tool() {
 blocked_terms() {
   printf '%s\n' \
     "n""tfy" "N""TFY" "n""tfy.sh" \
-    "cla""ude" "co""dex" "ge""mini" "open""code" "l""lm" "co""pilot" \
+    "co""dex" "ge""mini" "open""code" "l""lm" "co""pilot" \
     "kevin""mcmahon" "/Users/kevin/dot""files" \
+    "lin""ear.app" "LINEAR""_API_KEY" "lin""_api_" \
+    "no""tion.so" "NOTION""_API_KEY" "secret""_notion" \
+    "op"":""//" "OP_SERVICE""_ACCOUNT_TOKEN" "ops""a_" \
     "OPENAI""_API_KEY" "ANTHROPIC""_API_KEY" \
+    "AWS_ACCESS""_KEY_ID" "AWS_SECRET""_ACCESS_KEY" "AK""IA" \
+    "GOOGLE_APPLICATION""_CREDENTIALS" "service_""account" \
+    "xox""b-" "xox""p-" "xox""a-" "xox""s-" "SLACK""_TOKEN" \
     "gh""p_" "gh""o_" "gh""u_" "gh""s_" "gh""r_" "github""_pat_" \
     "sk""-proj-" "sk""-"
 }
@@ -83,12 +89,11 @@ scan_boundary_files() {
 }
 
 check_no_blocked_dirs() {
-  local d1 d2 d3 l1
-  d1=".$(printf '%s' "cla""ude")"
+  local d2 d3 l1
   d2=".$(printf '%s' "co""dex")"
   d3=".$(printf '%s' "open""code")"
   l1="$(printf '%s' "l""lm")"
-  for path in "$HOME/$d1" "$HOME/$d2" "$HOME/$d3" "$CONFIG_DIR/io.datasette.$l1"; do
+  for path in "$HOME/$d2" "$HOME/$d3" "$CONFIG_DIR/io.datasette.$l1"; do
     if [[ -e "$path" || -L "$path" ]]; then
       fail "blocked config path exists: $path"
     else
@@ -135,12 +140,12 @@ section "Core Packages"
 core_packages=(
   ca-certificates curl wget unzip xz-utils tar
   git git-lfs git-secrets jq make gcc g++ pkg-config libclang-dev
-  zsh tmux ripgrep fd-find bat gpg gawk locales tree
+  zsh tmux ripgrep fd-find bat gpg gawk locales tree keychain eza
 )
 for pkg in "${core_packages[@]}"; do check_pkg "$pkg"; done
 
 section "Core Commands"
-for cmd in git tmux rg jq make gcc zsh curl wget; do check_cmd "$cmd"; done
+for cmd in git tmux rg jq make gcc zsh curl wget keychain eza; do check_cmd "$cmd"; done
 check_link "$LOCAL_BIN/fd" "$(command -v fdfind 2>/dev/null || printf fdfind)"
 check_link "$LOCAL_BIN/bat" "$(command -v batcat 2>/dev/null || printf batcat)"
 
@@ -154,18 +159,19 @@ check_link "$HOME/.zshenv" "$DOTFILES_DIR/zsh/zshenv.symlink"
 check_link "$HOME/.zprofile" "$DOTFILES_DIR/zsh/zprofile.symlink"
 check_link "$HOME/.zsh/env" "$DOTFILES_DIR/zsh/env"
 check_link "$HOME/.zsh/alias.zsh" "$DOTFILES_DIR/zsh/alias.zsh"
+check_link "$HOME/.zsh/functions" "$DOTFILES_DIR/zsh/functions"
 check_link "$CONFIG_DIR/tmux/tmux.conf" "$DOTFILES_DIR/tmux/tmux.conf"
 check_link "$CONFIG_DIR/starship" "$DOTFILES_DIR/starship"
 
 section "Git Identity"
-if git config --global user.email >/dev/null 2>&1; then
-  email="$(git config --global user.email)"
+if email="$(git -C "$HOME" config user.email 2>/dev/null)" && [[ -n "$email" ]]; then
   case "$email" in
-    *users.noreply.github.com*) fail "global Git email appears personal: $email" ;;
-    *) pass "global Git email configured: $email" ;;
+    *-alight@users.noreply.github.com) pass "effective Git email configured (work noreply): $email" ;;
+    *users.noreply.github.com*) fail "effective Git email appears personal: $email" ;;
+    *) pass "effective Git email configured: $email" ;;
   esac
 else
-  warn "global Git email is unset; commits require work repo routing or local identity"
+  warn "no effective Git email; commits require work repo routing or local identity"
 fi
 if [[ -f "$HOME/.gituserconfig.work" ]]; then
   pass "work identity template exists"

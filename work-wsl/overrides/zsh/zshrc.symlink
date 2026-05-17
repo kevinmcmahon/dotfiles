@@ -30,6 +30,10 @@ fpath=("$HOME/.zsh/functions" "$HOME/.zsh/completions" "${fpath[@]}")
 autoload -Uz compinit
 compinit
 
+if [[ -d "$HOME/.zsh/functions" ]]; then
+  autoload -Uz "$HOME/.zsh/functions"/*(N:t)
+fi
+
 [[ -f "$HOME/.zsh/alias.zsh" ]] && source "$HOME/.zsh/alias.zsh"
 
 autoload -U zmv

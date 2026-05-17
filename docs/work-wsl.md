@@ -11,9 +11,9 @@ clone only the generated mirror inside WSL.
 ## Goals
 
 - Keep personal and work environments clearly separated.
-- Avoid moving personal Git identities, SSH assumptions, AI tooling, prompts,
-  hooks, notification services, or home-network configuration onto a work
-  machine.
+- Avoid moving personal Git identities, SSH assumptions, prompts, hooks,
+  notification services, home-network configuration, or personal AI/tool state
+  onto a work machine.
 - Keep maintenance lightweight by making the personal dotfiles repo the source
   of truth and the work repo a generated artifact.
 - Make the work WSL setup rerunnable and auditable.
@@ -47,10 +47,11 @@ untracked local state are never eligible for export.
 The generated mirror contains a conservative terminal-first setup:
 
 - Work-safe Git config and `git-secrets` hook wiring.
-- Minimal Zsh startup, aliases, and environment layering.
+- Minimal Zsh startup, aliases, functions, SSH keychain support, and environment
+  layering.
 - tmux config without personal theme/plugin dependencies.
 - Starship config.
-- Neovim config with AI-related extras removed.
+- Neovim config with personal AI-related extras removed.
 - WSL-specific bootstrap and audit scripts.
 
 The generated mirror does not include the normal personal Linux bootstrap. It
@@ -61,13 +62,16 @@ data-boundary requirements.
 
 The generated mirror excludes by default:
 
-- AI assistant CLIs, prompts, skills, hooks, and global config.
+- Personal assistant prompts, skills, hooks, tokens, and global config. Minimal
+  Claude CLI aliases are allowed, but this mirror does not export personal Claude
+  state.
 - Public push-notification service config or environment variables.
 - Personal Git identities, GitHub accounts, credential helpers, and token files.
 - Personal SSH identity helpers built around `~/.ssh/identities`.
 - Home-network, NAS, printer, Tailscale, Oracle Cloud, and remote-server docs.
 - Clipboard/display helpers such as `xclip`.
-- Third-party installers run through shell pipes.
+- Third-party installers run through shell pipes unless an optional tool flag is
+  explicitly requested.
 - npm global installs, cargo tool installs, GitHub release binaries, and
   AppImages.
 
@@ -120,11 +124,14 @@ Core packages include:
 - `ca-certificates`, `curl`, `wget`, `unzip`, `xz-utils`, `tar`
 - `git`, `git-lfs`, `git-secrets`
 - `jq`, `make`, `gcc`, `g++`, `pkg-config`, `libclang-dev`
-- `zsh`, `tmux`, `ripgrep`, `fd-find`, `bat`
-- `gpg`, `gawk`, `locales`, `tree`
+- `zsh`, `tmux`, `ripgrep`, `fd-find`, `bat`, `eza`
+- `gpg`, `gawk`, `locales`, `tree`, `keychain`
 
 The default bootstrap is safe to rerun. It should converge on the expected
 state without duplicating shell setup or overwriting local work identity files.
+Use `scripts/bootstrap-wsl-work.sh --skip-apt` when apt packages are already
+installed and you only want to refresh generated symlinks and optional tool
+setup.
 
 ## Optional Tools
 
@@ -146,6 +153,19 @@ they are acceptable for the work environment.
 
 Each optional tool writes a marker to `~/.work-wsl/enabled-tools`. The audit uses
 that marker to distinguish intentionally enabled tools from accidental drift.
+
+`--with-node` installs Node through `fnm`, enables Corepack through the `default`
+alias, and links `node`, `npm`, `npx`, and `corepack` into `~/.local/bin` so
+fresh shells and non-interactive commands can find them. `--with-yazi` uses the
+current crates.io `yazi-build` package, which installs the Yazi binaries through
+Cargo.
+
+## SSH Keys
+
+The generated shell can reuse SSH agents through `keychain`, but it does not
+export a committed SSH key path. Add one private key path per line to
+`~/.work-wsl/ssh-keys`, or set `WORK_WSL_SSH_KEYS` to a colon-separated list of
+private key paths. Missing files are ignored.
 
 ## Git Identity
 
@@ -173,7 +193,7 @@ The audit is read-only. It checks:
 
 - WSL 2 and Ubuntu 24.04.x.
 - Required apt packages and command wrappers.
-- Generated symlinks for Git, Zsh, tmux, and Starship.
+- Generated symlinks for Git, Zsh, Zsh functions, tmux, and Starship.
 - Work Git identity setup.
 - Absence of blocked personal, notification, token, and AI-tool markers.
 - Absence of blocked global config directories.
@@ -208,3 +228,8 @@ If export fails, read the matching line it prints. Common causes:
 If WSL audit fails, fix the reported category rather than bypassing it. The audit
 is part of the boundary; a clean bootstrap without a clean audit is not a
 complete setup.
+
+If bootstrap warns that `/run/user/$(id -u)` is missing, user runtime services
+may not work correctly. Fix that once from WSL with
+`sudo loginctl enable-linger $USER`, then shut WSL down from Windows with
+`wsl.exe --shutdown` before retrying.

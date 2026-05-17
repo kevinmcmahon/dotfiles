@@ -38,3 +38,5 @@ zsh/env/tools/go.zsh
 zsh/env/tools/node.zsh
 zsh/env/tools/python-uv.zsh
 zsh/env/tools/rust.zsh
+zsh/functions/h
+zsh/functions/reload

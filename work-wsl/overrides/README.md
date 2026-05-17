@@ -17,7 +17,9 @@ The mirror intentionally omits:
 
 - Personal Git identities and account routing.
 - Personal SSH identity helpers.
-- Assistant, model, prompt, hook, and skill configuration.
+- Personal assistant, model, prompt, hook, skill, and token configuration.
+  Minimal Claude CLI aliases are allowed, but personal Claude state is not
+  exported.
 - Public push-notification service configuration.
 - Home-network, printer, cloud-server, and remote-access setup.
 - Clipboard/display helpers unless you add them yourself locally.
@@ -33,8 +35,14 @@ scripts/bootstrap-wsl-work.sh
 ```
 
 The default bootstrap installs core terminal/dev packages from Ubuntu
-repositories and creates generated symlinks for Git, Zsh, tmux, and Starship.
-It is safe to rerun.
+repositories and creates generated symlinks for Git, Zsh, Zsh functions, tmux,
+and Starship. It is safe to rerun.
+
+If apt packages are already installed, refresh symlinks and optional tools with:
+
+```bash
+scripts/bootstrap-wsl-work.sh --skip-apt
+```
 
 Optional tools must be requested one by one:
 
@@ -53,6 +61,15 @@ upstream installers or release downloads, so confirm they are acceptable before
 enabling them.
 
 Each optional tool records an enable marker in `~/.work-wsl/enabled-tools`.
+Node is installed through `fnm`; bootstrap also links `node`, `npm`, `npx`, and
+`corepack` into `~/.local/bin` from fnm's default alias. Yazi is installed
+through the current `yazi-build` Cargo package.
+
+## SSH Keys
+
+SSH agent reuse is handled by `keychain`. Add one private key path per line to
+`~/.work-wsl/ssh-keys`, or set `WORK_WSL_SSH_KEYS` to a colon-separated list of
+private key paths. Missing files are ignored.
 
 ## Audit
 
@@ -63,7 +80,8 @@ scripts/audit-wsl-work.sh
 ```
 
 The audit checks WSL/Ubuntu version, required packages, generated symlinks,
-Git identity boundaries, and whether optional tools were explicitly enabled.
+Git identity boundaries, blocked token/tool markers, and whether optional tools
+were explicitly enabled.
 
 Treat a failing audit as a setup failure. The goal is not just a usable shell;
 the goal is a usable shell with clear work/personal boundaries.
@@ -92,3 +110,10 @@ scripts/audit-wsl-work.sh
 
 Do not hand-maintain this repository. If a local improvement should become
 durable, move it back to the source repo's WSL mirror inputs after review.
+
+## Troubleshooting
+
+If bootstrap warns that `/run/user/$(id -u)` is missing, user runtime services
+may not work correctly. Fix that once with
+`sudo loginctl enable-linger $USER`, then run `wsl.exe --shutdown` from Windows
+before retrying.

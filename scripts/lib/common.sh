@@ -246,6 +246,19 @@ verify_claude_setup() {
     fi
   done
 
+  # Check generated common AI skills, including book-rule skills.
+  local common_skills="book-refactoring-pass book-legacy-change book-reliability-review book-domain-modeling book-data-systems"
+  for skill in $common_skills; do
+    local skill_path="$claude_dst/skills/$skill"
+    if [[ ! -L "$skill_path" ]]; then
+      warn "Claude skill is not symlinked: $skill_path"
+      errors=$((errors + 1))
+    elif [[ ! -f "$skill_path/SKILL.md" ]]; then
+      warn "Broken Claude skill symlink: $skill_path -> $(readlink "$skill_path")"
+      errors=$((errors + 1))
+    fi
+  done
+
   # Check hooks are executable (including through symlink chains)
   for hook in "$claude_dst"/hooks/*.sh; do
     [[ -e "$hook" || -L "$hook" ]] || continue
@@ -326,6 +339,19 @@ verify_codex_setup() {
     warn "Broken Codex AGENTS.md symlink: $agents -> $(readlink "$agents")"
     errors=$((errors + 1))
   fi
+
+  # Check generated common AI skills, including book-rule skills.
+  local common_skills="book-refactoring-pass book-legacy-change book-reliability-review book-domain-modeling book-data-systems"
+  for skill in $common_skills; do
+    local skill_path="$codex_dst/skills/$skill"
+    if [[ ! -L "$skill_path" ]]; then
+      warn "Codex skill is not symlinked: $skill_path"
+      errors=$((errors + 1))
+    elif [[ ! -f "$skill_path/SKILL.md" ]]; then
+      warn "Broken Codex skill symlink: $skill_path -> $(readlink "$skill_path")"
+      errors=$((errors + 1))
+    fi
+  done
 
   if (( errors > 0 )); then
     warn "Codex setup: $errors issue(s) above"

@@ -385,13 +385,28 @@ check_symlink "$llm_data_dir/templates" "$DOTFILES_DIR/llm/templates.symlink" "l
 
 # --- Claude Code config ---
 section "Claude Code Config"
-for item in CLAUDE.md commands docs hooks settings.json; do
+for item in CLAUDE.md commands docs hooks settings.json skills; do
   check_symlink "$HOME/.claude/$item" "$DOTFILES_DIR/claude/$item" "~/.claude/$item"
+done
+
+# Generated common skills
+book_rule_skills=(
+  book-refactoring-pass
+  book-legacy-change
+  book-reliability-review
+  book-domain-modeling
+  book-data-systems
+)
+for skill in "${book_rule_skills[@]}"; do
+  check_symlink "$HOME/.claude/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.claude/skills/$skill"
 done
 
 # --- Codex config ---
 section "Codex Config"
 check_file_starts_with "$HOME/.codex/AGENTS.md" "$DOTFILES_DIR/codex/AGENTS.md" "~/.codex/AGENTS.md"
+for skill in "${book_rule_skills[@]}"; do
+  check_symlink "$HOME/.codex/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.codex/skills/$skill"
+done
 
 # --- AI CLIs ---
 section "AI CLIs"

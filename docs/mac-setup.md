@@ -94,8 +94,9 @@ exec zsh
 | `/Applications/cmux.app/Contents/Resources/bin/cmux` | `~/.local/bin/cmux` |
 | `zsh/*.symlink` | `~/.zshrc`, `~/.zshenv`, `~/.zprofile` |
 | `llm/templates.symlink` | `~/.config/io.datasette.llm/templates` |
-| `claude/CLAUDE.md`, `commands/`, `docs/`, `hooks/`, `settings.json` | `~/.claude/<name>` |
+| `claude/CLAUDE.md`, `commands/`, `docs/`, `hooks/`, `skills/`, `settings.json` | `~/.claude/<name>` |
 | `codex/AGENTS.md` | `~/.codex/AGENTS.md` |
+| `ai/skills/{common,codex}` | `~/.codex/skills/` |
 
 `ghostty` is treated as pure repo-owned XDG config, so the whole topic symlinks into `~/.config/ghostty`. `tmux` is the main exception: bootstrap keeps a real `~/.config/tmux/` directory so TPM plugins can stay local, and only symlinks `tmux/tmux.conf` into that directory.
 

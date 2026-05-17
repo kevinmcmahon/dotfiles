@@ -112,7 +112,7 @@ scan_boundary() {
   trap 'rm -f "$matches_file"' RETURN
 
   local pattern
-  pattern='ntfy|NTFY|ntfy\.sh|claude|codex|gemini|opencode|llm|copilot|kevinmcmahon|/Users/kevin/dotfiles|OPENAI_API_KEY|ANTHROPIC_API_KEY|github_pat_|ghp_|gho_|ghu_|ghs_|ghr_|sk-proj-|sk-'
+  pattern='ntfy|NTFY|ntfy\.sh|codex|gemini|opencode|llm|copilot|kevinmcmahon|/Users/kevin/dotfiles|linear\.app|LINEAR_API_KEY|lin_api_|notion\.so|NOTION_API_KEY|secret_notion|op://|OP_SERVICE_ACCOUNT_TOKEN|opsa_|OPENAI_API_KEY|ANTHROPIC_API_KEY|AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AKIA|GOOGLE_APPLICATION_CREDENTIALS|service_account|xoxb-|xoxp-|xoxa-|xoxs-|SLACK_TOKEN|github_pat_|ghp_|gho_|ghu_|ghs_|ghr_|sk-proj-|sk-'
 
   if (cd "$DEST" && rg -n --hidden --no-ignore -S "$pattern" . \
       -g '!.git/**' \

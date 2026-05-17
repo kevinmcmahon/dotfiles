@@ -135,7 +135,7 @@ sync_resource() {
   local specific_dir="$AI_DIR/$resource/$tool"
 
   # Track which names we've linked (for stale detection)
-  declare -A linked_names
+  local linked_names=$'\n'
 
   if (( ! DRY_RUN )); then
     mkdir -p "$target_dir"
@@ -151,7 +151,7 @@ sync_resource() {
       local rel_target
       rel_target="$(relative_link_target "$src" "$target_dir")"
 
-      linked_names["$name"]="common"
+      linked_names="${linked_names}${name}"$'\n'
 
       if [[ -L "$link" ]] && [[ "$(readlink "$link")" == "$rel_target" ]]; then
         verbose "unchanged: $link"
@@ -183,11 +183,11 @@ sync_resource() {
       local rel_target
       rel_target="$(relative_link_target "$src" "$target_dir")"
 
-      if [[ -n "${linked_names[$name]:-}" ]]; then
+      if [[ "$linked_names" == *$'\n'"$name"$'\n'* ]]; then
         verbose "override: $name ($tool-specific wins over common)"
         (( OVERRIDES++ )) || true
       fi
-      linked_names["$name"]="$tool"
+      linked_names="${linked_names}${name}"$'\n'
 
       if [[ -L "$link" ]] && [[ "$(readlink "$link")" == "$rel_target" ]]; then
         verbose "unchanged: $link"
@@ -218,7 +218,7 @@ sync_resource() {
 
       # Only clean up symlinks that point into ai/
       if link_points_into_ai "$link"; then
-        if [[ -z "${linked_names[$name]:-}" ]]; then
+        if [[ "$linked_names" != *$'\n'"$name"$'\n'* ]]; then
           verbose "stale: removing $link (target no longer in source)"
           if (( ! DRY_RUN )); then
             rm "$link"

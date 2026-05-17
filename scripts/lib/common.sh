@@ -272,6 +272,34 @@ ensure_opencode_skills_dir() {
   fi
 }
 
+cleanup_codex_legacy_skill_links() {
+  local legacy_dir="$HOME/.codex/skills"
+  [[ -d "$legacy_dir" ]] || return 0
+
+  local link
+  for link in "$legacy_dir"/*; do
+    [[ -L "$link" ]] || continue
+
+    local resolved
+    resolved="$(
+      python3 - "$link" <<'PY'
+import os
+import sys
+
+link = sys.argv[1]
+target = os.readlink(link)
+if not os.path.isabs(target):
+    target = os.path.join(os.path.dirname(link), target)
+print(os.path.abspath(target))
+PY
+    )"
+    if [[ "$resolved" == "$DOTFILES_DIR/ai/skills"/* ]]; then
+      warn "Removing legacy Codex dotfiles skill link from ~/.codex/skills: $link"
+      rm "$link"
+    fi
+  done
+}
+
 verify_claude_setup() {
   log "Verifying Claude Code setup"
   local claude_dst="$HOME/.claude"
@@ -350,6 +378,7 @@ symlink_codex_config() {
   local rules_dst="$codex_dst/rules/default.rules"
 
   mkdir -p "$codex_dst"
+  cleanup_codex_legacy_skill_links
 
   if [[ ! -f "$agents_src" ]]; then
     warn "Codex instructions missing: $agents_src"

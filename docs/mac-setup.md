@@ -96,9 +96,13 @@ exec zsh
 | `llm/templates.symlink` | `~/.config/io.datasette.llm/templates` |
 | `claude/CLAUDE.md`, `commands/`, `docs/`, `hooks/`, `skills/`, `settings.json` | `~/.claude/<name>` |
 | `codex/AGENTS.md` | `~/.codex/AGENTS.md` |
-| `ai/skills/{common,codex}` | `~/.codex/skills/` |
+| `codex/config.toml.template` | `~/.codex/config.toml` when missing |
+| `codex/rules/default.rules.template` | `~/.codex/rules/default.rules` when missing |
+| `ai/skills/{common,codex}` | `~/.agents/skills/` |
 
 `ghostty` is treated as pure repo-owned XDG config, so the whole topic symlinks into `~/.config/ghostty`. `tmux` is the main exception: bootstrap keeps a real `~/.config/tmux/` directory so TPM plugins can stay local, and only symlinks `tmux/tmux.conf` into that directory.
+
+Dotfiles do not manage Codex user skills in `~/.codex/skills`.
 
 ## Post-Install Configuration
 

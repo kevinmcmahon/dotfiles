@@ -57,7 +57,7 @@ resolve_target_dir() {
       printf "%s/%s/%s" "$DOTFILES_DIR" "$tool" "$resource"
       ;;
     codex:skills)
-      printf "%s/.codex/skills" "$HOME"
+      printf "%s/.agents/skills" "$HOME"
       ;;
     codex:commands|codex:docs)
       return 1

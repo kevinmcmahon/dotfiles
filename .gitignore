@@ -24,8 +24,10 @@ claude/mcp.json
 # local codex state / secrets
 /codex/*
 !/codex/AGENTS.md
-!/codex/config.yaml
-!/codex/instructions.md
+!/codex/README.md
+!/codex/config.toml.template
+!/codex/rules/
+!/codex/rules/default.rules.template
 
 # Repomix output (AI context dumps)
 **/output.txt

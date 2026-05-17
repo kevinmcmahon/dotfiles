@@ -1,0 +1,4 @@
+interface:
+  display_name: "Book Legacy Change"
+  short_description: "Change weakly tested or hard-to-test code with characterization first."
+  default_prompt: "Use this skill to make a risky change safely in legacy code."

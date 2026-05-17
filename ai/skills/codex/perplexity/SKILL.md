@@ -18,7 +18,7 @@ Resolve the CLI in this order:
 
 1. `$PPLX_SEARCH_BIN` if set
 2. `pplx-search` from `PATH`
-3. `~/.codex/skills/perplexity/pplx-search`
+3. `~/.agents/skills/perplexity/pplx-search`
 4. `/home/mrrobot/dotfiles/ai/skills/codex/perplexity/pplx-search`
 
 Before the first real query in a session, prefer a quick health check if setup is uncertain:

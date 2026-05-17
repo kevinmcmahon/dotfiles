@@ -50,7 +50,7 @@ Examples:
 
 ### Codex Prompt Snippets
 
-Codex does not currently have a slash-command sync target in this dotfiles layout. Use explicit prompt text instead:
+Codex uses skills as the reusable workflow surface in this dotfiles layout. Use explicit prompt text instead:
 
 ```text
 Use $book-refactoring-pass. Improve this module's structure without changing behavior.
@@ -98,7 +98,7 @@ The tracked skill copies live in:
 Codex exposure uses symlinks in:
 
 ```text
-~/.codex/skills/<skill>
+~/.agents/skills/<skill>
 ```
 
 Claude Code exposure uses local symlinks in:

@@ -1,0 +1,23 @@
+# Template for ~/.codex/config.toml.
+# Bootstrap copies this file only when ~/.codex/config.toml is missing.
+# Keep machine-local state, project trust entries, auth, marketplace timestamps,
+# generated plugin state, and session data out of this tracked template.
+
+model = "gpt-5.5"
+model_reasoning_effort = "high"
+
+[features]
+external_migration = true
+goals = true
+terminal_resize_reflow = true
+
+[shell_environment_policy]
+inherit = "core"
+
+[shell_environment_policy.set]
+DISABLE_ERROR_REPORTING = "1"
+DISABLE_TELEMETRY = "1"
+ENABLE_TOOL_SEARCH = "true"
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"

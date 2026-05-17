@@ -1,0 +1,4 @@
+interface:
+  display_name: "Book Domain Modeling"
+  short_description: "Model domain language, boundaries, invariants, and tactical DDD choices."
+  default_prompt: "Use this skill to clarify domain language and model boundaries before implementation."

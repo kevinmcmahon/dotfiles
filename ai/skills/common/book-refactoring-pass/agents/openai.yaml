@@ -1,0 +1,4 @@
+interface:
+  display_name: "Book Refactoring Pass"
+  short_description: "Behavior-preserving cleanup and preparatory refactoring."
+  default_prompt: "Use this skill to improve structure without changing observable behavior."

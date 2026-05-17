@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+# shellcheck disable=SC2329
 # scripts/lib/common.sh — Shared utilities and cross-platform installers
 #
 # This file is SOURCED by bootstrap.sh — do not add a shebang or set -euo pipefail.
@@ -197,7 +198,8 @@ symlink_claude_config() {
         continue
       fi
       if [ -e "$dst" ] || [ -L "$dst" ]; then
-        local backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
+        local backup
+        backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
         warn "Backing up existing $dst -> $backup"
         mv "$dst" "$backup"
       fi
@@ -290,35 +292,54 @@ verify_claude_setup() {
 }
 
 symlink_codex_config() {
-  log "Symlinking Codex config into ~/.codex"
+  log "Configuring Codex"
 
   local codex_src="$DOTFILES_DIR/codex"
   local codex_dst="$HOME/.codex"
-  local item="AGENTS.md"
-  local src="$codex_src/$item"
-  local dst="$codex_dst/$item"
+  local agents_src="$codex_src/AGENTS.md"
+  local agents_dst="$codex_dst/AGENTS.md"
+  local config_template="$codex_src/config.toml.template"
+  local config_dst="$codex_dst/config.toml"
+  local rules_template="$codex_src/rules/default.rules.template"
+  local rules_dst="$codex_dst/rules/default.rules"
 
   mkdir -p "$codex_dst"
 
-  # Only symlink repo-owned instructions. ~/.codex also contains auth, logs,
-  # sessions, caches, local config, and generated memory/state files.
-  if [[ ! -f "$src" ]]; then
-    warn "Codex instructions missing: $src"
-    return 0
+  if [[ ! -f "$agents_src" ]]; then
+    warn "Codex instructions missing: $agents_src"
+  elif [[ -L "$agents_dst" && "$(readlink "$agents_dst")" == "$agents_src" ]]; then
+    :
+  else
+    if [[ -e "$agents_dst" ]] || [[ -L "$agents_dst" ]]; then
+      local backup
+      backup="${agents_dst}.bak.$(date +%Y%m%d-%H%M%S)"
+      warn "Backing up existing $agents_dst -> $backup"
+      mv "$agents_dst" "$backup"
+    fi
+
+    ln -snf "$agents_src" "$agents_dst"
+    log "Linked $agents_dst -> $agents_src"
   fi
 
-  if [[ -L "$dst" && "$(readlink "$dst")" == "$src" ]]; then
-    return 0
+  if [[ -f "$config_template" && ! -e "$config_dst" ]]; then
+    cp "$config_template" "$config_dst"
+    chmod 600 "$config_dst"
+    log "Created $config_dst from $config_template"
+  elif [[ ! -f "$config_template" ]]; then
+    warn "Codex config template missing: $config_template"
+  else
+    :
   fi
 
-  if [[ -e "$dst" ]] || [[ -L "$dst" ]]; then
-    local backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
-    warn "Backing up existing $dst -> $backup"
-    mv "$dst" "$backup"
+  if [[ -f "$rules_template" && ! -e "$rules_dst" ]]; then
+    mkdir -p "$(dirname "$rules_dst")"
+    cp "$rules_template" "$rules_dst"
+    log "Created $rules_dst from $rules_template"
+  elif [[ ! -f "$rules_template" ]]; then
+    warn "Codex rules template missing: $rules_template"
+  else
+    :
   fi
-
-  ln -snf "$src" "$dst"
-  log "Linked $dst -> $src"
 }
 
 verify_codex_setup() {
@@ -327,6 +348,7 @@ verify_codex_setup() {
   local codex_dst="$HOME/.codex"
   local agents="$codex_dst/AGENTS.md"
   local expected="$DOTFILES_DIR/codex/AGENTS.md"
+  local codex_skills_dst="$HOME/.agents/skills"
   local errors=0
 
   if [[ ! -L "$agents" ]]; then
@@ -343,12 +365,33 @@ verify_codex_setup() {
   # Check generated common AI skills, including book-rule skills.
   local common_skills="book-refactoring-pass book-legacy-change book-reliability-review book-domain-modeling book-data-systems"
   for skill in $common_skills; do
-    local skill_path="$codex_dst/skills/$skill"
+    local skill_path="$codex_skills_dst/$skill"
     if [[ ! -L "$skill_path" ]]; then
       warn "Codex skill is not symlinked: $skill_path"
       errors=$((errors + 1))
     elif [[ ! -f "$skill_path/SKILL.md" ]]; then
       warn "Broken Codex skill symlink: $skill_path -> $(readlink "$skill_path")"
+      errors=$((errors + 1))
+    fi
+  done
+
+  if [[ ! -f "$codex_dst/config.toml" ]]; then
+    warn "Codex config missing: $codex_dst/config.toml"
+    errors=$((errors + 1))
+  fi
+
+  if [[ ! -f "$codex_dst/rules/default.rules" ]]; then
+    warn "Codex default rules missing: $codex_dst/rules/default.rules"
+    errors=$((errors + 1))
+  fi
+
+  local wrong_location_link
+  for wrong_location_link in "$codex_dst/skills"/*; do
+    [[ -L "$wrong_location_link" ]] || continue
+    local resolved
+    resolved="$(cd "$(dirname "$wrong_location_link")" && cd "$(dirname "$(readlink "$wrong_location_link")")" && pwd)/$(basename "$(readlink "$wrong_location_link")")"
+    if [[ "$resolved" == "$DOTFILES_DIR/ai/skills"/* ]]; then
+      warn "Codex user skills belong in ~/.agents/skills, but ~/.codex/skills has dotfiles-managed link: $wrong_location_link"
       errors=$((errors + 1))
     fi
   done
@@ -392,7 +435,8 @@ symlink_opencode_ai_dirs() {
     fi
 
     if [[ -e "$dst" ]] || [[ -L "$dst" ]]; then
-      local backup="${dst}.bak-$(date +%Y%m%d-%H%M%S)"
+      local backup
+      backup="${dst}.bak-$(date +%Y%m%d-%H%M%S)"
       warn "Backing up existing $dst -> $backup"
       mv "$dst" "$backup"
     fi
@@ -486,7 +530,8 @@ install_tmux_plugins() {
       : # already correct
     else
       if [ -e "$tmux_conf_dst" ] || [ -L "$tmux_conf_dst" ]; then
-        local backup="${tmux_conf_dst}.bak.$(date +%Y%m%d-%H%M%S)"
+        local backup
+        backup="${tmux_conf_dst}.bak.$(date +%Y%m%d-%H%M%S)"
         warn "Backing up existing $tmux_conf_dst -> $backup"
         mv "$tmux_conf_dst" "$backup"
       fi

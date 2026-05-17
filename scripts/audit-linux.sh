@@ -66,30 +66,6 @@ check_file_exists() {
   fi
 }
 
-check_file_starts_with() {
-  local target="$1"
-  local expected="$2"
-  local label="${3:-$target}"
-
-  if [[ ! -f "$target" ]]; then
-    fail "$label missing (expected content from $expected)"
-    return
-  fi
-
-  if [[ ! -f "$expected" ]]; then
-    fail "$label expected source missing: $expected"
-    return
-  fi
-
-  local expected_bytes
-  expected_bytes="$(wc -c < "$expected" | tr -d ' ')"
-  if head -c "$expected_bytes" "$target" | cmp -s - "$expected"; then
-    pass "$label starts with $expected"
-  else
-    fail "$label does not start with $expected"
-  fi
-}
-
 check_dir_exists() {
   local path="$1"
   local label="${2:-$path}"
@@ -358,10 +334,21 @@ done
 
 # --- Codex config ---
 section "Codex Config"
-check_file_starts_with "$HOME/.codex/AGENTS.md" "$DOTFILES_DIR/codex/AGENTS.md" "~/.codex/AGENTS.md"
+check_symlink "$HOME/.codex/AGENTS.md" "$DOTFILES_DIR/codex/AGENTS.md" "~/.codex/AGENTS.md"
+check_file_exists "$HOME/.codex/config.toml" "~/.codex/config.toml"
+check_file_exists "$HOME/.codex/rules/default.rules" "~/.codex/rules/default.rules"
 for skill in "${book_rule_skills[@]}"; do
-  check_symlink "$HOME/.codex/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.codex/skills/$skill"
+  check_symlink "$HOME/.agents/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.agents/skills/$skill"
 done
+if compgen -G "$HOME/.codex/skills/*" >/dev/null; then
+  for wrong_location_skill in "$HOME/.codex/skills"/*; do
+    [[ -L "$wrong_location_skill" ]] || continue
+    resolved="$(cd "$(dirname "$wrong_location_skill")" && cd "$(dirname "$(readlink "$wrong_location_skill")")" && pwd)/$(basename "$(readlink "$wrong_location_skill")")"
+    if [[ "$resolved" == "$DOTFILES_DIR/ai/skills"/* ]]; then
+      fail "~/.codex/skills has dotfiles-managed link: $wrong_location_skill"
+    fi
+  done
+fi
 
 # --- AI CLIs ---
 section "AI CLIs"

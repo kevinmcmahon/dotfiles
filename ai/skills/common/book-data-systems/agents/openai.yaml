@@ -1,0 +1,4 @@
+interface:
+  display_name: "Book Data Systems"
+  short_description: "Design data ownership, consistency, eventing, replay, and derived data."
+  default_prompt: "Use this skill to reason about source of truth, durability, replay, and derived data."

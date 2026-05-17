@@ -1,0 +1,4 @@
+interface:
+  display_name: "Book Reliability Review"
+  short_description: "Review and harden services, jobs, and integrations for production failures."
+  default_prompt: "Use this skill to review failure modes, limits, recovery, and observability."

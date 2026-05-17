@@ -39,6 +39,9 @@ fi
 # Deno
 [[ -d "$HOME/.deno/bin" ]] && path+=("$HOME/.deno/bin")
 
+# fnm-managed Node (stable bin dir for the default alias)
+[[ -d "$HOME/.local/share/fnm/aliases/default/bin" ]] && path+=("$HOME/.local/share/fnm/aliases/default/bin")
+
 # Go (official install)
 if [[ -d "/usr/local/go/bin" ]]; then
   path+=("/usr/local/go/bin")

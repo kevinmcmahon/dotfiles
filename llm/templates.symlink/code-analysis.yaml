@@ -1,4 +1,4 @@
-model: claude-opus-4.5
+model: claude-opus-4.7
 
 prompt: >
   I have a codebase analysis represented in the file provided below. Please analyze this content and provide a comprehensive summary of the codebase with the following elements:

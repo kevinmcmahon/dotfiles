@@ -845,6 +845,11 @@ setup_node() {
 
   log "Node.js active: $(node --version)"
 
+  log "Setting npm global prefix to $HOME/.local..."
+  mkdir -p "$HOME/.local/bin"
+  npm config set prefix "$HOME/.local"
+  log "npm global prefix: $(npm config get prefix)"
+
   log "Enabling corepack..."
   corepack enable
 

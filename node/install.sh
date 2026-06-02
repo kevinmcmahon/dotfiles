@@ -41,6 +41,12 @@ fnm use lts-latest
 
 log "Node.js active: $(node --version)"
 
+# Keep npm global installs stable across fnm-managed Node version changes.
+log "Setting npm global prefix to $HOME/.local..."
+mkdir -p "$HOME/.local/bin"
+npm config set prefix "$HOME/.local"
+log "npm global prefix: $(npm config get prefix)"
+
 # Enable corepack (ships with Node.js, provides yarn and pnpm)
 log "Enabling corepack..."
 corepack enable

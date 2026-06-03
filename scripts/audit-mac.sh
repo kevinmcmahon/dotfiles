@@ -76,6 +76,68 @@ check_dir_exists() {
   fi
 }
 
+is_fnm_path() {
+  case "$1" in
+    "$HOME/.local/share/fnm/"* | "$HOME/.local/state/fnm_multishells/"*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+check_npm_global_prefix() {
+  local expected_prefix="$HOME/.local"
+  local actual_prefix
+
+  if ! command -v npm >/dev/null 2>&1; then
+    warn "npm not available; skipping npm global prefix check"
+    return 0
+  fi
+
+  actual_prefix="$(npm config get prefix 2>/dev/null)"
+  if [[ "$actual_prefix" == "$expected_prefix" ]]; then
+    pass "npm global prefix: $actual_prefix"
+  else
+    fail "npm global prefix: $actual_prefix (expected $expected_prefix)"
+  fi
+}
+
+check_interactive_zsh_node_resolution() {
+  local shell_probe shell_node shell_npm shell_prefix
+
+  if ! command -v zsh >/dev/null 2>&1; then
+    warn "zsh not available; skipping interactive Node resolution check"
+    return 0
+  fi
+
+  shell_probe="$(zsh -ic 'command -v node; command -v npm; npm config get prefix' 2>/dev/null)"
+  shell_node="$(printf '%s\n' "$shell_probe" | sed -n '1p')"
+  shell_npm="$(printf '%s\n' "$shell_probe" | sed -n '2p')"
+  shell_prefix="$(printf '%s\n' "$shell_probe" | sed -n '3p')"
+
+  if [[ -z "$shell_node" ]]; then
+    warn "interactive zsh node not installed (run: fnm install --lts)"
+  elif is_fnm_path "$shell_node"; then
+    pass "interactive zsh node resolves through fnm: $shell_node"
+  else
+    fail "interactive zsh node resolves outside fnm: $shell_node"
+  fi
+
+  if [[ -z "$shell_npm" ]]; then
+    warn "interactive zsh npm not available"
+  elif is_fnm_path "$shell_npm"; then
+    pass "interactive zsh npm resolves through fnm: $shell_npm"
+  else
+    fail "interactive zsh npm resolves outside fnm: $shell_npm"
+  fi
+
+  if [[ -n "$shell_prefix" ]]; then
+    if [[ "$shell_prefix" == "$HOME/.local" ]]; then
+      pass "interactive zsh npm global prefix: $shell_prefix"
+    else
+      fail "interactive zsh npm global prefix: $shell_prefix (expected $HOME/.local)"
+    fi
+  fi
+}
+
 check_claude_mem_not_watching_codex() {
   local watch_config="$HOME/.claude-mem/transcript-watch.json"
 
@@ -320,6 +382,9 @@ if command -v node >/dev/null 2>&1; then
   else
     warn "pnpm not available (run: corepack enable)"
   fi
+
+  check_npm_global_prefix
+  check_interactive_zsh_node_resolution
 else
   warn "node not installed (run: fnm install --lts)"
 fi

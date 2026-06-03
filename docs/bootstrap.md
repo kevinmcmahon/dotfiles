@@ -4,7 +4,7 @@ One-command setup for macOS and Linux dev environments. Safe to re-run at any ti
 
 ```bash
 scripts/bootstrap.sh                     # auto-detects macOS or Linux
-INSTALL_NODE=1 scripts/bootstrap.sh      # also install Node.js LTS
+INSTALL_NODE=0 scripts/bootstrap.sh      # skip Node.js LTS
 INSTALL_AI_SKILLS=1 scripts/bootstrap.sh # also install third-party AI skills
 SKIP_DEFAULTS=1 scripts/bootstrap.sh     # skip macOS system defaults
 ```
@@ -164,7 +164,7 @@ remains Codex-owned/local. Codex user skills are installed or symlinked under
 | `LOCAL_BIN` | `$HOME/.local/bin` | User-local binaries (added to PATH) |
 | `CONFIG_DIR` | `$HOME/.config` | XDG config base directory |
 | `SKIP_DEFAULTS` | `0` | Set to `1` to skip macOS system defaults (mac only) |
-| `INSTALL_NODE` | `0` | Set to `1` to install Node.js LTS via fnm + corepack |
+| `INSTALL_NODE` | `1` | Set to `0` to skip Node.js LTS via fnm + corepack |
 | `INSTALL_AI_SKILLS` | `0` | Set to `1` to install third-party AI skills declared in `ai/skills-manifest.toml` |
 | `NTFY_TOPIC` | *(unset)* | ntfy topic for Claude Code push notifications (required for ntfy) |
 | `NTFY_SERVER` | `https://ntfy.sh` | ntfy server URL (optional, for self-hosted) |
@@ -191,7 +191,7 @@ Current topics: `ai`, `bash`, `claude`, `codex`, `gemini`, `ghostty`, `git`, `he
 Some topics have `install.sh` scripts that work independently of the main bootstrap:
 
 ### `node/install.sh`
-Installs Node.js LTS via fnm + corepack. Prerequisites: fnm on PATH. Handles fnm env setup, LTS install, setting default, and enabling corepack (provides yarn and pnpm).
+Installs Node.js LTS via fnm + corepack. Prerequisites: fnm on PATH. Handles fnm env setup, LTS install, setting the default, setting npm's global prefix to `~/.local`, and enabling corepack (provides yarn and pnpm).
 
 ### `zsh/install.sh`
 Full zsh environment setup:

@@ -15,6 +15,7 @@ The `bootstrap.sh` script auto-detects macOS and configures a complete developme
 - **Go** via Homebrew
 - **Rust** toolchain and cargo tools (viu)
 - **Python** tooling via uv (package manager, ruff, pynvim)
+- **Node.js** via fnm, with npm global binaries installed under `~/.local/bin`
 - **Deno** runtime
 - **AI CLIs** (Claude Code, Codex, OpenCode, llm)
 - **macOS system defaults** (Finder, keyboard, trackpad, screenshots)
@@ -126,12 +127,17 @@ $EDITOR ~/.gituserconfig.nsv
 
 ### Node.js via fnm
 
+Bootstrap installs Node.js by default. If you skipped Node with `INSTALL_NODE=0` or need to repair an existing machine, run:
+
 ```bash
 fnm install --lts
 fnm use lts-latest
 fnm default lts-latest
+npm config set prefix "$HOME/.local"
 corepack enable
 ```
+
+The npm prefix keeps global packages and binaries stable across fnm-managed Node version changes. `~/.local/bin` is already part of the managed shell `PATH`.
 
 ### Python via uv
 

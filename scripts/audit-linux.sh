@@ -76,6 +76,23 @@ check_dir_exists() {
   fi
 }
 
+check_npm_global_prefix() {
+  local expected_prefix="$HOME/.local"
+  local actual_prefix
+
+  if ! command -v npm >/dev/null 2>&1; then
+    warn "npm not available; skipping npm global prefix check"
+    return 0
+  fi
+
+  actual_prefix="$(npm config get prefix 2>/dev/null)"
+  if [[ "$actual_prefix" == "$expected_prefix" ]]; then
+    pass "npm global prefix: $actual_prefix"
+  else
+    fail "npm global prefix: $actual_prefix (expected $expected_prefix)"
+  fi
+}
+
 check_claude_mem_not_watching_codex() {
   local watch_config="$HOME/.claude-mem/transcript-watch.json"
 
@@ -280,6 +297,8 @@ if command -v node >/dev/null 2>&1; then
   else
     warn "pnpm not available (run: corepack enable)"
   fi
+
+  check_npm_global_prefix
 else
   warn "node not installed (run: fnm install --lts)"
 fi

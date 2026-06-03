@@ -108,6 +108,36 @@ check_claude_mem_not_watching_codex() {
   fi
 }
 
+check_codex_has_no_claude_mem() {
+  local codex_config="$HOME/.codex/config.toml"
+
+  if [[ ! -f "$codex_config" ]]; then
+    fail "Codex config missing: $codex_config"
+    return
+  fi
+
+  if grep -Eq 'claude-mem|mcp-search|CLAUDE_CODE_' "$codex_config"; then
+    fail "Codex config still references claude-mem, mcp-search, or CLAUDE_CODE_*"
+  else
+    pass "Codex config has no claude-mem, mcp-search, or CLAUDE_CODE_* references"
+  fi
+}
+
+check_codex_hooks_json() {
+  local hooks_json="$HOME/.codex/hooks.json"
+
+  if [[ ! -f "$hooks_json" ]]; then
+    fail "Codex hooks config missing: $hooks_json"
+    return
+  fi
+
+  if grep -q '[$]HOME/.codex/hooks/ntfy-notify.sh' "$hooks_json"; then
+    pass "Codex hooks use portable ntfy hook path"
+  else
+    fail "Codex hooks do not reference portable ntfy hook path"
+  fi
+}
+
 # ==============================================================================
 # Checks
 # ==============================================================================
@@ -375,8 +405,11 @@ done
 section "Codex Config"
 check_symlink "$HOME/.codex/AGENTS.md" "$DOTFILES_DIR/codex/AGENTS.md" "~/.codex/AGENTS.md"
 check_claude_mem_not_watching_codex
+check_codex_has_no_claude_mem
 check_file_exists "$HOME/.codex/config.toml" "~/.codex/config.toml"
+check_codex_hooks_json
 check_file_exists "$HOME/.codex/rules/default.rules" "~/.codex/rules/default.rules"
+check_symlink "$HOME/.codex/hooks/ntfy-notify.sh" "$DOTFILES_DIR/codex/hooks/ntfy-notify.sh" "~/.codex/hooks/ntfy-notify.sh"
 for skill in "${book_rule_skills[@]}"; do
   check_symlink "$HOME/.agents/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.agents/skills/$skill"
 done

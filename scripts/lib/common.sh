@@ -374,8 +374,12 @@ symlink_codex_config() {
   local agents_dst="$codex_dst/AGENTS.md"
   local config_template="$codex_src/config.toml.template"
   local config_dst="$codex_dst/config.toml"
+  local hooks_template="$codex_src/hooks.json.template"
+  local hooks_dst="$codex_dst/hooks.json"
   local rules_template="$codex_src/rules/default.rules.template"
   local rules_dst="$codex_dst/rules/default.rules"
+  local ntfy_hook_src="$codex_src/hooks/ntfy-notify.sh"
+  local ntfy_hook_dst="$codex_dst/hooks/ntfy-notify.sh"
 
   mkdir -p "$codex_dst"
   cleanup_codex_legacy_skill_links
@@ -406,6 +410,15 @@ symlink_codex_config() {
     :
   fi
 
+  if [[ -f "$hooks_template" && ! -e "$hooks_dst" ]]; then
+    cp "$hooks_template" "$hooks_dst"
+    log "Created $hooks_dst from $hooks_template"
+  elif [[ ! -f "$hooks_template" ]]; then
+    warn "Codex hooks template missing: $hooks_template"
+  else
+    :
+  fi
+
   if [[ -f "$rules_template" && ! -e "$rules_dst" ]]; then
     mkdir -p "$(dirname "$rules_dst")"
     cp "$rules_template" "$rules_dst"
@@ -414,6 +427,23 @@ symlink_codex_config() {
     warn "Codex rules template missing: $rules_template"
   else
     :
+  fi
+
+  if [[ ! -f "$ntfy_hook_src" ]]; then
+    warn "Codex ntfy hook missing: $ntfy_hook_src"
+  elif [[ -L "$ntfy_hook_dst" && "$(readlink "$ntfy_hook_dst")" == "$ntfy_hook_src" ]]; then
+    :
+  else
+    mkdir -p "$(dirname "$ntfy_hook_dst")"
+    if [[ -e "$ntfy_hook_dst" ]] || [[ -L "$ntfy_hook_dst" ]]; then
+      local backup
+      backup="${ntfy_hook_dst}.bak.$(date +%Y%m%d-%H%M%S)"
+      warn "Backing up existing $ntfy_hook_dst -> $backup"
+      mv "$ntfy_hook_dst" "$backup"
+    fi
+
+    ln -snf "$ntfy_hook_src" "$ntfy_hook_dst"
+    log "Linked $ntfy_hook_dst -> $ntfy_hook_src"
   fi
 }
 
@@ -424,6 +454,8 @@ verify_codex_setup() {
   local agents="$codex_dst/AGENTS.md"
   local expected="$DOTFILES_DIR/codex/AGENTS.md"
   local codex_skills_dst="$HOME/.agents/skills"
+  local ntfy_hook="$codex_dst/hooks/ntfy-notify.sh"
+  local expected_ntfy_hook="$DOTFILES_DIR/codex/hooks/ntfy-notify.sh"
   local errors=0
 
   if [[ ! -L "$agents" ]]; then
@@ -455,8 +487,24 @@ verify_codex_setup() {
     errors=$((errors + 1))
   fi
 
+  if [[ ! -f "$codex_dst/hooks.json" ]]; then
+    warn "Codex hooks config missing: $codex_dst/hooks.json"
+    errors=$((errors + 1))
+  fi
+
   if [[ ! -f "$codex_dst/rules/default.rules" ]]; then
     warn "Codex default rules missing: $codex_dst/rules/default.rules"
+    errors=$((errors + 1))
+  fi
+
+  if [[ ! -L "$ntfy_hook" ]]; then
+    warn "Codex ntfy hook is not symlinked: $ntfy_hook"
+    errors=$((errors + 1))
+  elif [[ "$(readlink "$ntfy_hook")" != "$expected_ntfy_hook" ]]; then
+    warn "Codex ntfy hook points to unexpected target: $(readlink "$ntfy_hook")"
+    errors=$((errors + 1))
+  elif [[ ! -x "$ntfy_hook" ]]; then
+    warn "Codex ntfy hook is not executable: $ntfy_hook"
     errors=$((errors + 1))
   fi
 

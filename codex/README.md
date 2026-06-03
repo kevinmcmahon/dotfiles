@@ -8,6 +8,9 @@ OpenAI Codex is managed as a first-class AI peer using Codex-native surfaces: gl
 codex/
 ├── AGENTS.md                  # Global instructions -> ~/.codex/AGENTS.md
 ├── config.toml.template       # Safe defaults copied to ~/.codex/config.toml when missing
+├── hooks.json.template        # Safe hook defaults copied to ~/.codex/hooks.json when missing
+├── hooks/
+│   └── ntfy-notify.sh         # Optional notifications -> ~/.codex/hooks/ntfy-notify.sh
 ├── rules/
 │   └── default.rules.template # Safe exec rules copied to ~/.codex/rules/default.rules when missing
 └── README.md
@@ -15,7 +18,9 @@ codex/
 
 ## Managed State
 
-Bootstrap links `codex/AGENTS.md` to `~/.codex/AGENTS.md`. It copies `config.toml.template` and `rules/default.rules.template` only when the live files are missing.
+Bootstrap links `codex/AGENTS.md` to `~/.codex/AGENTS.md` and `codex/hooks/ntfy-notify.sh` to `~/.codex/hooks/ntfy-notify.sh`. It copies `config.toml.template`, `hooks.json.template`, and `rules/default.rules.template` only when the live files are missing.
+
+Codex hooks are managed separately from Claude Code hooks. Do not install `claude-mem` or other Claude-only lifecycle hooks into Codex; Codex should only load Codex-owned hooks or plugin hooks that are intentionally enabled for Codex.
 
 Codex-owned skill state under `~/.codex/skills` remains local. Dotfiles do not inject skills into that directory or treat it as a symlink target.
 

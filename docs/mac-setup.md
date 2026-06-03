@@ -98,12 +98,14 @@ exec zsh
 | `claude/CLAUDE.md`, `commands/`, `docs/`, `hooks/`, `skills/`, `settings.json` | `~/.claude/<name>` |
 | `codex/AGENTS.md` | `~/.codex/AGENTS.md` |
 | `codex/config.toml.template` | `~/.codex/config.toml` when missing |
+| `codex/hooks.json.template` | `~/.codex/hooks.json` when missing |
+| `codex/hooks/ntfy-notify.sh` | `~/.codex/hooks/ntfy-notify.sh` |
 | `codex/rules/default.rules.template` | `~/.codex/rules/default.rules` when missing |
 | `ai/skills/{common,codex}` | `~/.agents/skills/` |
 
 `ghostty` is treated as pure repo-owned XDG config, so the whole topic symlinks into `~/.config/ghostty`. `tmux` is the main exception: bootstrap keeps a real `~/.config/tmux/` directory so TPM plugins can stay local, and only symlinks `tmux/tmux.conf` into that directory.
 
-Dotfiles do not manage Codex user skills in `~/.codex/skills`.
+Dotfiles do not manage Codex user skills in `~/.codex/skills`. Codex hook scripts are managed under `codex/hooks/` and kept separate from Claude Code hooks.
 
 ## Post-Install Configuration
 
@@ -167,7 +169,7 @@ llm keys set gemini
 
 ### Ntfy Push Notifications (optional)
 
-To receive push notifications on your phone when Claude Code needs input:
+To receive push notifications on your phone when Claude Code or Codex needs input:
 
 1. Install the ntfy app ([iOS](https://apps.apple.com/app/ntfy/id1625396347) / [Android](https://play.google.com/store/apps/details?id=io.heckel.ntfy))
 2. Subscribe to a unique, hard-to-guess topic

@@ -26,6 +26,9 @@ claude/mcp.json
 !/codex/AGENTS.md
 !/codex/README.md
 !/codex/config.toml.template
+!/codex/hooks.json.template
+!/codex/hooks/
+!/codex/hooks/ntfy-notify.sh
 !/codex/rules/
 !/codex/rules/default.rules.template
 

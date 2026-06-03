@@ -105,7 +105,7 @@ exec zsh
 
 `ghostty` is treated as pure repo-owned XDG config, so the whole topic symlinks into `~/.config/ghostty`. `tmux` is the main exception: bootstrap keeps a real `~/.config/tmux/` directory so TPM plugins can stay local, and only symlinks `tmux/tmux.conf` into that directory.
 
-Dotfiles do not manage Codex user skills in `~/.codex/skills`. Codex hook scripts are managed under `codex/hooks/` and kept separate from Claude Code hooks.
+Dotfiles do not manage Codex user skills in `~/.codex/skills`. Codex hook implementations live under `ai/scripts/codex/`; Codex-facing hook paths are managed under `codex/hooks/` and kept separate from Claude Code hooks.
 
 ## Post-Install Configuration
 

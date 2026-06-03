@@ -158,9 +158,10 @@ Dotfiles do not manage Codex user skills in `~/.codex/skills`; that directory
 remains Codex-owned/local. Codex user skills are installed or symlinked under
 `~/.agents/skills`.
 
-Codex hook scripts are kept under `codex/hooks/` and symlinked into
-`~/.codex/hooks/`. Claude Code lifecycle hooks and `claude-mem` stay out of
-Codex unless they are explicitly reintroduced as Codex-compatible plugins.
+Codex hook implementations live under `ai/scripts/codex/`. Codex-facing hook
+paths stay under `codex/hooks/` and are symlinked into `~/.codex/hooks/`.
+Claude Code lifecycle hooks and `claude-mem` stay out of Codex unless they are
+explicitly reintroduced as Codex-compatible plugins.
 
 ## Environment Variables
 

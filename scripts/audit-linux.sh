@@ -413,6 +413,8 @@ check_symlink "$HOME/.codex/hooks/ntfy-notify.sh" "$DOTFILES_DIR/codex/hooks/ntf
 for skill in "${book_rule_skills[@]}"; do
   check_symlink "$HOME/.agents/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.agents/skills/$skill"
 done
+check_symlink "$HOME/.agents/skills/perplexity" "$DOTFILES_DIR/ai/skills/codex/perplexity" "~/.agents/skills/perplexity"
+check_symlink "$LOCAL_BIN/pplx-search" "$DOTFILES_DIR/ai/skills/codex/perplexity/pplx-search" "~/.local/bin/pplx-search"
 if compgen -G "$HOME/.codex/skills/*" >/dev/null; then
   for wrong_location_skill in "$HOME/.codex/skills"/*; do
     [[ -L "$wrong_location_skill" ]] || continue

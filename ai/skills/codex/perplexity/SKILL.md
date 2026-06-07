@@ -19,7 +19,7 @@ Resolve the CLI in this order:
 1. `$PPLX_SEARCH_BIN` if set
 2. `pplx-search` from `PATH`
 3. `~/.agents/skills/perplexity/pplx-search`
-4. `/home/mrrobot/dotfiles/ai/skills/codex/perplexity/pplx-search`
+4. `~/dotfiles/ai/skills/codex/perplexity/pplx-search`
 
 Before the first real query in a session, prefer a quick health check if setup is uncertain:
 
@@ -30,7 +30,7 @@ pplx-search --health
 Use one of the resolved commands above. Example:
 
 ```bash
-/home/mrrobot/dotfiles/ai/skills/codex/perplexity/pplx-search "query"
+pplx-search "query"
 ```
 
 Models:
@@ -51,9 +51,9 @@ Prefer queries that ask for:
 Examples:
 
 ```bash
-/home/mrrobot/dotfiles/ai/skills/codex/perplexity/pplx-search "OpenClaw memory-core vs claude-mem April 2026 official docs issues changelog"
-/home/mrrobot/dotfiles/ai/skills/codex/perplexity/pplx-search --reason "Does current OpenClaw memory search require memory-core runtime contract"
-/home/mrrobot/dotfiles/ai/skills/codex/perplexity/pplx-search -m sonar "latest Bun release date"
+pplx-search "OpenClaw memory-core vs claude-mem April 2026 official docs issues changelog"
+pplx-search --reason "Does current OpenClaw memory search require memory-core runtime contract"
+pplx-search -m sonar "latest Bun release date"
 ```
 
 Useful templates:

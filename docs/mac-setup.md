@@ -102,6 +102,7 @@ exec zsh
 | `codex/hooks/ntfy-notify.sh` | `~/.codex/hooks/ntfy-notify.sh` |
 | `codex/rules/default.rules.template` | `~/.codex/rules/default.rules` when missing |
 | `ai/skills/{common,codex}` | `~/.agents/skills/` |
+| `ai/skills/codex/perplexity/pplx-search` | `~/.local/bin/pplx-search` |
 
 `ghostty` is treated as pure repo-owned XDG config, so the whole topic symlinks into `~/.config/ghostty`. `tmux` is the main exception: bootstrap keeps a real `~/.config/tmux/` directory so TPM plugins can stay local, and only symlinks `tmux/tmux.conf` into that directory.
 

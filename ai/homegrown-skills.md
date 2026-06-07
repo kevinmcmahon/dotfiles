@@ -8,7 +8,7 @@ installed with `npx skills add`.
 
 | Skill | Current source | Notes |
 | --- | --- | --- |
-| `perplexity` | `ai/skills/claude/perplexity`, `ai/skills/codex/perplexity` | Merge into one portable skill and remove hardcoded host paths before packaging. |
+| `perplexity` | `ai/skills/claude/perplexity`, `ai/skills/codex/perplexity` | Merge the duplicated Claude/Codex variants into one portable skill before packaging. |
 | `runpodctl` | `ai/skills/common/runpodctl` | Packageable external CLI workflow. |
 | `swift-best-practices` | `ai/skills/common/swift-best-practices` | Package with nested SwiftUI guidance as a separate skill or reference. |
 | `coding-best-practices` | `ai/skills/common/coding-best-practices` | Package after clarifying overlap with Swift-specific guidance. |

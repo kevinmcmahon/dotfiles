@@ -7,6 +7,7 @@ DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 MANIFEST="${SKILLS_MANIFEST:-$DOTFILES_DIR/ai/skills-manifest.toml}"
 
 JSON=0
+VERBOSE=0
 
 die() {
   printf "\033[1;31mERR:\033[0m %s\n" "$*"
@@ -22,6 +23,8 @@ This command is read-only: it never installs, updates, or edits skills.
 
 Options:
   --json      Print machine-readable JSON
+  -v, --verbose
+              Print full refs, source, risk, and notes in human output
   -h, --help  Show this help message
 EOF
 }
@@ -29,6 +32,7 @@ EOF
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --json) JSON=1; shift ;;
+    -v|--verbose) VERBOSE=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) die "Unknown option: $1" ;;
   esac
@@ -44,8 +48,9 @@ CURL_BIN="$(command -v curl || true)"
 if [[ -z "$CURL_BIN" ]]; then
   die "curl not found; required to check GitHub sources"
 fi
+GH_BIN="$(command -v gh || true)"
 
-python3 - "$MANIFEST" "$JSON" "$CURL_BIN" <<'PY'
+python3 - "$MANIFEST" "$JSON" "$VERBOSE" "$CURL_BIN" "$GH_BIN" <<'PY'
 import json
 import re
 import subprocess
@@ -60,7 +65,9 @@ except ModuleNotFoundError:
 
 manifest = Path(sys.argv[1])
 json_mode = sys.argv[2] == "1"
-curl_bin = sys.argv[3]
+verbose_mode = sys.argv[3] == "1"
+curl_bin = sys.argv[4]
+gh_bin = sys.argv[5]
 data = tomllib.loads(manifest.read_text())
 
 
@@ -95,6 +102,29 @@ def latest_ref_for(source):
     repo = github_repo(source)
     if repo is None:
         return None, "unsupported"
+
+    if gh_bin:
+        result = subprocess.run(
+            [gh_bin, "api", f"repos/{repo}/commits/HEAD"],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        if result.returncode == 0:
+            try:
+                payload = json.loads(result.stdout)
+            except json.JSONDecodeError as exc:
+                return None, f"error: invalid JSON from gh api: {exc}"
+
+            sha = payload.get("sha")
+            if isinstance(sha, str) and sha:
+                return sha, None
+
+            message = payload.get("message")
+            if isinstance(message, str) and message:
+                return None, f"error: {message}"
+            return None, "error: gh api response did not include sha"
 
     url = f"https://api.github.com/repos/{repo}/commits/HEAD"
     result = subprocess.run(
@@ -144,6 +174,30 @@ def validate_entry(kind, entry):
         raise SystemExit(f"{name}: source must be a string")
 
 
+def short_ref(value):
+    if not isinstance(value, str) or not value:
+        return "-"
+    return value[:12]
+
+
+def status_count(count, status):
+    return f"{count} {status}"
+
+
+def print_verbose(entry):
+    print(f"    source: {entry['source']}")
+    if entry.get("reviewed_ref"):
+        print(f"    reviewed_ref: {entry['reviewed_ref']}")
+    if entry.get("latest_ref"):
+        print(f"    latest_ref:   {entry['latest_ref']}")
+    if entry.get("reviewed_at"):
+        print(f"    reviewed_at: {entry['reviewed_at']}")
+    if entry.get("risk"):
+        print(f"    risk: {entry['risk']}")
+    if entry.get("notes"):
+        print(f"    notes: {entry['notes']}")
+
+
 results = []
 for kind in ("external", "watch"):
     for entry in require_entries(kind):
@@ -170,15 +224,43 @@ if json_mode:
     print(json.dumps({"manifest": str(manifest), "entries": results}, indent=2, sort_keys=True))
 else:
     print(f"AI skills audit: {manifest}")
-    for entry in results:
-        latest = entry["latest_ref"] or "-"
-        reviewed = entry["reviewed_ref"] or "-"
-        print(
-            f"{entry['status']:11} {entry['type']:8} {entry['name']} "
-            f"(reviewed={reviewed}, latest={latest})"
-        )
-        if entry["error"]:
-            print(f"  {entry['error']}")
+
+    status_order = ["current", "stale", "unreviewed", "unsupported", "error"]
+    counts = {status: sum(1 for entry in results if entry["status"] == status) for status in status_order}
+    summary = ", ".join(status_count(counts[status], status) for status in status_order if counts[status])
+    print(f"Summary: {summary or '0 entries'}")
+
+    attention = [entry for entry in results if entry["status"] != "current"]
+    current = [entry for entry in results if entry["status"] == "current"]
+
+    if attention:
+        print("\nNeeds attention")
+        for entry in attention:
+            reviewed = short_ref(entry["reviewed_ref"])
+            latest = short_ref(entry["latest_ref"])
+            print(f"  {entry['status']:11} {entry['type']:8} {entry['name']}")
+            if entry["status"] == "stale":
+                print(f"    reviewed {reviewed} -> latest {latest}")
+            elif entry["status"] == "unreviewed":
+                print(f"    latest {latest}; add reviewed_ref after review")
+            elif entry["status"] == "unsupported":
+                print("    source is not a GitHub repo; use --json for stored metadata")
+            elif entry["status"] == "error":
+                print(f"    {entry['error']}")
+            if verbose_mode:
+                print_verbose(entry)
+
+    if current:
+        print("\nCurrent")
+        for entry in current:
+            print(f"  {entry['type']:8} {entry['name']} @ {short_ref(entry['latest_ref'])}")
+            if verbose_mode:
+                print_verbose(entry)
+
+    if verbose_mode:
+        print("\nUse --json for machine-readable output.")
+    else:
+        print("\nUse --verbose for full refs and notes; use --json for machine-readable output.")
 
 raise SystemExit(1 if any(entry["status"] == "error" for entry in results) else 0)
 PY

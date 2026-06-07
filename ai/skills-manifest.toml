@@ -23,12 +23,20 @@ skills = [
   "write-a-skill",
   "zoom-out",
 ]
+reviewed_ref = "be55a7970319ede7965edbb02b5e41cba1ca82c9"
+reviewed_at = "2026-06-07"
+risk = "workflow"
+notes = "Broad workflow skill pack. Review upstream diff before updating because these skills affect agent behavior across Codex, Claude Code, and OpenCode."
 
 [[external]]
 name = "find-skills"
 source = "vercel-labs/skills"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["find-skills"]
+reviewed_ref = "a561e790756b2785b9ddb82285c4eb0a08258ac9"
+reviewed_at = "2026-06-07"
+risk = "workflow"
+notes = "Skill discovery helper. Keep external unless a repo-specific discovery workflow becomes necessary."
 
 [[external]]
 name = "likec4"
@@ -41,6 +49,10 @@ name = "eraser-terraform"
 source = "eraserlabs/eraser-io"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["terraform-diagrams"]
+reviewed_ref = "30d6f3679f597eeae67bacab5ee733c863686177"
+reviewed_at = "2026-06-07"
+risk = "tool-stale"
+notes = "Terraform diagram workflow tied to external tooling. Review upstream behavior before updating."
 
 [[external]]
 name = "app-store-review"

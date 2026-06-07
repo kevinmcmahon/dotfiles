@@ -42,6 +42,60 @@ source = "eraserlabs/eraser-io"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["terraform-diagrams"]
 
+[[external]]
+name = "app-store-review"
+source = "safaiyeh/app-store-review-skill"
+agents = ["codex", "claude-code", "opencode"]
+skills = ["app-store-review"]
+reviewed_ref = "3497c26895bcef743e06de2bd83675a68dea3555"
+reviewed_at = "2026-06-07"
+risk = "policy-stale"
+notes = "App Store policy changes over time; verify findings against current Apple App Store Review Guidelines before relying on them."
+
+[[external]]
+name = "app-store-preflight"
+source = "truongduy2611/app-store-preflight-skills"
+agents = ["codex", "claude-code", "opencode"]
+skills = ["app-store-preflight-skills"]
+reviewed_ref = "e52e007036fb6edea104b6b49eb01f69c155ad51"
+reviewed_at = "2026-06-07"
+risk = "policy-stale"
+notes = "Useful as an App Store preflight workflow, but rule content must be checked against current Apple docs and asc CLI behavior."
+
+[[external]]
+name = "dimillian-workflow-skills"
+source = "Dimillian/Skills"
+agents = ["codex", "claude-code", "opencode"]
+skills = ["app-store-changelog", "review-swarm", "bug-hunt-swarm"]
+reviewed_ref = "05ba982bfeb0d77d3c97d4542b0ee15034d05f84"
+reviewed_at = "2026-06-07"
+risk = "workflow"
+notes = "Install selected workflow skills only; avoid importing the whole repo because several skills overlap with existing Swift and macOS guidance."
+
+[[watch]]
+name = "swift-agent-skills-index"
+source = "twostraws/Swift-Agent-Skills"
+reviewed_ref = "79dacde53418e718d3ae2c6c44d7eb65c0b9b33e"
+reviewed_at = "2026-06-07"
+risk = "discovery-only"
+notes = "Curated index of Swift and Apple platform skills. Use for discovery; do not install directly."
+
+[[watch]]
+name = "app-store-connect-cli-skills"
+source = "rorkai/app-store-connect-cli-skills"
+reviewed_ref = "ed0049a59ebbe68743019922c7150c4f5bb29db2"
+reviewed_at = "2026-06-07"
+risk = "tool-stale"
+notes = "Potential companion skill source for asc workflows; keep watched until it is reviewed for portability and overlap."
+
+[[watch]]
+name = "awesome-ios-ai"
+source = "Techopolis/awesome-ios-ai"
+reviewed_ref = "e77e8d1fc2dfc5368702c3f8d44ce2f27348df65"
+reviewed_at = "2026-06-07"
+risk = "discovery-only"
+notes = "Alternative discovery index for iOS AI tooling; do not install directly."
+
 [[local]]
 name = "perplexity"
 source = "ai/skills/{claude,codex}/perplexity"

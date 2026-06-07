@@ -26,7 +26,7 @@ Codex hooks are managed separately from Claude Code hooks. Do not install `claud
 
 Codex-owned skill state under `~/.codex/skills` remains local. Dotfiles do not inject skills into that directory or treat it as a symlink target.
 
-Codex user skills live in `~/.agents/skills`. Dotfiles-owned Codex skills are symlinked there from `ai/skills/{common,codex}` by `scripts/ai-sync.sh`. Third-party skills for Codex, Claude Code, and OpenCode are declared in `ai/skills-manifest.toml` and installed by `scripts/install-ai-skills.sh` via `npx skills`. OpenCode skills use the same local-directory pattern at `~/.opencode/skills`.
+Codex user skills live in `~/.agents/skills`. Dotfiles-owned Codex skills are symlinked there from `ai/skills/{common,codex}` by `scripts/ai-sync.sh`. Third-party skills for Codex, Claude Code, and OpenCode are declared in `ai/skills-manifest.toml` and installed by `scripts/install-ai-skills.sh` via `npx skills`; see `ai/skills-manifest.md` for the manifest contract, entry types, and audit workflow. OpenCode skills use the same local-directory pattern at `~/.opencode/skills`.
 
 Home-grown skills are inventoried in `ai/homegrown-skills.md`. Packageable candidates should move to a separate skills repository before they become `npx skills` installs.
 

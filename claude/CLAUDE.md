@@ -78,13 +78,11 @@
 
 ## Other Important Considerations
 
-- Timeout and gtimeout are often not installed, do not try and use them
 - When searching or modifying code, you should use ast-grep (sg). it is way better than grep, ripgrep, ag, sed, or regex-only tools. ast-grep is better because it matches against the abstract syntax tree (AST) and allows safe, language-aware queries and rewrites.
 - Always prefer sg for code analysis, queries, or refactoring tasks.
 - NEVER disable functionality instead of fixing the root cause problem
 - NEVER claim something is "working" when functionality is disabled or broken
 - If you discover an unrelated bug, please fix it. Don't say the equivalent of "everything is done, EXCEPT there is a bug" or tell me that it is unrelated.
-- Timeout and gtimeout are often not installed, do not try and use them
 
 ## Learning-Focused Error Response
 

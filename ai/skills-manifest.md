@@ -43,6 +43,9 @@ Two scripts consume the manifest:
 Neither script owns the lock file. The `skills` CLI owns resolution,
 installation, and local lock state under `~/.agents/.skill-lock.json`.
 
+The scripts run Python through `uv run --no-project --python 3.12` so TOML
+parsing does not depend on the host system `python3` on macOS or Linux.
+
 ## Decision Rule
 
 Use this rule before adding or moving a skill entry:

@@ -40,8 +40,8 @@ done
 
 [[ -f "$MANIFEST" ]] || die "Skills manifest not found: $MANIFEST"
 
-if ! command -v python3 >/dev/null 2>&1; then
-  die "python3 not found; required to read TOML manifest"
+if ! command -v uv >/dev/null 2>&1; then
+  die "uv not found; required to run Python tooling"
 fi
 
 CURL_BIN="$(command -v curl || true)"
@@ -50,7 +50,7 @@ if [[ -z "$CURL_BIN" ]]; then
 fi
 GH_BIN="$(command -v gh || true)"
 
-python3 - "$MANIFEST" "$JSON" "$VERBOSE" "$CURL_BIN" "$GH_BIN" <<'PY'
+uv run --no-project --python 3.12 python - "$MANIFEST" "$JSON" "$VERBOSE" "$CURL_BIN" "$GH_BIN" <<'PY'
 import json
 import re
 import subprocess
@@ -58,10 +58,7 @@ import sys
 from pathlib import Path
 from urllib.parse import urlparse
 
-try:
-    import tomllib
-except ModuleNotFoundError:
-    raise SystemExit("python tomllib is required; use Python 3.11+")
+import tomllib
 
 manifest = Path(sys.argv[1])
 json_mode = sys.argv[2] == "1"

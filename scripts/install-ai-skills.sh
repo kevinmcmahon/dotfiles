@@ -43,24 +43,24 @@ done
 
 [[ -f "$MANIFEST" ]] || die "Skills manifest not found: $MANIFEST"
 
-if ! command -v python3 >/dev/null 2>&1; then
-  die "python3 not found; required to read TOML manifest"
+if ! command -v uv >/dev/null 2>&1; then
+  die "uv not found; required to run Python tooling"
 fi
 
 if (( ! CHECK )) && (( ! DRY_RUN )) && ! command -v npx >/dev/null 2>&1; then
   die "npx not found; install Node.js first"
 fi
 
-mapfile -t commands < <(
-  python3 - "$MANIFEST" <<'PY'
+commands=()
+while IFS= read -r command; do
+  commands+=("$command")
+done < <(
+  uv run --no-project --python 3.12 python - "$MANIFEST" <<'PY'
 import shlex
 import sys
 from pathlib import Path
 
-try:
-    import tomllib
-except ModuleNotFoundError:
-    raise SystemExit("python tomllib is required; use Python 3.11+")
+import tomllib
 
 manifest = Path(sys.argv[1])
 data = tomllib.loads(manifest.read_text())

@@ -93,6 +93,22 @@ risk = "discovery-only"
 notes = "Curated index of Swift and Apple platform skills. Use for discovery; do not install directly."
 
 [[watch]]
+name = "swift-architecture-skill"
+source = "efremidze/swift-architecture-skill"
+reviewed_ref = "294d8ee0b10b35874ec4a2dc6f564b31af251603"
+reviewed_at = "2026-06-07"
+risk = "workflow"
+notes = "Installed project-local in PinWhiz because architecture guidance should follow the repo context instead of becoming a global default."
+
+[[watch]]
+name = "swift-testing-pro"
+source = "twostraws/swift-testing-agent-skill"
+reviewed_ref = "2d6bba14a3c8bf3694f218b92fffe617c41ae43e"
+reviewed_at = "2026-06-07"
+risk = "api-stale"
+notes = "Installed project-local in PinWhiz for Swift Testing guidance; review upstream before refreshing the project-local copy."
+
+[[watch]]
 name = "app-store-connect-cli-skills"
 source = "rorkai/app-store-connect-cli-skills"
 reviewed_ref = "ed0049a59ebbe68743019922c7150c4f5bb29db2"

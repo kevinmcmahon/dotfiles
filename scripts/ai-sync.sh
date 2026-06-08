@@ -75,11 +75,15 @@ resolve_target_dir() {
   esac
 }
 
+uv_python() {
+  uv run --no-project --python 3.12 python "$@"
+}
+
 relative_link_target() {
   local src="$1"
   local target_dir="$2"
 
-  python3 - "$src" "$target_dir" <<'PY'
+  uv_python - "$src" "$target_dir" <<'PY'
 import os
 import sys
 
@@ -92,7 +96,7 @@ PY
 link_points_into_ai() {
   local link="$1"
 
-  python3 - "$link" "$AI_DIR" <<'PY'
+  uv_python - "$link" "$AI_DIR" <<'PY'
 import os
 import sys
 
@@ -110,24 +114,14 @@ PY
 externally_managed_skill_names() {
   [[ -f "$SKILLS_MANIFEST" ]] || return 0
 
-  python3 - "$SKILLS_MANIFEST" <<'PY' 2>/dev/null || true
-import re
+  uv_python - "$SKILLS_MANIFEST" <<'PY' 2>/dev/null || true
 import sys
 from pathlib import Path
 
 manifest = Path(sys.argv[1])
 text = manifest.read_text()
 
-try:
-    import tomllib
-except ModuleNotFoundError:
-    # Minimal fallback for this repo's manifest shape.
-    names = set()
-    for match in re.finditer(r"(?ms)^\s*skills\s*=\s*\[(.*?)\]", text):
-        names.update(re.findall(r'"([^"]+)"', match.group(1)))
-    for name in sorted(names):
-        print(name)
-    raise SystemExit(0)
+import tomllib
 
 data = tomllib.loads(text)
 names = set()

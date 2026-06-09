@@ -14,11 +14,9 @@
     "commit": "",
     "pr": ""
   },
+  "model": "claude-fable-5[1m]",
   "permissions": {
-    "allow": [
-      "Bash(ls:*)",
-      "Bash(sg:*)"
-    ],
+    "allow": ["Bash(ls:*)", "Bash(sg:*)"],
     "deny": [
       "Bash(rm -rf *)",
       "Bash(rm -fr *)",

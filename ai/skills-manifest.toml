@@ -146,6 +146,12 @@ source = "ai/skills/common/coding-best-practices"
 status = "move-to-skills-repo"
 
 [[local]]
+name = "issue-prompt"
+source = "ai/skills/common/issue-prompt"
+status = "local-private"
+notes = "Personal workflow for generating ready-to-paste Linear implementation prompts from repo guidance."
+
+[[local]]
 name = "claude-codex"
 source = "ai/skills/claude/codex"
 status = "move-to-skills-repo"

@@ -88,7 +88,7 @@ cat error.log | ./pplx-search --stdin
 ```
 skills/perplexity/
 ├── SKILL.md       # Claude Code reads this to learn when/how to search
-├── pplx-search    # The actual CLI (zero dependencies, Python 3.12+)
+├── pplx-search    # The actual CLI (zero dependencies, Python 3.9+)
 └── README.md      # You're reading it
 ```
 

@@ -17,24 +17,37 @@ Use `pplx-search` when you need information that:
 
 ## Quick Reference
 
+Resolve the CLI before running searches:
+
+```bash
+PPLX="${PPLX_SEARCH_BIN:-$HOME/.local/bin/pplx-search}"
+if [ ! -x "$PPLX" ]; then PPLX="$HOME/.claude/skills/perplexity/pplx-search"; fi
+if [ ! -x "$PPLX" ]; then PPLX="$HOME/dotfiles/ai/skills/claude/perplexity/pplx-search"; fi
+```
+
+Prefer `"$PPLX"` over bare `pplx-search` because agent shells can start with a minimal PATH.
+
 ```bash
 # Standard search (sonar-pro) — good default for most lookups
-pplx-search "your query here"
+"$PPLX" "your query here"
 
 # Fast search (sonar) — quick facts, simple lookups
-pplx-search -m sonar "is Python 3.13 stable yet"
+"$PPLX" -m sonar "is Python 3.13 stable yet"
 
 # Deep research — thorough multi-step investigation
-pplx-search --deep "comprehensive comparison of Bun vs Deno vs Node in 2025"
+"$PPLX" --deep "comprehensive comparison of Bun vs Deno vs Node in 2025"
 
 # Reasoning — analytical or complex technical questions
-pplx-search --reason "tradeoffs of ECS vs OOP for game engine architecture"
+"$PPLX" --reason "tradeoffs of ECS vs OOP for game engine architecture"
 
 # Pipe context in
-echo "explain this error: $ERROR_MSG" | pplx-search --stdin
+echo "explain this error: $ERROR_MSG" | "$PPLX" --stdin
 
 # Raw JSON output (if you need to parse programmatically)
-pplx-search --json "query"
+"$PPLX" --json "query"
+
+# Local setup check, no API request
+"$PPLX" --health
 ```
 
 ## Writing Good Queries
@@ -71,7 +84,7 @@ Default is `sonar-pro` which balances speed and quality well.
 2. Export it: `export PERPLEXITY_API_KEY="pplx-..."`
 3. Add `tools/perplexity/` to your PATH or call it directly as `./tools/perplexity/pplx-search`
 
-No pip install. No dependencies. Just Python 3.12+.
+No pip install. No dependencies. Just Python 3.9+.
 
 ## Cost Awareness
 

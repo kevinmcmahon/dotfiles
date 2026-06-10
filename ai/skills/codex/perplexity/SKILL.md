@@ -17,20 +17,29 @@ Do not use it for:
 Resolve the CLI in this order:
 
 1. `$PPLX_SEARCH_BIN` if set
-2. `pplx-search` from `PATH`
+2. `$HOME/.local/bin/pplx-search`
 3. `~/.agents/skills/perplexity/pplx-search`
 4. `~/dotfiles/ai/skills/codex/perplexity/pplx-search`
+5. `pplx-search` from `PATH`
+
+Prefer a resolved path over bare `pplx-search` because agent shells can start with a minimal PATH.
+
+```bash
+PPLX="${PPLX_SEARCH_BIN:-$HOME/.local/bin/pplx-search}"
+if [ ! -x "$PPLX" ]; then PPLX="$HOME/.agents/skills/perplexity/pplx-search"; fi
+if [ ! -x "$PPLX" ]; then PPLX="$HOME/dotfiles/ai/skills/codex/perplexity/pplx-search"; fi
+```
 
 Before the first real query in a session, prefer a quick health check if setup is uncertain:
 
 ```bash
-pplx-search --health
+"$PPLX" --health
 ```
 
 Use one of the resolved commands above. Example:
 
 ```bash
-pplx-search "query"
+"$PPLX" "query"
 ```
 
 Models:
@@ -51,25 +60,25 @@ Prefer queries that ask for:
 Examples:
 
 ```bash
-pplx-search "OpenClaw memory-core vs claude-mem April 2026 official docs issues changelog"
-pplx-search --reason "Does current OpenClaw memory search require memory-core runtime contract"
-pplx-search -m sonar "latest Bun release date"
+"$PPLX" "OpenClaw memory-core vs claude-mem April 2026 official docs issues changelog"
+"$PPLX" --reason "Does current OpenClaw memory search require memory-core runtime contract"
+"$PPLX" -m sonar "latest Bun release date"
 ```
 
 Useful templates:
 
 ```bash
 # Release / changelog lookup
-pplx-search "latest <product> release changelog <month year> official"
+"$PPLX" "latest <product> release changelog <month year> official"
 
 # Is X still supported?
-pplx-search --reason "Is <feature/plugin/product> still supported as of <month year>? Prefer official docs, changelogs, issues, maintainer comments"
+"$PPLX" --reason "Is <feature/plugin/product> still supported as of <month year>? Prefer official docs, changelogs, issues, maintainer comments"
 
 # Comparison with current state
-pplx-search --deep "<product A> vs <product B> <year> official docs benchmarks maintainer guidance"
+"$PPLX" --deep "<product A> vs <product B> <year> official docs benchmarks maintainer guidance"
 
 # Maintainer-intent / architecture drift
-pplx-search --reason "<project> <feature> architecture changes issue discussion changelog maintainer comments"
+"$PPLX" --reason "<project> <feature> architecture changes issue discussion changelog maintainer comments"
 ```
 
 ## Output Handling
@@ -88,6 +97,6 @@ If the first search is weak:
 - switch to `--deep` only when breadth is genuinely needed
 
 If setup fails:
-- run `pplx-search --health`
+- run `"$PPLX" --health`
 - check `PERPLEXITY_API_KEY`
 - check whether network access is available

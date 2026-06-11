@@ -131,7 +131,6 @@
     "claude-mem@thedotmack": true,
     "modern-go-guidelines@goland-claude-marketplace": true,
     "gopls-lsp@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "second-opinion@trailofbits": true,
     "swift-lsp@claude-plugins-official": true,

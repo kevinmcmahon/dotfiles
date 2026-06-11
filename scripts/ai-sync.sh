@@ -111,6 +111,28 @@ raise SystemExit(0 if os.path.commonpath([resolved, ai_dir]) == ai_dir else 1)
 PY
 }
 
+repair_identical_file_conflict() {
+  local src="$1"
+  local link="$2"
+  local rel_target="$3"
+
+  if [[ ! -f "$src" || ! -f "$link" ]]; then
+    return 1
+  fi
+
+  if ! cmp -s "$src" "$link"; then
+    return 1
+  fi
+
+  verbose "repair: $link -> $rel_target (replacing identical generated file)"
+  if (( ! DRY_RUN )); then
+    rm "$link"
+    ln -snf "$rel_target" "$link"
+  fi
+  (( CREATED++ )) || true
+  return 0
+}
+
 externally_managed_skill_names() {
   [[ -f "$SKILLS_MANIFEST" ]] || return 0
 
@@ -205,6 +227,9 @@ sync_resource() {
       fi
 
       if [[ -e "$link" ]] && [[ ! -L "$link" ]]; then
+        if repair_identical_file_conflict "$src" "$link" "$rel_target"; then
+          continue
+        fi
         warn "CONFLICT: $link exists and is not a symlink — skipping"
         (( CONFLICTS++ )) || true
         continue
@@ -246,6 +271,9 @@ sync_resource() {
       fi
 
       if [[ -e "$link" ]] && [[ ! -L "$link" ]]; then
+        if repair_identical_file_conflict "$src" "$link" "$rel_target"; then
+          continue
+        fi
         warn "CONFLICT: $link exists and is not a symlink — skipping"
         (( CONFLICTS++ )) || true
         continue

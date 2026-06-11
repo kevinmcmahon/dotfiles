@@ -76,6 +76,18 @@ check_dir_exists() {
   fi
 }
 
+check_generated_common_ai_docs() {
+  local tool="$1"
+  local docs_dir="$2"
+  local doc_path doc_name
+
+  for doc_path in "$DOTFILES_DIR"/ai/docs/common/*; do
+    [[ -f "$doc_path" ]] || continue
+    doc_name="$(basename "$doc_path")"
+    check_symlink "$docs_dir/$doc_name" "$doc_path" "$tool doc: $doc_name"
+  done
+}
+
 is_fnm_path() {
   case "$1" in
     "$HOME/.local/share/fnm/"* | "$HOME/.local/state/fnm_multishells/"*) return 0 ;;
@@ -474,6 +486,7 @@ section "Claude Code Config"
 for item in CLAUDE.md commands docs hooks settings.json scripts; do
   check_symlink "$HOME/.claude/$item" "$DOTFILES_DIR/claude/$item" "~/.claude/$item"
 done
+check_generated_common_ai_docs "Claude" "$HOME/.claude/docs"
 if [[ -L "$HOME/.claude/skills" ]]; then
   fail "~/.claude/skills is a symlink (expected real local directory)"
 else
@@ -531,6 +544,9 @@ fi
 if [[ -f "$DOTFILES_DIR/opencode/opencode.json.symlink" ]]; then
   check_symlink "$CONFIG_DIR/opencode/opencode.json" "$DOTFILES_DIR/opencode/opencode.json.symlink" "opencode config"
 fi
+check_symlink "$HOME/.opencode/commands" "$DOTFILES_DIR/opencode/commands" "~/.opencode/commands"
+check_symlink "$HOME/.opencode/docs" "$DOTFILES_DIR/opencode/docs" "~/.opencode/docs"
+check_generated_common_ai_docs "OpenCode" "$HOME/.opencode/docs"
 if [[ -L "$HOME/.opencode/skills" ]]; then
   fail "~/.opencode/skills is a symlink (expected real local directory)"
 else

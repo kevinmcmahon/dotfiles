@@ -35,13 +35,17 @@ The manifest has three entry types:
 Two scripts consume the manifest:
 
 - `scripts/install-ai-skills.sh` reads `[[external]]` entries and translates them
-  into `npx skills@latest add ...` commands.
+  into `npx skills@latest add ...` commands. After a successful install, it
+  records the current GitHub `HEAD` for that external source in `reviewed_ref`
+  and updates `reviewed_at`.
 - `scripts/audit-ai-skills.sh` reads `[[external]]` and `[[watch]]` entries,
   checks GitHub-backed sources for drift, and reports whether each reviewed ref
   is current.
 
 Neither script owns the lock file. The `skills` CLI owns resolution,
-installation, and local lock state under `~/.agents/.skill-lock.json`.
+installation, and local lock state under `~/.agents/.skill-lock.json`. Direct
+URL skill sources can be installed, but the audit cannot map them back to a
+GitHub commit unless the manifest source is a GitHub repo or repo URL.
 
 The scripts run Python through `uv run --no-project --python 3.12` so TOML
 parsing does not depend on the host system `python3` on macOS or Linux.
@@ -205,6 +209,12 @@ Preview install commands:
 scripts/install-ai-skills.sh --dry-run
 ```
 
+Install skills and update GitHub-backed `[[external]]` review refs:
+
+```bash
+scripts/install-ai-skills.sh
+```
+
 Audit upstream drift:
 
 ```bash
@@ -227,5 +237,7 @@ scripts/audit-ai-skills.sh --json
 - Do not copy third-party skill folders into `ai/skills/common` just to avoid an
   install command.
 - Do not commit `~/.agents/.skill-lock.json`; it is local package-manager state.
-- When updating `reviewed_ref`, inspect the upstream diff first and update
-  `reviewed_at` and `notes` if the maintenance posture changed.
+- Running `scripts/install-ai-skills.sh` treats successful GitHub-backed installs
+  as the new accepted refs and updates `reviewed_ref` plus `reviewed_at`.
+- Inspect upstream changes before installing when the source is high-risk, and
+  update `notes` if the maintenance posture changed.

@@ -23,8 +23,8 @@ skills = [
   "write-a-skill",
   "zoom-out",
 ]
-reviewed_ref = "be55a7970319ede7965edbb02b5e41cba1ca82c9"
-reviewed_at = "2026-06-07"
+reviewed_ref = "694fa30311e02c2639942308513555e61ee84a6f"
+reviewed_at = "2026-06-11"
 risk = "workflow"
 notes = "Broad workflow skill pack. Review upstream diff before updating because these skills affect agent behavior across Codex, Claude Code, and OpenCode."
 
@@ -33,8 +33,8 @@ name = "find-skills"
 source = "vercel-labs/skills"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["find-skills"]
-reviewed_ref = "a561e790756b2785b9ddb82285c4eb0a08258ac9"
-reviewed_at = "2026-06-07"
+reviewed_ref = "be0dd25b4a8665894a56f45ef582cc02ca802c39"
+reviewed_at = "2026-06-11"
 risk = "workflow"
 notes = "Skill discovery helper. Keep external unless a repo-specific discovery workflow becomes necessary."
 
@@ -50,7 +50,7 @@ source = "eraserlabs/eraser-io"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["terraform-diagrams"]
 reviewed_ref = "30d6f3679f597eeae67bacab5ee733c863686177"
-reviewed_at = "2026-06-07"
+reviewed_at = "2026-06-11"
 risk = "tool-stale"
 notes = "Terraform diagram workflow tied to external tooling. Review upstream behavior before updating."
 
@@ -59,8 +59,8 @@ name = "app-store-review"
 source = "safaiyeh/app-store-review-skill"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["app-store-review"]
-reviewed_ref = "3497c26895bcef743e06de2bd83675a68dea3555"
-reviewed_at = "2026-06-07"
+reviewed_ref = "c2532321a3f3f60f6f54bd584fb86290a5ba9940"
+reviewed_at = "2026-06-11"
 risk = "policy-stale"
 notes = "App Store policy changes over time; verify findings against current Apple App Store Review Guidelines before relying on them."
 
@@ -70,7 +70,7 @@ source = "truongduy2611/app-store-preflight-skills"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["app-store-preflight-skills"]
 reviewed_ref = "e52e007036fb6edea104b6b49eb01f69c155ad51"
-reviewed_at = "2026-06-07"
+reviewed_at = "2026-06-11"
 risk = "policy-stale"
 notes = "Useful as an App Store preflight workflow, but rule content must be checked against current Apple docs and asc CLI behavior."
 
@@ -80,7 +80,7 @@ source = "Dimillian/Skills"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["app-store-changelog", "review-swarm", "bug-hunt-swarm"]
 reviewed_ref = "05ba982bfeb0d77d3c97d4542b0ee15034d05f84"
-reviewed_at = "2026-06-07"
+reviewed_at = "2026-06-11"
 risk = "workflow"
 notes = "Install selected workflow skills only; avoid importing the whole repo because several skills overlap with existing Swift and macOS guidance."
 

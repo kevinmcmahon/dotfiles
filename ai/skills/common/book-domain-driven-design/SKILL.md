@@ -1,6 +1,6 @@
 ---
 name: book-domain-driven-design
-description: Use for deeper DDD decisions: strategic modeling, subdomains, bounded contexts, and integration risk.
+description: "Use for deeper DDD decisions: strategic modeling, subdomains, bounded contexts, and integration risk."
 ---
 
 # Book Domain-Driven Design

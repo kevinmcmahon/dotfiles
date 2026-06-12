@@ -36,6 +36,9 @@ per issue when feasible.
 - Create an isolated branch or git worktree before changing code, unless the
   workspace is already isolated for that issue. Use the tracker's
   `gitBranchName` when available.
+- Place worktrees under `.worktrees/<issue-id>` in the repo root by default,
+  not as peer directories next to the repo. Check for an existing `.worktrees/`
+  convention or repo-specific guidance before choosing a different location.
 - Worktree tooling may branch from origin's default branch. If local main is
   ahead of origin (unpushed work), fast-forward the new branch to local main
   before starting, or the baseline silently misses prior work.

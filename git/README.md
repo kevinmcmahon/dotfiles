@@ -103,7 +103,7 @@ ln -sf ~/dotfiles/git/gitignore_global.symlink ~/.gitignore_global
 ln -sf ~/dotfiles/git/git-core.symlink ~/.git-core
 ```
 
-Install delta for enhanced diffs:
+Linux bootstrap installs delta for enhanced diffs. To install it manually:
 
 ```bash
 cargo install git-delta

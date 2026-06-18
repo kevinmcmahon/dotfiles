@@ -348,6 +348,7 @@ fi
 # --- Cargo tools ---
 section "Cargo Tools"
 check_cmd tree-sitter "tree-sitter"
+check_cmd delta "delta (git-delta)"
 check_cmd viu "viu"
 check_cmd jless "jless"
 

@@ -102,6 +102,15 @@ install_rust_and_cargo_tools() {
     log "jless installed: $(jless --version | head -n 1)"
   fi
 
+  # --- delta (Git pager configured by gitconfig-linux.symlink) ---
+  if need_cmd delta; then
+    log "delta already installed: $(delta --version | head -n 1)"
+  else
+    log "Installing delta..."
+    cargo install git-delta
+    log "delta installed: $(delta --version | head -n 1)"
+  fi
+
   # --- viu (terminal image viewer) ---
   if need_cmd viu; then
     log "viu already installed: $(viu --version | head -n 1)"

@@ -99,7 +99,7 @@ Each `lib/platform-*.sh` must define these 8 functions:
 | fzf | Homebrew | Git clone + install script |
 | yazi | Homebrew | `cargo install` |
 | jless | Homebrew | `cargo install` |
-
+| delta | N/A | `cargo install git-delta` |
 | Go | Homebrew | Official tarball to `/usr/local/go` |
 | Ruby | `brew install chruby ruby-install` | Manual install from source |
 | Terminal app | Official cmux DMG -> `/Applications/cmux.app` + `~/.local/bin/cmux` symlink | N/A |
@@ -326,7 +326,7 @@ Linux counterpart of the macOS audit. Same pass/fail/warn framework, same helper
 - Language runtimes (rust, go, uv, deno, bun, fnm, chruby, ruby-install)
 - Binary installs in `~/.local/bin` (nvim AppImage, lazygit)
 - Starship and fzf (from non-brew sources)
-- Cargo tools (viu, yazi)
+- Cargo tools (tree-sitter, delta/git-delta, viu, jless, yazi)
 - Python tooling (ruff, neovim python venv)
 - LLM tool + plugins + template symlinks (at `~/.config` path)
 - AI CLIs (claude, codex, opencode), Claude/Codex/OpenCode config symlinks, and generated common AI docs

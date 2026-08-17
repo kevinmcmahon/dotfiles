@@ -50,7 +50,7 @@ if [[ -z "$CURL_BIN" ]]; then
 fi
 GH_BIN="$(command -v gh || true)"
 
-uv run --no-project --python 3.12 python - "$MANIFEST" "$JSON" "$VERBOSE" "$CURL_BIN" "$GH_BIN" <<'PY'
+uv run --python 3.12 python - "$MANIFEST" "$JSON" "$VERBOSE" "$CURL_BIN" "$GH_BIN" <<'PY'
 import json
 import re
 import subprocess

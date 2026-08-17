@@ -54,6 +54,17 @@
 - Write evergreen comments that explain the code as it is. Do not reference recent refactors, temporary decisions, or conversational context.
 - Use comments sparingly; prefer readable code and clear structure.
 
+## Writing prose
+
+Apply Orwell's six rules to all prose you write — replies to me, code comments, docs, commit messages (George Orwell, "Politics and the English Language," 1946; via Duke's scientific writing guide):
+
+1. Never use a metaphor, simile, or other figure of speech which you are used to seeing in print.
+2. Never use a long word where a short one will do.
+3. If it is possible to cut a word out, always cut it out.
+4. Never use the passive where you can use the active.
+5. Never use a foreign phrase, a scientific word, or a jargon word if you can think of an everyday English equivalent.
+6. Break any of these rules sooner than say anything outright barbarous.
+
 ## Testing And Tool Failures
 
 - Tests should cover the behavior being changed.

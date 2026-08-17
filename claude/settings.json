@@ -142,7 +142,9 @@
     "superpowers@claude-plugins-official": true,
     "linear@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
-    "deploy-on-aws@claude-plugins-official": false
+    "deploy-on-aws@claude-plugins-official": false,
+    "elements-of-style@the-elements-of-style": true,
+    "mattpocock-skills@mattpocock": true
   },
   "extraKnownMarketplaces": {
     "trailofbits": {
@@ -173,6 +175,18 @@
       "source": {
         "source": "github",
         "repo": "JetBrains/go-modern-guidelines"
+      }
+    },
+    "the-elements-of-style": {
+      "source": {
+        "source": "github",
+        "repo": "kevinmcmahon/the-elements-of-style"
+      }
+    },
+    "mattpocock": {
+      "source": {
+        "source": "github",
+        "repo": "mattpocock/skills"
       }
     }
   },

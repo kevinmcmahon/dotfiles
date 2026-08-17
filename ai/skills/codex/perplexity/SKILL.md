@@ -18,7 +18,7 @@ Resolve the CLI in this order:
 
 1. `$PPLX_SEARCH_BIN` if set
 2. `$HOME/.local/bin/pplx-search`
-3. `~/.agents/skills/perplexity/pplx-search`
+3. `~/.codex/skills/perplexity/pplx-search`
 4. `~/dotfiles/ai/skills/codex/perplexity/pplx-search`
 5. `pplx-search` from `PATH`
 
@@ -26,7 +26,7 @@ Prefer a resolved path over bare `pplx-search` because agent shells can start wi
 
 ```bash
 PPLX="${PPLX_SEARCH_BIN:-$HOME/.local/bin/pplx-search}"
-if [ ! -x "$PPLX" ]; then PPLX="$HOME/.agents/skills/perplexity/pplx-search"; fi
+if [ ! -x "$PPLX" ]; then PPLX="$HOME/.codex/skills/perplexity/pplx-search"; fi
 if [ ! -x "$PPLX" ]; then PPLX="$HOME/dotfiles/ai/skills/codex/perplexity/pplx-search"; fi
 ```
 

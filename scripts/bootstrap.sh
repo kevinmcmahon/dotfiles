@@ -90,7 +90,6 @@ main() {
   install_opencode
   ensure_claude_skills_dir
   ensure_opencode_skills_dir
-  cleanup_codex_legacy_skill_links
   sync_ai_resources
   ensure_pplx_search_bin
   symlink_claude_config

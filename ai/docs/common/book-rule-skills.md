@@ -173,7 +173,7 @@ The tracked skill copies live in:
 Codex exposure uses symlinks in:
 
 ```text
-~/.agents/skills/<skill>
+~/.codex/skills/<skill>
 ```
 
 Claude Code exposure uses local symlinks in:

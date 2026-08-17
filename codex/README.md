@@ -24,9 +24,7 @@ Bootstrap links `codex/AGENTS.md` to `~/.codex/AGENTS.md` and `codex/hooks/ntfy-
 
 Codex hooks are managed separately from Claude Code hooks. Do not install `claude-mem` or other Claude-only lifecycle hooks into Codex; Codex should only load Codex-owned hooks or plugin hooks that are intentionally enabled for Codex.
 
-Codex-owned skill state under `~/.codex/skills` remains local. Dotfiles do not inject skills into that directory or treat it as a symlink target.
-
-Codex user skills live in `~/.agents/skills`. Dotfiles-owned Codex skills are symlinked there from `ai/skills/{common,codex}` by `scripts/ai-sync.sh`. Third-party skills for Codex, Claude Code, and OpenCode are declared in `ai/skills-manifest.toml` and installed by `scripts/install-ai-skills.sh` via `npx skills`; see `ai/skills-manifest.md` for the manifest contract, entry types, and audit workflow. OpenCode skills use the same local-directory pattern at `~/.opencode/skills`.
+Codex user skills live in `~/.codex/skills`. Dotfiles-owned Codex skills are symlinked there from `ai/skills/{common,codex}` by `scripts/ai-sync.sh`. Third-party skills for Codex, Claude Code, and OpenCode are declared in `ai/skills-manifest.toml` and installed by `scripts/install-ai-skills.sh` via `npx skills`; see `ai/skills-manifest.md` for the manifest contract, entry types, and audit workflow. OpenCode skills use the same local-directory pattern at `~/.opencode/skills`.
 
 Home-grown skills are inventoried in `ai/homegrown-skills.md`. Packageable candidates should move to a separate skills repository before they become `npx skills` installs.
 
@@ -37,3 +35,7 @@ Home-grown skills are inventoried in `ai/homegrown-skills.md`. Packageable candi
 Do not commit Codex auth, sessions, logs, cache data, project trust entries, marketplace timestamps, generated plugin state, or app state. Those belong under `~/.codex` on the local machine.
 
 If you need to change global Codex defaults, edit `config.toml.template` for portable defaults and then apply the same change manually to any existing live `~/.codex/config.toml`.
+
+## Sentry MCP
+
+`config.toml.template` registers the Sentry MCP server (`https://mcp.sentry.dev/mcp`) with `enabled = false` so its tools stay out of sessions by default. Authenticate once per machine with `codex mcp login sentry`; enable it inside a Sentry-using project with `codex -c mcp_servers.sentry.enabled=true`. The OAuth token is local-only state under `~/.codex`.

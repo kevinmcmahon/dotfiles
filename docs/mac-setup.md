@@ -101,12 +101,12 @@ exec zsh
 | `codex/hooks.json.template` | `~/.codex/hooks.json` when missing |
 | `codex/hooks/ntfy-notify.sh` | `~/.codex/hooks/ntfy-notify.sh` |
 | `codex/rules/default.rules.template` | `~/.codex/rules/default.rules` when missing |
-| `ai/skills/{common,codex}` | `~/.agents/skills/` |
+| `ai/skills/{common,codex}` | `~/.codex/skills/` |
 | `ai/skills/codex/perplexity/pplx-search` | `~/.local/bin/pplx-search` |
 
 `ghostty` is treated as pure repo-owned XDG config, so the whole topic symlinks into `~/.config/ghostty`. `tmux` is the main exception: bootstrap keeps a real `~/.config/tmux/` directory so TPM plugins can stay local, and only symlinks `tmux/tmux.conf` into that directory.
 
-Dotfiles do not manage Codex user skills in `~/.codex/skills`. Codex hook implementations live under `ai/scripts/codex/`; Codex-facing hook paths are managed under `codex/hooks/` and kept separate from Claude Code hooks.
+Dotfiles-owned Codex user skills are symlinked into `~/.codex/skills`. Codex hook implementations live under `ai/scripts/codex/`; Codex-facing hook paths are managed under `codex/hooks/` and kept separate from Claude Code hooks.
 
 ## Post-Install Configuration
 
@@ -178,6 +178,18 @@ To receive push notifications on your phone when Claude Code or Codex needs inpu
    ```bash
    export NTFY_TOPIC="your-unique-topic"
    ```
+
+### Sentry MCP (per-project)
+
+The Sentry MCP server is registered but disabled globally for Codex and has no
+global Claude Code entry, so its tools only load in Sentry-using projects. See
+"Sentry MCP (per-project, not global)" in `docs/bootstrap.md` for the
+per-project `.mcp.json` snippet and enable flag. One-time auth per machine:
+
+```bash
+codex mcp login sentry     # Codex OAuth
+# Claude Code: run /mcp inside a session in a project that declares the server
+```
 
 ## Optional: Additional Apps
 

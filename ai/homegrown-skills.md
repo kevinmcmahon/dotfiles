@@ -12,6 +12,7 @@ installed with `npx skills add`.
 | `runpodctl` | `ai/skills/common/runpodctl` | Packageable external CLI workflow. |
 | `swift-best-practices` | `ai/skills/common/swift-best-practices` | Package with nested SwiftUI guidance as a separate skill or reference. |
 | `coding-best-practices` | `ai/skills/common/coding-best-practices` | Package after clarifying overlap with Swift-specific guidance. |
+| `create-adr` | `ai/skills/common/create-adr` | Generic ADR workflow; package after it settles in local use. |
 | `claude-codex` | `ai/skills/claude/codex` | Package only after removing local persona-specific wording and making assumptions portable. |
 
 ## Local-Private For Now

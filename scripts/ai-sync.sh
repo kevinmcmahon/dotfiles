@@ -64,7 +64,7 @@ resolve_target_dir() {
       printf "%s/.opencode/skills" "$HOME"
       ;;
     codex:skills)
-      printf "%s/.agents/skills" "$HOME"
+      printf "%s/.codex/skills" "$HOME"
       ;;
     codex:commands|codex:docs)
       return 1
@@ -76,7 +76,7 @@ resolve_target_dir() {
 }
 
 uv_python() {
-  uv run --no-project --python 3.12 python "$@"
+  uv run --python 3.12 python "$@"
 }
 
 relative_link_target() {
@@ -127,6 +127,28 @@ repair_identical_file_conflict() {
   verbose "repair: $link -> $rel_target (replacing identical generated file)"
   if (( ! DRY_RUN )); then
     rm "$link"
+    ln -snf "$rel_target" "$link"
+  fi
+  (( CREATED++ )) || true
+  return 0
+}
+
+repair_identical_directory_conflict() {
+  local src="$1"
+  local link="$2"
+  local rel_target="$3"
+
+  if [[ ! -d "$src" || ! -d "$link" ]]; then
+    return 1
+  fi
+
+  if ! diff -qr "$src" "$link" >/dev/null; then
+    return 1
+  fi
+
+  verbose "repair: $link -> $rel_target (replacing identical generated directory)"
+  if (( ! DRY_RUN )); then
+    rm -rf "$link"
     ln -snf "$rel_target" "$link"
   fi
   (( CREATED++ )) || true
@@ -230,6 +252,9 @@ sync_resource() {
         if repair_identical_file_conflict "$src" "$link" "$rel_target"; then
           continue
         fi
+        if repair_identical_directory_conflict "$src" "$link" "$rel_target"; then
+          continue
+        fi
         warn "CONFLICT: $link exists and is not a symlink — skipping"
         (( CONFLICTS++ )) || true
         continue
@@ -274,6 +299,9 @@ sync_resource() {
         if repair_identical_file_conflict "$src" "$link" "$rel_target"; then
           continue
         fi
+        if repair_identical_directory_conflict "$src" "$link" "$rel_target"; then
+          continue
+        fi
         warn "CONFLICT: $link exists and is not a symlink — skipping"
         (( CONFLICTS++ )) || true
         continue
@@ -308,6 +336,24 @@ sync_resource() {
   fi
 }
 
+cleanup_legacy_codex_agents_skill_links() {
+  local legacy_dir="$HOME/.agents/skills"
+  [[ -d "$legacy_dir" ]] || return 0
+
+  local link
+  for link in "$legacy_dir"/*; do
+    [[ -L "$link" ]] || continue
+
+    if link_points_into_ai "$link"; then
+      verbose "legacy: removing $link (Codex dotfiles skills now sync to ~/.codex/skills)"
+      if (( ! DRY_RUN )); then
+        rm "$link"
+      fi
+      (( STALE++ )) || true
+    fi
+  done
+}
+
 # ==============================================================================
 # Main
 # ==============================================================================
@@ -321,6 +367,8 @@ for tool in "${TOOLS[@]}"; do
     sync_resource "$tool" "$resource"
   done
 done
+
+cleanup_legacy_codex_agents_skill_links
 
 # Summary
 log "ai-sync complete: ${CREATED} created, ${UNCHANGED} unchanged, ${STALE} stale removed, ${OVERRIDES} overrides, ${CONFLICTS} conflicts"

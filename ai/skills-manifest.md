@@ -47,7 +47,7 @@ installation, and local lock state under `~/.agents/.skill-lock.json`. Direct
 URL skill sources can be installed, but the audit cannot map them back to a
 GitHub commit unless the manifest source is a GitHub repo or repo URL.
 
-The scripts run Python through `uv run --no-project --python 3.12` so TOML
+The scripts run Python through `uv run --python 3.12` so TOML
 parsing does not depend on the host system `python3` on macOS or Linux.
 
 ## Decision Rule

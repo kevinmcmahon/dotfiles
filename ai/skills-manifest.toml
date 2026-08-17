@@ -146,6 +146,12 @@ source = "ai/skills/common/coding-best-practices"
 status = "move-to-skills-repo"
 
 [[local]]
+name = "create-adr"
+source = "ai/skills/common/create-adr"
+status = "move-to-skills-repo"
+notes = "Generic ADR workflow; keep in dotfiles until it moves to a packageable skills repository."
+
+[[local]]
 name = "issue-prompt"
 source = "ai/skills/common/issue-prompt"
 status = "local-private"

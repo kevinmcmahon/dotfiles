@@ -68,6 +68,7 @@
 ## Writing Conventions
 
 - @~/.claude/docs/tropes.md
+- @~/.claude/docs/orwell.md
 
 ## Tools & Conventions  
 

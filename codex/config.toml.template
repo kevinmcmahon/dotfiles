@@ -21,3 +21,10 @@ ENABLE_TOOL_SEARCH = "true"
 
 [mcp_servers.openaiDeveloperDocs]
 url = "https://developers.openai.com/mcp"
+
+# Sentry MCP (remote HTTP, OAuth). Disabled globally so its tools only load in
+# Sentry-using projects: run `codex -c mcp_servers.sentry.enabled=true` there.
+# One-time auth per machine: `codex mcp login sentry`.
+[mcp_servers.sentry]
+url = "https://mcp.sentry.dev/mcp"
+enabled = false

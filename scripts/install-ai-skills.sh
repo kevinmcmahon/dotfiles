@@ -18,7 +18,7 @@ die() {
 }
 
 uv_python() {
-  uv run --no-project --python 3.12 python "$@"
+  uv run --python 3.12 python "$@"
 }
 
 usage() {

@@ -302,34 +302,6 @@ ensure_opencode_skills_dir() {
   fi
 }
 
-cleanup_codex_legacy_skill_links() {
-  local legacy_dir="$HOME/.codex/skills"
-  [[ -d "$legacy_dir" ]] || return 0
-
-  local link
-  for link in "$legacy_dir"/*; do
-    [[ -L "$link" ]] || continue
-
-    local resolved
-    resolved="$(
-      python3 - "$link" <<'PY'
-import os
-import sys
-
-link = sys.argv[1]
-target = os.readlink(link)
-if not os.path.isabs(target):
-    target = os.path.join(os.path.dirname(link), target)
-print(os.path.abspath(target))
-PY
-    )"
-    if [[ "$resolved" == "$DOTFILES_DIR/ai/skills"/* ]]; then
-      warn "Removing legacy Codex dotfiles skill link from ~/.codex/skills: $link"
-      rm "$link"
-    fi
-  done
-}
-
 verify_claude_setup() {
   log "Verifying Claude Code setup"
   local claude_dst="$HOME/.claude"
@@ -352,8 +324,8 @@ verify_claude_setup() {
     errors=$((errors + 1))
   fi
 
-  # Check generated common AI skills, including book-rule skills.
-  local common_skills="book-refactoring-pass book-legacy-change book-reliability-review book-domain-modeling book-data-systems"
+  # Check generated common AI skills that should always be present.
+  local common_skills="book-refactoring-pass book-legacy-change book-reliability-review book-domain-modeling book-data-systems create-adr"
   for skill in $common_skills; do
     local skill_path="$claude_dst/skills/$skill"
     if [[ ! -L "$skill_path" ]]; then
@@ -412,7 +384,7 @@ symlink_codex_config() {
   local ntfy_hook_dst="$codex_dst/hooks/ntfy-notify.sh"
 
   mkdir -p "$codex_dst"
-  cleanup_codex_legacy_skill_links
+  mkdir -p "$codex_dst/skills"
 
   if [[ ! -f "$agents_src" ]]; then
     warn "Codex instructions missing: $agents_src"
@@ -483,7 +455,7 @@ verify_codex_setup() {
   local codex_dst="$HOME/.codex"
   local agents="$codex_dst/AGENTS.md"
   local expected="$DOTFILES_DIR/codex/AGENTS.md"
-  local codex_skills_dst="$HOME/.agents/skills"
+  local codex_skills_dst="$codex_dst/skills"
   local ntfy_hook="$codex_dst/hooks/ntfy-notify.sh"
   local expected_ntfy_hook="$DOTFILES_DIR/codex/hooks/ntfy-notify.sh"
   local errors=0
@@ -499,8 +471,8 @@ verify_codex_setup() {
     errors=$((errors + 1))
   fi
 
-  # Check generated common AI skills, including book-rule skills.
-  local common_skills="book-refactoring-pass book-legacy-change book-reliability-review book-domain-modeling book-data-systems"
+  # Check generated common AI skills that should always be present.
+  local common_skills="book-refactoring-pass book-legacy-change book-reliability-review book-domain-modeling book-data-systems create-adr"
   for skill in $common_skills; do
     local skill_path="$codex_skills_dst/$skill"
     if [[ ! -L "$skill_path" ]]; then
@@ -555,17 +527,6 @@ verify_codex_setup() {
     warn "Codex ntfy hook is not executable: $ntfy_hook"
     errors=$((errors + 1))
   fi
-
-  local wrong_location_link
-  for wrong_location_link in "$codex_dst/skills"/*; do
-    [[ -L "$wrong_location_link" ]] || continue
-    local resolved
-    resolved="$(cd "$(dirname "$wrong_location_link")" && cd "$(dirname "$(readlink "$wrong_location_link")")" && pwd)/$(basename "$(readlink "$wrong_location_link")")"
-    if [[ "$resolved" == "$DOTFILES_DIR/ai/skills"/* ]]; then
-      warn "Codex user skills belong in ~/.agents/skills, but ~/.codex/skills has dotfiles-managed link: $wrong_location_link"
-      errors=$((errors + 1))
-    fi
-  done
 
   if (( errors > 0 )); then
     warn "Codex setup: $errors issue(s) above"

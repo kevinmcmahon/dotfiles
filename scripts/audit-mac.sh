@@ -180,6 +180,28 @@ check_codex_has_no_claude_mem() {
   fi
 }
 
+check_codex_sentry_mcp() {
+  local codex_config="$HOME/.codex/config.toml"
+
+  if [[ ! -f "$codex_config" ]]; then
+    fail "Codex config missing: $codex_config"
+    return
+  fi
+
+  if ! grep -q '^\[mcp_servers\.sentry\]' "$codex_config"; then
+    fail "Codex config missing [mcp_servers.sentry] -- copy block from codex/config.toml.template"
+    return
+  fi
+
+  # Sentry must stay disabled globally; projects enable it per-invocation with
+  # `codex -c mcp_servers.sentry.enabled=true`.
+  if awk '/^\[mcp_servers\.sentry\]/{found=1; next} /^\[/{found=0} found && /^enabled *= *false/{ok=1} END{exit !ok}' "$codex_config"; then
+    pass "Codex sentry MCP server is registered and disabled globally"
+  else
+    fail "Codex sentry MCP server is not disabled globally (expected enabled = false)"
+  fi
+}
+
 check_codex_hooks_json() {
   local hooks_json="$HOME/.codex/hooks.json"
 
@@ -494,14 +516,15 @@ else
 fi
 
 # Generated common skills
-book_rule_skills=(
+common_ai_skills=(
   book-refactoring-pass
   book-legacy-change
   book-reliability-review
   book-domain-modeling
   book-data-systems
+  create-adr
 )
-for skill in "${book_rule_skills[@]}"; do
+for skill in "${common_ai_skills[@]}"; do
   check_symlink "$HOME/.claude/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.claude/skills/$skill"
 done
 
@@ -511,23 +534,15 @@ check_symlink "$HOME/.codex/AGENTS.md" "$DOTFILES_DIR/codex/AGENTS.md" "~/.codex
 check_claude_mem_not_watching_codex
 check_codex_has_no_claude_mem
 check_file_exists "$HOME/.codex/config.toml" "~/.codex/config.toml"
+check_codex_sentry_mcp
 check_codex_hooks_json
 check_file_exists "$HOME/.codex/rules/default.rules" "~/.codex/rules/default.rules"
 check_symlink "$HOME/.codex/hooks/ntfy-notify.sh" "$DOTFILES_DIR/codex/hooks/ntfy-notify.sh" "~/.codex/hooks/ntfy-notify.sh"
-for skill in "${book_rule_skills[@]}"; do
-  check_symlink "$HOME/.agents/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.agents/skills/$skill"
+for skill in "${common_ai_skills[@]}"; do
+  check_symlink "$HOME/.codex/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.codex/skills/$skill"
 done
-check_symlink "$HOME/.agents/skills/perplexity" "$DOTFILES_DIR/ai/skills/codex/perplexity" "~/.agents/skills/perplexity"
+check_symlink "$HOME/.codex/skills/perplexity" "$DOTFILES_DIR/ai/skills/codex/perplexity" "~/.codex/skills/perplexity"
 check_symlink "$LOCAL_BIN/pplx-search" "$DOTFILES_DIR/ai/skills/codex/perplexity/pplx-search" "~/.local/bin/pplx-search"
-if compgen -G "$HOME/.codex/skills/*" >/dev/null; then
-  for wrong_location_skill in "$HOME/.codex/skills"/*; do
-    [[ -L "$wrong_location_skill" ]] || continue
-    resolved="$(cd "$(dirname "$wrong_location_skill")" && cd "$(dirname "$(readlink "$wrong_location_skill")")" && pwd)/$(basename "$(readlink "$wrong_location_skill")")"
-    if [[ "$resolved" == "$DOTFILES_DIR/ai/skills"/* ]]; then
-      fail "~/.codex/skills has dotfiles-managed link: $wrong_location_skill"
-    fi
-  done
-fi
 
 # --- AI CLIs ---
 section "AI CLIs"

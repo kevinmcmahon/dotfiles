@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create ADR"
+  short_description: "Draft concise Nygard-style ADRs"
+  default_prompt: "Use $create-adr to draft a concise architecture decision record for this decision."

@@ -13,6 +13,7 @@ machine. Use the generated mirror flow in [Work WSL Mirror](docs/work-wsl.md).
 git clone https://github.com/kevinmcmahon/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 scripts/bootstrap.sh
+scripts/bootstrap.sh --profile server
 ```
 
 The script auto-detects macOS or Linux and is safe to re-run (idempotent).
@@ -34,6 +35,7 @@ The script auto-detects macOS or Linux and is safe to re-run (idempotent).
 - **Repo-owned static XDG config** is linked into `~/.config/` (e.g. `ghostty/` → `~/.config/ghostty/`)
 - **Mutable local state stays local** — `tmux` is managed as a real `~/.config/tmux/` directory with a symlinked `tmux.conf`, so TPM plugins do not live inside the repo
 - **Platform auto-detection** — a single `bootstrap.sh` entry point delegates to `lib/platform-mac.sh` or `lib/platform-linux.sh`
+- **Named profiles** — `workstation` keeps the full default setup; Linux `server` installs a fixed shell, tmux, Git, editor, and administration set
 
 ## Repository Structure
 

@@ -14,9 +14,11 @@ local -a _existing=("${path[@]}")
 # Highest priority first
 path=(
   "$HOME/.local/bin"
-  "$HOME/.fzf/bin"
-  "$HOME/.cargo/bin"
 )
+
+if [[ "${DOTFILES_PROFILE:-workstation}" == "workstation" ]]; then
+  path+=("$HOME/.fzf/bin" "$HOME/.cargo/bin")
+fi
 
 # Homebrew (macOS Apple Silicon only) — add explicitly to preserve ordering
 if $_is_macos; then
@@ -30,24 +32,21 @@ if $_is_macos; then
   [[ -d "/Library/TeX/texbin" ]] && path+=("/Library/TeX/texbin")
 fi
 
-# Cross-platform custom tools
-[[ -d "$HOME/tools" ]] && path+=("$HOME/tools")
+if [[ "${DOTFILES_PROFILE:-workstation}" == "workstation" ]]; then
+  # Cross-platform custom tools
+  [[ -d "$HOME/tools" ]] && path+=("$HOME/tools")
 
-# Bun
-[[ -d "$HOME/.bun/bin" ]] && path+=("$HOME/.bun/bin")
+  # Optional language runtimes
+  [[ -d "$HOME/.bun/bin" ]] && path+=("$HOME/.bun/bin")
+  [[ -d "$HOME/.deno/bin" ]] && path+=("$HOME/.deno/bin")
+  [[ -d "$HOME/.local/share/fnm/aliases/default/bin" ]] && path+=("$HOME/.local/share/fnm/aliases/default/bin")
 
-# Deno
-[[ -d "$HOME/.deno/bin" ]] && path+=("$HOME/.deno/bin")
-
-# fnm-managed Node (stable bin dir for the default alias)
-[[ -d "$HOME/.local/share/fnm/aliases/default/bin" ]] && path+=("$HOME/.local/share/fnm/aliases/default/bin")
-
-# Go (official install)
-if [[ -d "/usr/local/go/bin" ]]; then
-  path+=("/usr/local/go/bin")
-  export GOPATH="$HOME/go"
-  export GOBIN="$GOPATH/bin"
-  [[ -d "$GOBIN" ]] && path+=("$GOBIN")
+  if [[ -d "/usr/local/go/bin" ]]; then
+    path+=("/usr/local/go/bin")
+    export GOPATH="$HOME/go"
+    export GOBIN="$GOPATH/bin"
+    [[ -d "$GOBIN" ]] && path+=("$GOBIN")
+  fi
 fi
 
 # Restore previously-existing entries (fnm, oh-my-zsh plugins, etc.)

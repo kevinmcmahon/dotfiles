@@ -32,7 +32,22 @@ export EDITOR="nvim"
 
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 
-export OLLAMA_HOST=http://localhost:11434
+# Bootstrap profiles are non-secret local state. Missing or invalid markers
+# preserve the full workstation environment.
+export DOTFILES_PROFILE=workstation
+if [[ -r "$HOME/.config/dotfiles/profile" ]]; then
+  IFS= read -r _dotfiles_profile <"$HOME/.config/dotfiles/profile"
+  if [[ "$_dotfiles_profile" == "server" || "$_dotfiles_profile" == "workstation" ]]; then
+    export DOTFILES_PROFILE="$_dotfiles_profile"
+  fi
+  unset _dotfiles_profile
+fi
+
+if [[ "$DOTFILES_PROFILE" == "workstation" ]]; then
+  export OLLAMA_HOST=http://localhost:11434
+else
+  unset OLLAMA_HOST
+fi
 
 # Mosh can't relay kitty's keyboard protocol sequences, causing garbled input.
 # Disable the keyboard protocol part of shell integration when running under mosh.
@@ -45,8 +60,12 @@ fi
 [[ -f "$HOME/.zsh/env/core/path.zsh" ]] && source "$HOME/.zsh/env/core/path.zsh"
 
 # Load private/unversioned env vars (needed by non-interactive shells like Claude hooks)
-[[ -f "$HOME/.zsh/env/optional/private.zsh" ]] && source "$HOME/.zsh/env/optional/private.zsh"
+if [[ "$DOTFILES_PROFILE" == "workstation" ]]; then
+  [[ -f "$HOME/.zsh/env/optional/private.zsh" ]] && source "$HOME/.zsh/env/optional/private.zsh"
+fi
 
 # Don't let interactive Zsh config re-run this stuff
 export ZSHENV_LOADED=1
-. "$HOME/.cargo/env"
+if [[ "$DOTFILES_PROFILE" == "workstation" && -f "$HOME/.cargo/env" ]]; then
+  . "$HOME/.cargo/env"
+fi

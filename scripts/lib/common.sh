@@ -35,6 +35,79 @@ ensure_local_bin_in_path() {
   fi
 }
 
+write_bootstrap_profile_marker() {
+  local profile="${1:-${PROFILE:-workstation}}"
+  local profile_dir="$CONFIG_DIR/dotfiles"
+  local profile_file="$profile_dir/profile"
+  local temporary
+
+  case "$profile" in
+    workstation|server) ;;
+    *) die "Unknown Bootstrap profile marker: $profile" ;;
+  esac
+
+  mkdir -p "$profile_dir"
+  temporary="$(mktemp "$profile_dir/.profile.XXXXXX")"
+  printf '%s\n' "$profile" >"$temporary"
+  chmod 644 "$temporary"
+  mv "$temporary" "$profile_file"
+  log "Recorded Bootstrap profile: $profile"
+}
+
+link_server_file() {
+  local src="$1"
+  local dst="$2"
+
+  [[ -e "$src" || -L "$src" ]] || die "Server profile source is missing: $src"
+  mkdir -p "$(dirname "$dst")"
+
+  if [[ -L "$dst" && "$(readlink "$dst")" == "$src" ]]; then
+    return 0
+  fi
+
+  if [[ -e "$dst" || -L "$dst" ]]; then
+    local backup
+    backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
+    warn "Backing up existing $dst -> $backup"
+    mv "$dst" "$backup"
+  fi
+
+  ln -snf "$src" "$dst"
+  log "Linked $dst -> $src"
+}
+
+symlink_server_dotfiles() {
+  log "Symlinking the reviewed server profile"
+
+  link_server_file "$DOTFILES_DIR/git/gitconfig.symlink" "$HOME/.gitconfig"
+  link_server_file "$DOTFILES_DIR/git/gitignore_global.symlink" "$HOME/.gitignore_global"
+  link_server_file "$DOTFILES_DIR/zsh/zprofile.symlink" "$HOME/.zprofile"
+  link_server_file "$DOTFILES_DIR/zsh/zshenv.symlink" "$HOME/.zshenv"
+  link_server_file "$DOTFILES_DIR/zsh/zshrc.symlink" "$HOME/.zshrc"
+  link_server_file "$DOTFILES_DIR/zsh/env" "$HOME/.zsh/env"
+  link_server_file "$DOTFILES_DIR/tmux/tmux.conf" "$CONFIG_DIR/tmux/tmux.conf"
+}
+
+ensure_server_git_identity() {
+  log "Ensuring the server Git identity files exist"
+
+  if [[ ! -f "$HOME/.gituserconfig" ]]; then
+    cat >"$HOME/.gituserconfig" <<'EOF'
+# Local Git identity. This file is not part of the dotfiles repository.
+[user]
+  # name = Your Name
+  # email = you@example.com
+EOF
+    chmod 600 "$HOME/.gituserconfig"
+    warn "Created $HOME/.gituserconfig; set the name and email before committing"
+  fi
+
+  if [[ ! -f "$HOME/.gitconfig-local" ]]; then
+    : >"$HOME/.gitconfig-local"
+    chmod 600 "$HOME/.gitconfig-local"
+  fi
+}
+
 ensure_pplx_search_bin() {
   log "Ensuring pplx-search is available on PATH"
 
@@ -611,11 +684,19 @@ install_zsh_environment() {
 
   # SKIP_EXEC_ZSH: prevent zsh/install.sh from exec'ing into a new shell (blocks bootstrap)
   # SKIP_SSH_AGENT: prevent passphrase prompts during bootstrap
-  if ! (
+  local install_status
+  if (
     export SKIP_SSH_AGENT=1 SKIP_EXEC_ZSH=1
+    if [[ "$PROFILE" == server ]]; then
+      export SKIP_DEFAULT_SHELL=1 SKIP_WORKSTATION_ALIASES=1
+    fi
     bash "$DOTFILES_DIR/zsh/install.sh"
   ); then
+    install_status=0
+  else
+    install_status=$?
     warn "zsh/install.sh reported errors (may still be partially successful)"
+    [[ "$PROFILE" != server ]] || return "$install_status"
   fi
 
   log "zsh environment installed"
@@ -1105,4 +1186,20 @@ post_checks() {
 
   need_cmd gemini || warn "gemini CLI missing"
   need_cmd node || log "Node.js not yet installed (run: fnm install --lts)"
+}
+
+post_checks_server() {
+  log "Checking the server command set"
+  local command_name
+  for command_name in git jq zsh tmux nvim rg fd bat fzf less tree htop rsync ssh; do
+    need_cmd "$command_name" || warn "$command_name missing"
+  done
+}
+
+print_server_next_steps() {
+  log "Server Bootstrap profile complete."
+  log "Set your Git identity in ~/.gituserconfig before committing."
+  if [[ -n "${LOG_FILE:-}" ]]; then
+    log "Full bootstrap log saved to: $LOG_FILE"
+  fi
 }

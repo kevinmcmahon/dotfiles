@@ -29,6 +29,9 @@ This approach prevents SSH lockout by installing Tailscale first, verifying it w
 ```bash
 cd ~/dotfiles/scripts
 ./setup-linux-networking.sh --skip-firewall
+
+# Install Tailscale and mosh now, but authenticate and enable UFW later
+./setup-linux-networking.sh --defer-tailscale-login --skip-firewall --skip-fail2ban
 ```
 
 **What this does:**
@@ -147,8 +150,13 @@ Only use this if you're already connected via Tailscale or have console access a
 | `--skip-tailscale` | Skip Tailscale installation |
 | `--skip-mosh` | Skip mosh installation |
 | `--skip-fail2ban` | Skip fail2ban installation |
+| `--defer-tailscale-login` | Install Tailscale without prompting for login or running `tailscale up` |
 | `--dry-run` | Show what would be done without making changes |
 | `-h, --help` | Show help message |
+
+Use `--defer-tailscale-login` when a later interactive stage owns Tailnet
+enrollment. It also skips UFW so access handoff checks can pass before firewall
+activation.
 
 ## Common Scenarios
 

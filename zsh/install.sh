@@ -95,28 +95,47 @@ clone_if_missing https://github.com/Aloxaf/fzf-tab "$ZSH_CUSTOM/plugins/fzf-tab"
 # -----------------------------
 # Link alias file
 # -----------------------------
-ln -sf "$DOTFILES_DIR/alias.zsh" "$ZSH_CUSTOM/alias.zsh"
-echo "Linked alias.zsh to $ZSH_CUSTOM/alias.zsh"
+if [[ "${SKIP_WORKSTATION_ALIASES:-0}" != 1 ]]; then
+  ln -sf "$DOTFILES_DIR/alias.zsh" "$ZSH_CUSTOM/alias.zsh"
+  echo "Linked alias.zsh to $ZSH_CUSTOM/alias.zsh"
+else
+  if [[ -L "$ZSH_CUSTOM/alias.zsh" ]]; then
+    if [[ "$(readlink "$ZSH_CUSTOM/alias.zsh")" == "$DOTFILES_DIR/alias.zsh" ]]; then
+      rm "$ZSH_CUSTOM/alias.zsh"
+    else
+      echo "Error: Refusing to remove user-owned alias symlink: $ZSH_CUSTOM/alias.zsh" >&2
+      exit 1
+    fi
+  elif [[ -e "$ZSH_CUSTOM/alias.zsh" ]]; then
+    echo "Error: Refusing to remove user-owned alias file: $ZSH_CUSTOM/alias.zsh" >&2
+    exit 1
+  fi
+  echo "Workstation aliases are excluded by the Bootstrap profile"
+fi
 
 # -----------------------------
 # Set zsh as default shell
 # -----------------------------
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  current_shell="$(dscl . -read /Users/"$USER" UserShell | awk '{print $2}')"
-else
-  current_shell="$(getent passwd "$USER" | cut -d: -f7)"
-fi
-zsh_path="$(which zsh)"
-
-if [[ "$current_shell" != "$zsh_path" ]]; then
-  echo "Setting zsh as default login shell..."
-  if chsh -s "$zsh_path"; then
-    echo "Default shell changed to zsh"
+if [[ "${SKIP_DEFAULT_SHELL:-0}" != 1 ]]; then
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    current_shell="$(dscl . -read /Users/"$USER" UserShell | awk '{print $2}')"
   else
-    echo "Warning: Could not change default shell. Run manually: chsh -s $zsh_path"
+    current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+  fi
+  zsh_path="$(which zsh)"
+
+  if [[ "$current_shell" != "$zsh_path" ]]; then
+    echo "Setting zsh as default login shell..."
+    if chsh -s "$zsh_path"; then
+      echo "Default shell changed to zsh"
+    else
+      echo "Warning: Could not change default shell. Run manually: chsh -s $zsh_path"
+    fi
+  else
+    echo "zsh is already the default shell"
   fi
 else
-  echo "zsh is already the default shell"
+  echo "Default shell change is managed by the Bootstrap profile"
 fi
 
 # -----------------------------

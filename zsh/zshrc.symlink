@@ -30,7 +30,13 @@ else
   return 0 2>/dev/null || exit 0
 fi
 
-load_env_dir "${ZSH_ENV_ROOT}/core"
+if [[ "${DOTFILES_PROFILE:-workstation}" == "server" ]]; then
+  load_env_file "${ZSH_ENV_ROOT}/core/language.zsh"
+  load_env_file "${ZSH_ENV_ROOT}/core/history.zsh"
+  load_env_file "${ZSH_ENV_ROOT}/core/path.zsh"
+else
+  load_env_dir "${ZSH_ENV_ROOT}/core"
+fi
 
 # Load platform-specific configurations
 if [[ ${IS_MACOS:-0} -eq 1 ]]; then
@@ -42,7 +48,9 @@ fi
 # Load optional interactive configuration last.
 # private.zsh is already loaded from ~/.zshenv so non-interactive shells get it.
 # local.zsh is for machine-local interactive tweaks.
-load_env_file "${ZSH_ENV_ROOT}/optional/local.zsh"
+if [[ "${DOTFILES_PROFILE:-workstation}" == "workstation" ]]; then
+  load_env_file "${ZSH_ENV_ROOT}/optional/local.zsh"
+fi
 
 unset CORE_FUNCS
 
@@ -173,11 +181,15 @@ zstyle ':completion:*' menu select
 
 # Re-apply PATH after oh-my-zsh (it may reset PATH)
 [[ -f "$HOME/.zsh/env/core/path.zsh" ]] && source "$HOME/.zsh/env/core/path.zsh"
-[[ -f "$HOME/.zsh/env/core/runtime.zsh" ]] && source "$HOME/.zsh/env/core/runtime.zsh"
+if [[ "${DOTFILES_PROFILE:-workstation}" == "workstation" ]]; then
+  [[ -f "$HOME/.zsh/env/core/runtime.zsh" ]] && source "$HOME/.zsh/env/core/runtime.zsh"
+fi
 
 # Load tools AFTER oh-my-zsh and PATH re-source so dynamic tools (fnm, cargo env,
 # etc.) get last say on PATH and their entries aren't wiped.
-load_env_dir "${ZSH_ENV_ROOT}/tools"
+if [[ "${DOTFILES_PROFILE:-workstation}" == "workstation" ]]; then
+  load_env_dir "${ZSH_ENV_ROOT}/tools"
+fi
 
 # User configuration
 
@@ -202,37 +214,38 @@ export EDITOR='nvim'
 # -----------------------------
 # COMPLETIONS
 # -----------------------------
-# Package manager completions
-[[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . "${HOME}/.config/tabtab/zsh/__tabtab.zsh" || true
+if [[ "${DOTFILES_PROFILE:-workstation}" == "workstation" ]]; then
+  # Package manager completions
+  [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . "${HOME}/.config/tabtab/zsh/__tabtab.zsh" || true
 
-# Cloud tool completions
-# Check multiple potential locations for Google Cloud SDK
-for gcloud_path in "$HOME/tools/google-cloud-sdk" "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk" "/opt/google-cloud-sdk"; do
-  if [[ -d "$gcloud_path" ]]; then
-    [[ -f "$gcloud_path/completion.zsh.inc" ]] && source "$gcloud_path/completion.zsh.inc"
-    [[ -f "$gcloud_path/path.zsh.inc" ]] && source "$gcloud_path/path.zsh.inc"
-    break
-  fi
-done
-
-
-# Command line tool completions
-command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
-command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
-command -v ngrok &>/dev/null && eval "$(ngrok completion)"
-command -v deno >/dev/null && eval "$(deno completions zsh)"
-
-# Machine-local completions (not versioned)
-[[ -f "$HOME/.zsh/env/optional/local_completions.zsh" ]] && source "$HOME/.zsh/env/optional/local_completions.zsh"
-
-_uv_run_mod() {
-    if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
-        _arguments '*:filename:_files'
-    else
-        _uv "$@"
+  # Cloud tool completions
+  # Check multiple potential locations for Google Cloud SDK
+  for gcloud_path in "$HOME/tools/google-cloud-sdk" "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk" "/opt/google-cloud-sdk"; do
+    if [[ -d "$gcloud_path" ]]; then
+      [[ -f "$gcloud_path/completion.zsh.inc" ]] && source "$gcloud_path/completion.zsh.inc"
+      [[ -f "$gcloud_path/path.zsh.inc" ]] && source "$gcloud_path/path.zsh.inc"
+      break
     fi
-}
-compdef _uv_run_mod uv
+  done
+
+  # Command line tool completions
+  command -v uv >/dev/null && eval "$(uv --generate-shell-completion zsh)"
+  command -v uvx >/dev/null && eval "$(uvx --generate-shell-completion zsh)"
+  command -v ngrok &>/dev/null && eval "$(ngrok completion)"
+  command -v deno >/dev/null && eval "$(deno completions zsh)"
+
+  # Machine-local completions (not versioned)
+  [[ -f "$HOME/.zsh/env/optional/local_completions.zsh" ]] && source "$HOME/.zsh/env/optional/local_completions.zsh"
+
+  _uv_run_mod() {
+      if [[ "$words[2]" == "run" && "$words[CURRENT]" != -* ]]; then
+          _arguments '*:filename:_files'
+      else
+          _uv "$@"
+      fi
+  }
+  compdef _uv_run_mod uv
+fi
 
 
 ### functions
@@ -288,7 +301,9 @@ export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :5000 {}'"
 
 # NOTE: oh-my-zsh already ran compinit using the fpath prepared above.
 
-alias claude-mem='bun "/Users/kevin/.claude/plugins/cache/thedotmack/claude-mem/12.1.5/scripts/worker-service.cjs"'
+if [[ "${DOTFILES_PROFILE:-workstation}" == "workstation" ]]; then
+  alias claude-mem='bun "/Users/kevin/.claude/plugins/cache/thedotmack/claude-mem/12.1.5/scripts/worker-service.cjs"'
 
-# OpenClaw Completion
-[ -f "/home/mrrobot/.openclaw/completions/openclaw.zsh" ] && source "/home/mrrobot/.openclaw/completions/openclaw.zsh"
+  # OpenClaw completion is workstation-only.
+  [ -f "/home/mrrobot/.openclaw/completions/openclaw.zsh" ] && source "/home/mrrobot/.openclaw/completions/openclaw.zsh"
+fi

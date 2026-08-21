@@ -8,6 +8,8 @@ set -euo pipefail
 #
 # Usage:
 #   scripts/bootstrap.sh
+#   scripts/bootstrap.sh --profile workstation
+#   scripts/bootstrap.sh --profile server
 #   INSTALL_NODE=0 scripts/bootstrap.sh    # skip Node.js LTS install
 #   SKIP_DEFAULTS=1 scripts/bootstrap.sh   # skip macOS system defaults
 # ------------------------------------------------------------------------------
@@ -16,13 +18,43 @@ DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 LOCAL_BIN="${LOCAL_BIN:-$HOME/.local/bin}"
 CONFIG_DIR="${CONFIG_DIR:-$HOME/.config}"
 INSTALL_NODE="${INSTALL_NODE:-1}"
+PROFILE="workstation"
 
-# --- Log capture: tee all output to a timestamped file ---
-LOG_DIR="${LOG_DIR:-/tmp/dotfiles-bootstrap}"
-mkdir -p "$LOG_DIR"
-LOG_FILE="$LOG_DIR/bootstrap-$(date +%Y%m%d-%H%M%S).log"
-exec > >(tee -a "$LOG_FILE") 2>&1
-printf "\n\033[1;34m==>\033[0m Bootstrap log: %s\n" "$LOG_FILE"
+parse_bootstrap_args() {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --profile)
+        [[ $# -ge 2 ]] || { printf 'ERR: --profile requires a value\n' >&2; return 2; }
+        PROFILE="$2"
+        shift 2
+        ;;
+      *)
+        printf 'ERR: Unknown option: %s\n' "$1" >&2
+        return 2
+        ;;
+    esac
+  done
+
+  case "$PROFILE" in
+    workstation|server) ;;
+    *)
+      printf 'ERR: Unknown profile: %s\n' "$PROFILE" >&2
+      return 2
+      ;;
+  esac
+}
+
+setup_logging() {
+  LOG_DIR="${LOG_DIR:-/tmp/dotfiles-bootstrap}"
+  mkdir -p "$LOG_DIR"
+  LOG_FILE="$LOG_DIR/bootstrap-$(date +%Y%m%d-%H%M%S).log"
+  exec > >(tee -a "$LOG_FILE") 2>&1
+  printf "\n\033[1;34m==>\033[0m Bootstrap log: %s\n" "$LOG_FILE"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  parse_bootstrap_args "$@"
+fi
 
 SCRIPTS_DIR="$DOTFILES_DIR/scripts"
 PLATFORM="$(uname -s)"
@@ -48,10 +80,11 @@ Linux)
   ;;
 esac
 
-main() {
+run_workstation_profile() {
   # Phase 1 — Foundation (platform-specific: package manager + git)
   preflight_checks
   ensure_dirs
+  write_bootstrap_profile_marker
   ensure_local_bin_in_path
   install_platform_foundation
 
@@ -107,4 +140,33 @@ main() {
   print_next_steps
 }
 
-main "$@"
+run_server_profile() {
+  [[ "$PLATFORM" == "Linux" ]] || die "The server profile supports Linux only."
+
+  preflight_checks
+  ensure_dirs
+  ensure_local_bin_in_path
+  install_server_packages
+  write_bootstrap_profile_marker
+  symlink_server_dotfiles
+  ensure_server_git_identity
+  install_tmux_plugins
+  install_zsh_environment
+  set_default_shell_zsh
+  post_checks_server
+  print_server_next_steps
+}
+
+main() {
+  setup_logging
+  log "Bootstrap profile: $PROFILE"
+
+  case "$PROFILE" in
+    workstation) run_workstation_profile ;;
+    server) run_server_profile ;;
+  esac
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main
+fi

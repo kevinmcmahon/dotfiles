@@ -4,6 +4,8 @@ One-command setup for macOS and Linux dev environments. Safe to re-run at any ti
 
 ```bash
 scripts/bootstrap.sh                     # auto-detects macOS or Linux
+scripts/bootstrap.sh --profile workstation # explicit form of the default
+scripts/bootstrap.sh --profile server      # fixed headless Linux operator profile
 INSTALL_NODE=0 scripts/bootstrap.sh      # skip Node.js LTS
 INSTALL_AI_SKILLS=1 scripts/bootstrap.sh # also install third-party AI skills
 SKIP_DEFAULTS=1 scripts/bootstrap.sh     # skip macOS system defaults
@@ -12,6 +14,28 @@ SKIP_DEFAULTS=1 scripts/bootstrap.sh     # skip macOS system defaults
 > **Work WSL is different.** Do not use this personal bootstrap directly on a
 > work-owned WSL machine. Generate and clone the work-safe mirror described in
 > [Work WSL Mirror](work-wsl.md) instead.
+
+## Bootstrap Profiles
+
+With no argument, `scripts/bootstrap.sh` uses the `workstation` profile. The
+explicit `--profile workstation` form runs the same phase sequence.
+
+The Linux-only `server` profile installs this fixed package set:
+
+```text
+ca-certificates curl git git-lfs jq zsh tmux neovim ripgrep fd-find bat fzf
+less tree htop rsync unzip openssh-client dnsutils iproute2 procps lsof
+```
+
+It links only the main Git config and ignore file, the Zsh entry files and
+layered environment, and `tmux.conf`. It installs no language runtime, AI CLI,
+AI configuration, private shell overlay, full Neovim configuration, or macOS
+asset. Networking remains a separate step.
+
+Bootstrap writes the selected non-secret profile name to
+`~/.config/dotfiles/profile`. Shell startup treats a missing or invalid marker
+as `workstation`. The `server` marker skips private overlays and tool runtime
+hooks while retaining the shared shell, tmux, and Git experience.
 
 ## Goals
 

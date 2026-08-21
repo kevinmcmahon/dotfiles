@@ -37,6 +37,22 @@ install_platform_foundation() {
   install_extras_optional
 }
 
+install_server_packages() {
+  log "Installing the fixed server package set"
+  sudo apt-get update -y
+  sudo apt-get install -y \
+    ca-certificates curl git git-lfs jq zsh tmux neovim ripgrep fd-find bat fzf \
+    less tree htop rsync unzip openssh-client dnsutils iproute2 procps lsof
+
+  if need_cmd fdfind && ! need_cmd fd; then
+    ln -sf "$(command -v fdfind)" "$LOCAL_BIN/fd"
+  fi
+
+  if need_cmd batcat && ! need_cmd bat; then
+    ln -sf "$(command -v batcat)" "$LOCAL_BIN/bat"
+  fi
+}
+
 install_platform_packages() {
   install_go_official
   install_fnm
@@ -134,7 +150,7 @@ set_default_shell_zsh() {
   fi
 
   # Find zsh path
-  local zsh_path
+  local zsh_path chsh_status
   zsh_path="$(command -v zsh)" || {
     warn "zsh not found in PATH, cannot change default shell"
     return 1
@@ -146,11 +162,19 @@ set_default_shell_zsh() {
     echo "$zsh_path" | sudo tee -a /etc/shells
   fi
 
+  if [[ "$PROFILE" == server ]]; then
+    log "Changing the server login shell to zsh"
+    sudo usermod --shell "$zsh_path" "$(id -un)"
+    return
+  fi
+
   log "Changing default shell to zsh (will prompt for password)"
   if chsh -s "$zsh_path"; then
     log "Default shell changed to zsh. Log out and back in for it to take effect."
   else
+    chsh_status=$?
     warn "Failed to change default shell. You can do it manually with: chsh -s $zsh_path"
+    [[ "$PROFILE" != server ]] || return "$chsh_status"
   fi
 }
 

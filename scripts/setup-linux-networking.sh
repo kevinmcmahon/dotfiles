@@ -11,6 +11,8 @@
 #   --skip-tailscale    Skip Tailscale installation
 #   --skip-mosh         Skip mosh installation
 #   --skip-fail2ban     Skip fail2ban installation
+#   --defer-tailscale-login
+#                       Install Tailscale without authenticating it
 #   --dry-run           Show what would be done
 #   -h, --help          Show this help message
 
@@ -33,6 +35,7 @@ SKIP_TAILSCALE=false
 SKIP_MOSH=false
 SKIP_FAIL2BAN=false
 DRY_RUN=false
+DEFER_TAILSCALE_LOGIN=false
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Logging utilities
@@ -107,6 +110,8 @@ Options:
   --skip-tailscale    Skip Tailscale installation
   --skip-mosh         Skip mosh installation
   --skip-fail2ban     Skip fail2ban installation
+  --defer-tailscale-login
+                      Install Tailscale without login or UFW activation
   --dry-run           Show what would be done
   -h, --help          Show this help message
 
@@ -150,6 +155,11 @@ parse_args() {
                 ;;
             --skip-fail2ban)
                 SKIP_FAIL2BAN=true
+                shift
+                ;;
+            --defer-tailscale-login)
+                DEFER_TAILSCALE_LOGIN=true
+                SKIP_FIREWALL=true
                 shift
                 ;;
             --dry-run)
@@ -266,6 +276,11 @@ install_tailscale() {
         else
             curl -fsSL https://tailscale.com/install.sh | sh
         fi
+    fi
+
+    if [[ "$DEFER_TAILSCALE_LOGIN" == "true" ]]; then
+        info "Tailscale login deferred; run 'sudo tailscale up' in the enrollment stage"
+        return 0
     fi
 
     # Prompt to authenticate
@@ -446,6 +461,7 @@ show_summary() {
     info "Configuration summary:"
     printf '  Mode:        %s\n' "$MODE"
     printf '  Tailscale:   %s\n' "$( [[ "$SKIP_TAILSCALE" == "true" ]] && echo "skipped" || echo "installed" )"
+    [[ "$DEFER_TAILSCALE_LOGIN" == "true" ]] && printf '  Login:       deferred\n'
     printf '  mosh:        %s\n' "$( [[ "$SKIP_MOSH" == "true" ]] && echo "skipped" || echo "installed" )"
     printf '  fail2ban:    %s\n' "$( [[ "$SKIP_FAIL2BAN" == "true" ]] && echo "skipped" || echo "installed" )"
     printf '  UFW:         %s\n' "$( [[ "$SKIP_FIREWALL" == "true" ]] && echo "skipped" || echo "configured" )"

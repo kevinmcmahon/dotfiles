@@ -50,7 +50,6 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "claude-fable-5[1m]",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "PreToolUse": [
@@ -130,21 +129,23 @@
     "playwright@claude-plugins-official": true,
     "claude-mem@thedotmack": true,
     "modern-go-guidelines@goland-claude-marketplace": true,
-    "gopls-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": false,
+    "typescript-lsp@claude-plugins-official": false,
     "second-opinion@trailofbits": true,
     "swift-lsp@claude-plugins-official": true,
     "workflow-skill-design@trailofbits": true,
     "astral@astral-sh": true,
     "codex@openai-codex": true,
     "telegram@claude-plugins-official": false,
-    "clangd-lsp@claude-plugins-official": true,
+    "clangd-lsp@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true,
     "linear@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "deploy-on-aws@claude-plugins-official": false,
     "elements-of-style@the-elements-of-style": true,
-    "mattpocock-skills@mattpocock": true
+    "mattpocock-skills@mattpocock": true,
+    "cloudflare@cloudflare": true,
+    "perplexity@pplx-search": true
   },
   "extraKnownMarketplaces": {
     "trailofbits": {
@@ -188,10 +189,23 @@
         "source": "github",
         "repo": "mattpocock/skills"
       }
+    },
+    "cloudflare": {
+      "source": {
+        "source": "github",
+        "repo": "cloudflare/skills"
+      }
+    },
+    "pplx-search": {
+      "source": {
+        "source": "github",
+        "repo": "kevinmcmahon/pplx-search"
+      }
     }
   },
+  "outputStyle": "Concise",
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "autoUpdatesChannel": "latest",
   "channelsEnabled": true,
   "autoDreamEnabled": true,

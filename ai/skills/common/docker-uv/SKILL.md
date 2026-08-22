@@ -1,3 +1,8 @@
+---
+name: docker-uv
+description: Multistage Dockerfile patterns for Python projects using uv. Use when writing or reviewing a Dockerfile, docker-compose setup, or container build for a Python project.
+---
+
 # Multistage Dockerfile with UV for Python
 
 ## Basic Structure

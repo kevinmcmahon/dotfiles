@@ -433,6 +433,8 @@ common_ai_skills=(
   book-domain-modeling
   book-data-systems
   create-adr
+  writing-tropes
+  docker-uv
 )
 for skill in "${common_ai_skills[@]}"; do
   check_symlink "$HOME/.claude/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.claude/skills/$skill"

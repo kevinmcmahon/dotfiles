@@ -1,3 +1,8 @@
+---
+name: writing-tropes
+description: AI writing tropes to avoid in any prose humans will read — documentation, READMEs, commit messages, release notes, blog posts, marketing copy, UI text. Use before writing or reviewing any prose so the output does not read as AI-generated.
+---
+
 # AI Writing Tropes to Avoid
 
 ## Word Choice

@@ -168,3 +168,15 @@ name = "book-rule-skills"
 source = "ai/skills/common/book-*"
 status = "local-private"
 notes = "Keep local unless redistribution and provenance cleanup are explicitly handled."
+
+[[local]]
+name = "writing-tropes"
+source = "ai/skills/common/writing-tropes"
+status = "local-private"
+notes = "AI writing tropes to avoid, converted from the always-loaded claude/docs/tropes.md context doc so it loads on demand."
+
+[[local]]
+name = "docker-uv"
+source = "ai/skills/common/docker-uv"
+status = "local-private"
+notes = "Multistage Dockerfile patterns with uv, converted from the always-loaded claude/docs/docker-uv.md context doc so it loads on demand."

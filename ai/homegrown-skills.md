@@ -26,6 +26,8 @@ installed with `npx skills add`.
 | `book-reliability-review` | `ai/skills/common/book-reliability-review` | Keep local until redistribution and provenance cleanup are resolved. |
 | `book-rule-skills` | `ai/skills/common/book-*` | Composite local book lens set (including newly added book-derived SKILL.md files). |
 | `issue-prompt` | `ai/skills/common/issue-prompt` | Personal workflow for generating ready-to-paste Linear implementation prompts from repo guidance. |
+| `writing-tropes` | `ai/skills/common/writing-tropes` | AI writing tropes to avoid, converted from the always-loaded `tropes.md` context doc so it loads on demand. |
+| `docker-uv` | `ai/skills/common/docker-uv` | Multistage Dockerfile patterns with uv, converted from the always-loaded `docker-uv.md` context doc so it loads on demand. |
 
 ## Superseded By External Installs
 

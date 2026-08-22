@@ -67,14 +67,13 @@
 
 ## Writing Conventions
 
-- @~/.claude/docs/tropes.md
-- @~/.claude/docs/orwell.md
+- Before writing any prose humans will read, use the writing-tropes and orwell skills.
 
 ## Tools & Conventions  
 
 - Use Perplexity for web search. We have a perplexity skill.
-- @~/.claude/docs/using-uv.md
-- @~/.claude/docs/docker-uv.md
+- For uv (Python packaging), use the astral:uv skill.
+- For Python Dockerfiles, use the docker-uv skill.
 - @~/.claude/docs/workflow-protocol.md
 
 ## Other Important Considerations

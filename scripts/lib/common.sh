@@ -108,27 +108,25 @@ EOF
   fi
 }
 
+# The perplexity skill installs into the shared ~/.agents/skills store from the
+# [[external]] pplx-search manifest entry. Its CLI is useful outside an agent
+# session too, so link it onto PATH. Must run after install_ai_skills; the skill
+# is absent when INSTALL_AI_SKILLS is unset, which is not an error.
 ensure_pplx_search_bin() {
   log "Ensuring pplx-search is available on PATH"
 
-  local src="$DOTFILES_DIR/ai/skills/codex/perplexity/pplx-search"
+  local src="${AGENT_SKILLS:-$HOME/.agents/skills}/perplexity/pplx-search"
   local dst="$LOCAL_BIN/pplx-search"
 
   if [[ ! -x "$src" ]]; then
-    warn "pplx-search source missing or not executable: $src"
+    warn "pplx-search not installed: $src (run scripts/install-ai-skills.sh)"
     return 0
   fi
 
   mkdir -p "$LOCAL_BIN"
 
   if [[ -L "$dst" ]]; then
-    local actual actual_resolved
-    actual="$(readlink "$dst")"
-    actual_resolved="$(cd "$(dirname "$dst")" && cd "$(dirname "$actual")" && pwd)/$(basename "$actual")"
-
-    if [[ "$actual" == "$src" || "$actual_resolved" == "$src" ]]; then
-      return 0
-    fi
+    [[ "$(readlink "$dst")" == "$src" ]] && return 0
   elif [[ -e "$dst" ]]; then
     warn "$dst exists and is not a symlink; leaving it unchanged"
     return 0
@@ -556,24 +554,6 @@ verify_codex_setup() {
       errors=$((errors + 1))
     fi
   done
-
-  local perplexity_skill="$codex_skills_dst/perplexity"
-  if [[ ! -L "$perplexity_skill" ]]; then
-    warn "Codex Perplexity skill is not symlinked: $perplexity_skill"
-    errors=$((errors + 1))
-  elif [[ ! -x "$perplexity_skill/pplx-search" ]]; then
-    warn "Codex Perplexity skill CLI missing or not executable: $perplexity_skill/pplx-search"
-    errors=$((errors + 1))
-  fi
-
-  local pplx_bin="$LOCAL_BIN/pplx-search"
-  if [[ ! -L "$pplx_bin" ]]; then
-    warn "pplx-search is not symlinked into PATH: $pplx_bin"
-    errors=$((errors + 1))
-  elif [[ ! -x "$pplx_bin" ]]; then
-    warn "pplx-search symlink is not executable: $pplx_bin -> $(readlink "$pplx_bin")"
-    errors=$((errors + 1))
-  fi
 
   if [[ ! -f "$codex_dst/config.toml" ]]; then
     warn "Codex config missing: $codex_dst/config.toml"

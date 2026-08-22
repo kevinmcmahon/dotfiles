@@ -11,6 +11,9 @@ set -uo pipefail
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 CONFIG_DIR="${CONFIG_DIR:-$HOME/.config}"
 LOCAL_BIN="${LOCAL_BIN:-$HOME/.local/bin}"
+# Shared skills store the `skills` CLI writes to. Codex, OpenCode, Gemini CLI, and
+# Antigravity read it directly; Claude Code reads symlinks into ~/.claude/skills.
+AGENT_SKILLS="${AGENT_SKILLS:-$HOME/.agents/skills}"
 
 # --- Counters ---
 PASS=0
@@ -169,6 +172,98 @@ check_codex_hooks_json() {
     pass "Codex hooks use portable ntfy hook path"
   else
     fail "Codex hooks do not reference portable ntfy hook path"
+  fi
+}
+
+# Claude Code plugins are installed from remote marketplaces, not symlinked out
+# of this repo. claude/settings.json is the declaration; Claude Code records what
+# it actually installed under ~/.claude/plugins/. This compares the two.
+check_claude_plugins() {
+  local settings="$DOTFILES_DIR/claude/settings.json"
+  local installed="$HOME/.claude/plugins/installed_plugins.json"
+  local known="$HOME/.claude/plugins/known_marketplaces.json"
+  local name repo actual plugin installed_list
+  local declared_markets=0 missing_markets=0
+  local enabled_count=0 missing_plugins=0
+
+  if ! command -v jq >/dev/null 2>&1; then
+    warn "jq not found; skipping Claude Code plugin checks"
+    return
+  fi
+
+  if [[ ! -f "$settings" ]]; then
+    fail "Claude settings missing: $settings"
+    return
+  fi
+
+  # Every marketplace declared in dotfiles must be registered under the same repo.
+  if [[ ! -f "$known" ]]; then
+    fail "Claude marketplaces not registered: $known missing"
+  else
+    while IFS=$'\t' read -r name repo; do
+      [[ -n "$name" ]] || continue
+      declared_markets=$((declared_markets + 1))
+      actual="$(jq -r --arg n "$name" '.[$n].source.repo // ""' "$known")"
+      if [[ -z "$actual" ]]; then
+        fail "Claude marketplace not registered: $name ($repo)"
+        missing_markets=$((missing_markets + 1))
+      elif [[ "$actual" != "$repo" ]]; then
+        fail "Claude marketplace repo mismatch: $name -> $actual (expected $repo)"
+        missing_markets=$((missing_markets + 1))
+      fi
+    done < <(jq -r '.extraKnownMarketplaces // {} | to_entries[] | "\(.key)\t\(.value.source.repo // "")"' "$settings")
+
+    if [[ $missing_markets -eq 0 && $declared_markets -gt 0 ]]; then
+      pass "Claude marketplaces registered ($declared_markets declared)"
+    fi
+  fi
+
+  # Plugins declared true must be installed. Plugins declared false are switched
+  # off on purpose, so their install state is not a drift signal.
+  if [[ ! -f "$installed" ]]; then
+    fail "Claude plugins not installed: $installed missing"
+    return
+  fi
+
+  installed_list="$(jq -r '.plugins // {} | keys[]' "$installed")"
+  while read -r plugin; do
+    [[ -n "$plugin" ]] || continue
+    enabled_count=$((enabled_count + 1))
+    if ! grep -qxF "$plugin" <<<"$installed_list"; then
+      fail "Claude plugin enabled but not installed: $plugin"
+      missing_plugins=$((missing_plugins + 1))
+    fi
+  done < <(jq -r '.enabledPlugins // {} | to_entries[] | select(.value == true) | .key' "$settings")
+
+  if [[ $missing_plugins -eq 0 && $enabled_count -gt 0 ]]; then
+    pass "Claude plugins installed ($enabled_count enabled)"
+  fi
+}
+
+# The perplexity skill and its pplx-search CLI ship from
+# github.com/kevinmcmahon/pplx-search, not from this repo. Claude Code gets it from
+# the perplexity@pplx-search plugin (covered by check_claude_plugins); Codex,
+# OpenCode, and the other agents read the shared ~/.agents/skills store the skills
+# CLI writes to. Only presence and usability are checked, never how the entry was
+# provisioned, so a manifest install and a local dev checkout both pass.
+check_perplexity_skill() {
+  local skill="$AGENT_SKILLS/perplexity"
+  local bin="$LOCAL_BIN/pplx-search"
+
+  if [[ ! -d "$skill" ]]; then
+    fail "perplexity skill missing: $skill (scripts/install-ai-skills.sh installs it from kevinmcmahon/pplx-search)"
+  elif [[ ! -f "$skill/SKILL.md" ]]; then
+    fail "perplexity skill incomplete: $skill/SKILL.md not found"
+  elif [[ ! -x "$skill/pplx-search" ]]; then
+    fail "perplexity CLI missing or not executable: $skill/pplx-search"
+  else
+    pass "perplexity skill available to Codex/OpenCode: $skill"
+  fi
+
+  if [[ -x "$bin" ]]; then
+    pass "pplx-search on PATH: $bin"
+  else
+    fail "pplx-search missing or not executable: $bin (link it from $skill/pplx-search)"
   fi
 }
 
@@ -440,6 +535,8 @@ for skill in "${common_ai_skills[@]}"; do
   check_symlink "$HOME/.claude/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.claude/skills/$skill"
 done
 
+check_claude_plugins
+
 # --- Codex config ---
 section "Codex Config"
 check_symlink "$HOME/.codex/AGENTS.md" "$DOTFILES_DIR/codex/AGENTS.md" "~/.codex/AGENTS.md"
@@ -453,8 +550,6 @@ check_symlink "$HOME/.codex/hooks/ntfy-notify.sh" "$DOTFILES_DIR/codex/hooks/ntf
 for skill in "${common_ai_skills[@]}"; do
   check_symlink "$HOME/.codex/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.codex/skills/$skill"
 done
-check_symlink "$HOME/.codex/skills/perplexity" "$DOTFILES_DIR/ai/skills/codex/perplexity" "~/.codex/skills/perplexity"
-check_symlink "$LOCAL_BIN/pplx-search" "$DOTFILES_DIR/ai/skills/codex/perplexity/pplx-search" "~/.local/bin/pplx-search"
 
 # --- AI CLIs ---
 section "AI CLIs"
@@ -479,6 +574,8 @@ if [[ -L "$HOME/.opencode/skills" ]]; then
 else
   check_dir_exists "$HOME/.opencode/skills" "~/.opencode/skills"
 fi
+
+check_perplexity_skill
 
 # --- Directories ---
 section "Standard Directories"

@@ -124,10 +124,10 @@ run_workstation_profile() {
   ensure_claude_skills_dir
   ensure_opencode_skills_dir
   sync_ai_resources
-  ensure_pplx_search_bin
   symlink_claude_config
   symlink_opencode_ai_dirs
   install_ai_skills
+  ensure_pplx_search_bin
   symlink_codex_config
   verify_claude_setup
   verify_codex_setup

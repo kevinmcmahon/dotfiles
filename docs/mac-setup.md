@@ -102,11 +102,12 @@ exec zsh
 | `codex/hooks/ntfy-notify.sh` | `~/.codex/hooks/ntfy-notify.sh` |
 | `codex/rules/default.rules.template` | `~/.codex/rules/default.rules` when missing |
 | `ai/skills/{common,codex}` | `~/.codex/skills/` |
-| `ai/skills/codex/perplexity/pplx-search` | `~/.local/bin/pplx-search` |
 
 `ghostty` is treated as pure repo-owned XDG config, so the whole topic symlinks into `~/.config/ghostty`. `tmux` is the main exception: bootstrap keeps a real `~/.config/tmux/` directory so TPM plugins can stay local, and only symlinks `tmux/tmux.conf` into that directory.
 
 Dotfiles-owned Codex user skills are symlinked into `~/.codex/skills`. Codex hook implementations live under `ai/scripts/codex/`; Codex-facing hook paths are managed under `codex/hooks/` and kept separate from Claude Code hooks.
+
+The perplexity skill is not one of them: it ships from `kevinmcmahon/pplx-search` and installs into the shared `~/.agents/skills` store that Codex and OpenCode read directly. See [Perplexity skill](bootstrap.md#perplexity-skill).
 
 ## Post-Install Configuration
 

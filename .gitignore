@@ -32,6 +32,10 @@ claude/mcp.json
 !/codex/rules/
 !/codex/rules/default.rules.template
 
+# Python bytecode caches (left behind by running tests/)
+__pycache__/
+*.pyc
+
 # Repomix output (AI context dumps)
 **/output.txt
 **/repomix-output*

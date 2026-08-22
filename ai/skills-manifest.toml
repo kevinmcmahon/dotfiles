@@ -84,6 +84,16 @@ reviewed_at = "2026-06-11"
 risk = "workflow"
 notes = "Install selected workflow skills only; avoid importing the whole repo because several skills overlap with existing Swift and macOS guidance."
 
+[[external]]
+name = "pplx-search"
+source = "kevinmcmahon/pplx-search"
+agents = ["codex", "opencode"]
+skills = ["perplexity"]
+reviewed_ref = "39543b87a901ada9d0e31cd55026f5f86a8d3b2e"
+reviewed_at = "2026-08-21"
+risk = "low"
+notes = "First-party skill, so upstream review is not a concern. Claude Code is deliberately absent from agents: it gets this skill from the perplexity@pplx-search plugin declared in claude/settings.json, and installing here too would give it a duplicate. To pick up changes to the skill, push them and run `npx skills update perplexity`."
+
 [[watch]]
 name = "swift-agent-skills-index"
 source = "twostraws/Swift-Agent-Skills"
@@ -123,12 +133,6 @@ reviewed_ref = "e77e8d1fc2dfc5368702c3f8d44ce2f27348df65"
 reviewed_at = "2026-06-07"
 risk = "discovery-only"
 notes = "Alternative discovery index for iOS AI tooling; do not install directly."
-
-[[local]]
-name = "perplexity"
-source = "ai/skills/{claude,codex}/perplexity"
-status = "move-to-skills-repo"
-notes = "Scrub hardcoded host paths before packaging."
 
 [[local]]
 name = "runpodctl"

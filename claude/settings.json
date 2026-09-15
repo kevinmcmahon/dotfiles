@@ -8,17 +8,14 @@
     "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "CLAUDE_CODE_NO_FLICKER": "1",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
+    "CLAUDE_CODE_SUBAGENT_MODEL": "opus"
   },
   "attribution": {
     "commit": "",
     "pr": ""
   },
   "permissions": {
-    "allow": [
-      "Bash(ls:*)",
-      "Bash(sg:*)"
-    ],
+    "allow": ["Bash(ls:*)", "Bash(sg:*)"],
     "deny": [
       "Bash(rm -rf *)",
       "Bash(rm -fr *)",
@@ -50,6 +47,7 @@
     ],
     "defaultMode": "bypassPermissions"
   },
+  "model": "claude-fable-5-1[1m]",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "PreToolUse": [
@@ -206,6 +204,14 @@
   "outputStyle": "Concise",
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "medium"
+    },
+    "claude-opus-5": {
+      "effortLevel": "high"
+    }
+  },
   "autoUpdatesChannel": "latest",
   "channelsEnabled": true,
   "autoDreamEnabled": true,

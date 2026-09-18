@@ -197,6 +197,16 @@ meaningful maintenance difference.
 
 ## Commands
 
+Update installed global skills with the skills CLI:
+
+```bash
+npx skills@latest update -g
+```
+
+The CLI owns installed versions and local lock state. The manifest records what
+bootstrap should install; it is not an update lock file. CLI updates do not
+change the manifest's review refs.
+
 Validate installable entries:
 
 ```bash
@@ -229,6 +239,15 @@ scripts/audit-ai-skills.sh --json
 
 ## Maintenance Rules
 
+- Use the skills CLI for routine updates and removal. Keep this manifest's
+  skill names in sync so bootstrap does not request removed skills.
+- For Matt Pocock's skills, use the selected CLI installs for Codex and OpenCode.
+  Claude Code uses the plugin already declared in `claude/settings.json`.
+  Do not install both copies in Claude Code. This follows the
+  [upstream installation guidance](https://github.com/mattpocock/skills#installation-30-second-setup).
+- Remove retired global skills with `npx skills@latest remove <names> -g -y`,
+  then remove their names from the manifest. A successful install command does
+  not prove every requested skill exists: the CLI can skip missing names.
 - Add `[[external]]` only when the skill should actually be installed.
 - Add `[[watch]]` when a source is useful but not trusted, reviewed, or
   installable enough for active use.

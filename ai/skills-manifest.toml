@@ -6,10 +6,8 @@
 [[external]]
 name = "mattpocock-skills"
 source = "mattpocock/skills"
-agents = ["codex", "claude-code", "opencode"]
+agents = ["codex", "opencode"]
 skills = [
-  "caveman",
-  "diagnose",
   "grill-me",
   "grill-with-docs",
   "handoff",
@@ -17,30 +15,26 @@ skills = [
   "prototype",
   "setup-matt-pocock-skills",
   "tdd",
-  "to-issues",
-  "to-prd",
   "triage",
-  "write-a-skill",
-  "zoom-out",
 ]
-reviewed_ref = "694fa30311e02c2639942308513555e61ee84a6f"
-reviewed_at = "2026-06-11"
+reviewed_ref = "c55ee46073ed923f86ce59a5eb3b6d895095d1b7"
+reviewed_at = "2026-09-18"
 risk = "workflow"
-notes = "Broad workflow skill pack. Review upstream diff before updating because these skills affect agent behavior across Codex, Claude Code, and OpenCode."
+notes = "Selected skills for Codex and OpenCode. Claude Code uses the mattpocock-skills plugin declared in claude/settings.json; do not install duplicate CLI-managed skills there. Review upstream changes before updating."
 
 [[external]]
 name = "find-skills"
 source = "vercel-labs/skills"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["find-skills"]
-reviewed_ref = "be0dd25b4a8665894a56f45ef582cc02ca802c39"
-reviewed_at = "2026-06-11"
+reviewed_ref = "7407f3893ad4dceab546ac002c3ef806e4000c73"
+reviewed_at = "2026-09-18"
 risk = "workflow"
 notes = "Skill discovery helper. Keep external unless a repo-specific discovery workflow becomes necessary."
 
 [[external]]
 name = "likec4"
-source = "https://likec4.dev/.well-known/skills/likec4-dsl/SKILL.md"
+source = "https://likec4.dev"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["likec4-dsl"]
 
@@ -50,7 +44,7 @@ source = "eraserlabs/eraser-io"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["terraform-diagrams"]
 reviewed_ref = "30d6f3679f597eeae67bacab5ee733c863686177"
-reviewed_at = "2026-06-11"
+reviewed_at = "2026-09-18"
 risk = "tool-stale"
 notes = "Terraform diagram workflow tied to external tooling. Review upstream behavior before updating."
 
@@ -59,8 +53,8 @@ name = "app-store-review"
 source = "safaiyeh/app-store-review-skill"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["app-store-review"]
-reviewed_ref = "c2532321a3f3f60f6f54bd584fb86290a5ba9940"
-reviewed_at = "2026-06-11"
+reviewed_ref = "d7650c3741dc9a60f40b6f48af0564caa3b2fe02"
+reviewed_at = "2026-09-18"
 risk = "policy-stale"
 notes = "App Store policy changes over time; verify findings against current Apple App Store Review Guidelines before relying on them."
 
@@ -70,7 +64,7 @@ source = "truongduy2611/app-store-preflight-skills"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["app-store-preflight-skills"]
 reviewed_ref = "e52e007036fb6edea104b6b49eb01f69c155ad51"
-reviewed_at = "2026-06-11"
+reviewed_at = "2026-09-18"
 risk = "policy-stale"
 notes = "Useful as an App Store preflight workflow, but rule content must be checked against current Apple docs and asc CLI behavior."
 
@@ -80,7 +74,7 @@ source = "Dimillian/Skills"
 agents = ["codex", "claude-code", "opencode"]
 skills = ["app-store-changelog", "review-swarm", "bug-hunt-swarm"]
 reviewed_ref = "05ba982bfeb0d77d3c97d4542b0ee15034d05f84"
-reviewed_at = "2026-06-11"
+reviewed_at = "2026-09-18"
 risk = "workflow"
 notes = "Install selected workflow skills only; avoid importing the whole repo because several skills overlap with existing Swift and macOS guidance."
 
@@ -90,7 +84,7 @@ source = "kevinmcmahon/pplx-search"
 agents = ["codex", "opencode"]
 skills = ["perplexity"]
 reviewed_ref = "39543b87a901ada9d0e31cd55026f5f86a8d3b2e"
-reviewed_at = "2026-08-21"
+reviewed_at = "2026-09-18"
 risk = "low"
 notes = "First-party skill, so upstream review is not a concern. Claude Code is deliberately absent from agents: it gets this skill from the perplexity@pplx-search plugin declared in claude/settings.json, and installing here too would give it a duplicate. To pick up changes to the skill, push them and run `npx skills update perplexity`."
 

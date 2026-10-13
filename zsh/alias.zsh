@@ -104,7 +104,7 @@ if [[ "$OSTYPE" == darwin* ]]; then
   alias o='open .'
 
   # Applications
-  alias marked='open -a Marked\ 2'
+  alias marked='open -a Marked'
 
   # In VS Code do `Cmd+Shift+P` then `Shell Command: Install 'code' command in PATH`
   alias ci='/usr/local/bin/code-insiders'

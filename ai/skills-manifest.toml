@@ -171,7 +171,7 @@ notes = "Keep local unless redistribution and provenance cleanup are explicitly 
 name = "writing-tropes"
 source = "ai/skills/common/writing-tropes"
 status = "local-private"
-notes = "AI writing tropes to avoid, converted from the always-loaded claude/docs/tropes.md context doc so it loads on demand."
+notes = "AI writing tropes to avoid, converted from the always-loaded claude/docs/tropes.md context doc so it loads on demand. Also carries Orwell's six rules from the retired orwell.md doc; the full catalog lives in references/catalog.md."
 
 [[local]]
 name = "docker-uv"

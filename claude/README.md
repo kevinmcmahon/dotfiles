@@ -31,7 +31,6 @@ claude/
 ├── skills/                    # Dotfiles-owned skill sources
 └── docs/                      # Context docs loaded via @-references in CLAUDE.md
     ├── using-uv.md            # uv package manager guide (symlink → ai/)
-    ├── orwell.md              # Orwell's six rules for prose (symlink → ai/)
     └── perplexity.md          # Perplexity search docs (symlink → ai/)
 ```
 
@@ -168,10 +167,9 @@ Slash commands available as `/command-name` in Claude Code sessions. All symlink
 
 Referenced in `CLAUDE.md` via `@~/.claude/docs/filename.md`. These are injected into every Claude Code session as background context:
 
-- **orwell.md** — Orwell's six rules for prose
 - **workflow-protocol.md** — Cross-project unit-of-work protocol for agents
 
-Guidance that loads on demand instead of every session: AI writing tropes moved to the `writing-tropes` skill (`ai/skills/common/writing-tropes`), Dockerfile patterns moved to the `docker-uv` skill (`ai/skills/common/docker-uv`), and the uv field manual is covered by the `astral:uv` plugin skill.
+Guidance that loads on demand instead of every session: AI writing tropes and Orwell's six rules for prose moved to the `writing-tropes` skill (`ai/skills/common/writing-tropes`), Dockerfile patterns moved to the `docker-uv` skill (`ai/skills/common/docker-uv`), and the uv field manual is covered by the `astral:uv` plugin skill.
 
 ---
 

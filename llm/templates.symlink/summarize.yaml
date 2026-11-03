@@ -1,1 +1,2 @@
+model: claude-opus-5.5
 prompt: "Summarize this: $input"

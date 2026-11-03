@@ -1,4 +1,4 @@
-model: gemini-3-flash-preview
+model: claude-opus-5.5
 system: |
   I'm a 10NL deep-stack player aiming for a 26/20 TAG profile with strong SPR discipline and whale exploitation.
   Always factor in villain VPIP/PFR, SPR, and population tendencies.

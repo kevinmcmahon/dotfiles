@@ -7,5 +7,20 @@
   "small_model": "google/gemini-3-flash-preview",
   "instructions": [
     "AGENTS.md"
-  ]
+  ],
+  "mcp": {
+    "rea": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "rea-agents@6.7.0",
+        "mcp"
+      ],
+      "enabled": true,
+      "environment": {
+        "HOPPER_LAUNCHER_PATH": "/Users/kevin/Applications/Hopper Disassembler.app/Contents/MacOS/hopper"
+      }
+    }
+  }
 }

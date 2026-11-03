@@ -83,6 +83,9 @@ dotfiles/
 
 ## Customization
 
+See [Git commit-message input](docs/git-hooks.md) for the global hook's context
+limits, handling of large staged changes, and tests.
+
 ### Environment Variables
 
 | Variable | Default | Effect |

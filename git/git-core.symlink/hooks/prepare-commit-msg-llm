@@ -10,13 +10,6 @@ if [ -n "$2" ]; then
   exit 0
 fi
 
-# ANSI color codes for styling the output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
 # Create a log file for debugging if needed
 LOG_FILE="/tmp/git-commit-hook-$$.log"
 
@@ -51,11 +44,20 @@ log() {
 
 log "Hook started"
 
-# Get the diff of staged changes
-DIFF_INPUT=$(git diff --cached)
+# Keep model input bounded even when staged files contain large text records.
+HOOK_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+if ! PROMPT_INPUT=$(mktemp "${TMPDIR:-/tmp}/git-commit-prompt.XXXXXX"); then
+  echo "Failed to prepare staged commit context: cannot create a temporary file"
+  exit 1
+fi
+trap 'rm -f "$PROMPT_INPUT"' EXIT
+if ! python3 "$HOOK_DIR/commit_prompt.py" > "$PROMPT_INPUT" 2>>"$LOG_FILE"; then
+  echo "Failed to prepare staged commit context; see $LOG_FILE"
+  exit 1
+fi
 
 # Skip if there are no changes
-if [ -z "$DIFF_INPUT" ]; then
+if [ ! -s "$PROMPT_INPUT" ]; then
   echo "No staged changes detected."
   log "No staged changes detected"
   exit 0
@@ -77,10 +79,10 @@ log "Started spinner animation (PID: $spin_pid)"
 SYSTEM_PROMPT_FILE="$HOME/.config/prompts/commit-system-prompt.txt"
 if [ -f "$SYSTEM_PROMPT_FILE" ]; then
   log "Using system prompt from file"
-  GENERATED_MSG=$(echo "$DIFF_INPUT" | llm -s "$(cat $SYSTEM_PROMPT_FILE)" 2>>"$LOG_FILE")
+  GENERATED_MSG=$(llm -s "$(cat "$SYSTEM_PROMPT_FILE")" < "$PROMPT_INPUT" 2>>"$LOG_FILE")
 else
   log "Using default gitcommit template"
-  GENERATED_MSG=$(echo "$DIFF_INPUT" | llm -t gitcommit 2>>"$LOG_FILE")
+  GENERATED_MSG=$(llm -t gitcommit < "$PROMPT_INPUT" 2>>"$LOG_FILE")
 fi
 result_code=$?
 log "LLM command completed with code: $result_code"
@@ -126,9 +128,11 @@ echo "$GENERATED_MSG" > "$1"
 
 # If there was an original message, append it after a separator
 if [ -n "$ORIG_MSG" ]; then
-  echo "" >> "$1"
-  echo "# Original message:" >> "$1"
-  echo "# $ORIG_MSG" >> "$1"
+  {
+    echo ""
+    echo "# Original message:"
+    echo "# $ORIG_MSG"
+  } >> "$1"
   log "Original message appended"
 fi
 

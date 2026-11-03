@@ -263,16 +263,23 @@ check_claude_plugins() {
     fi
   fi
 
-  # Plugins declared true must be installed. Plugins declared false are switched
-  # off on purpose, so their install state is not a drift signal.
-  if [[ ! -f "$installed" ]]; then
-    fail "Claude plugins not installed: $installed missing"
-    return
+  # Enabled marketplace plugins need install records. Built-ins are supplied by
+  # Claude Code and expose their availability only inside a session's /plugin UI.
+  installed_list=""
+  if [[ -f "$installed" ]]; then
+    installed_list="$(jq -r '.plugins // {} | keys[]' "$installed")"
   fi
 
-  installed_list="$(jq -r '.plugins // {} | keys[]' "$installed")"
   while read -r plugin; do
     [[ -n "$plugin" ]] || continue
+    if [[ "$plugin" == *@builtin ]]; then
+      printf '  Claude built-in: %s (check availability in a session with /plugin)\n' "$plugin"
+      continue
+    fi
+    if [[ ! -f "$installed" ]]; then
+      fail "Claude plugins not installed: $installed missing"
+      return
+    fi
     enabled_count=$((enabled_count + 1))
     if ! grep -qxF "$plugin" <<<"$installed_list"; then
       fail "Claude plugin enabled but not installed: $plugin"
@@ -281,7 +288,7 @@ check_claude_plugins() {
   done < <(jq -r '.enabledPlugins // {} | to_entries[] | select(.value == true) | .key' "$settings")
 
   if [[ $missing_plugins -eq 0 && $enabled_count -gt 0 ]]; then
-    pass "Claude plugins installed ($enabled_count enabled)"
+    pass "Claude plugins installed ($enabled_count enabled marketplace plugins)"
   fi
 }
 

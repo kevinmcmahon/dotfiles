@@ -192,6 +192,11 @@ declaration against those records, so a plugin enabled in settings but never
 installed — or a marketplace pointing at a different repo than declared — shows
 up as drift. Plugins declared `false` are off on purpose and are not checked.
 
+Plugins ending in `@builtin` ship with Claude Code and have no marketplace
+install record. The audits report them separately without claiming they are
+available in the current session. Check `/plugin` → **Installed** inside Claude
+Code for that. See the [plugin commands reference](https://code.claude.com/docs/en/plugins/cli-reference#plugin-details).
+
 Adding a plugin therefore means editing `claude/settings.json`, not adding a
 symlink. `perplexity@pplx-search` (from `kevinmcmahon/pplx-search`) is the
 current example: the skill and its `pplx-search` CLI ship from that repo rather

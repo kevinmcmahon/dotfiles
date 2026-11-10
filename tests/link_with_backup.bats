@@ -170,3 +170,62 @@ assert_single_timestamped_backup() {
   [[ "$output" == *"$LOCAL_BIN not currently on PATH for this shell session."* ]]
   [[ "$output" == *"Adding it for this bootstrap run."* ]]
 }
+
+@test "git-core is linked once, with a wrong symlink backed up" {
+  mkdir -p "$DOTFILES_DIR/git/git-core.symlink" "$BATS_TEST_TMPDIR/other-core"
+  ln -s "$BATS_TEST_TMPDIR/other-core" "$HOME/.git-core"
+
+  run symlink_dotfiles_symlink_pattern
+
+  [ "$status" -eq 0 ]
+  assert_single_timestamped_backup "$HOME/.git-core"
+  [ "$(readlink "$BACKUP")" = "$BATS_TEST_TMPDIR/other-core" ]
+  [ "$(readlink "$HOME/.git-core")" = "$DOTFILES_DIR/git/git-core.symlink" ]
+  [ "$(printf '%s\n' "$output" | grep -c "Linked $HOME/.git-core ->")" -eq 1 ]
+}
+
+@test "XDG config step backs up a wrong symlink and leaves a correct one alone" {
+  mkdir -p "$DOTFILES_DIR/nvim" "$DOTFILES_DIR/yazi" "$BATS_TEST_TMPDIR/other-nvim" "$CONFIG_DIR"
+  ln -s "$BATS_TEST_TMPDIR/other-nvim" "$CONFIG_DIR/nvim"
+  ln -s "$DOTFILES_DIR/yazi" "$CONFIG_DIR/yazi"
+
+  run symlink_xdg_dirs
+
+  [ "$status" -eq 0 ]
+  assert_single_timestamped_backup "$CONFIG_DIR/nvim"
+  [[ "$output" == *"Backing up existing $CONFIG_DIR/nvim -> $BACKUP"* ]]
+  [ "$(readlink "$BACKUP")" = "$BATS_TEST_TMPDIR/other-nvim" ]
+  [ "$(readlink "$CONFIG_DIR/nvim")" = "$DOTFILES_DIR/nvim" ]
+  [ "$(readlink "$CONFIG_DIR/yazi")" = "$DOTFILES_DIR/yazi" ]
+  [[ "$output" != *"Linked $CONFIG_DIR/yazi"* ]]
+  [ -z "$(backups_of "$CONFIG_DIR/yazi")" ]
+}
+
+@test "OpenCode AI dirs step backs up a real directory with the .bak.<timestamp> suffix" {
+  mkdir -p "$DOTFILES_DIR/opencode/commands" "$HOME/.opencode/commands"
+  echo "local command" >"$HOME/.opencode/commands/mine.md"
+
+  run symlink_opencode_ai_dirs
+
+  [ "$status" -eq 0 ]
+  assert_single_timestamped_backup "$HOME/.opencode/commands"
+  [ "$(cat "$BACKUP/mine.md")" = "local command" ]
+  [ "$(readlink "$HOME/.opencode/commands")" = "$DOTFILES_DIR/opencode/commands" ]
+}
+
+@test "OpenCode config step backs up a wrong symlink" {
+  mkdir -p "$HOME/.opencode/bin" "$DOTFILES_DIR/opencode" "$CONFIG_DIR/opencode"
+  printf '#!/bin/sh\necho 0.0.0-test\n' >"$HOME/.opencode/bin/opencode"
+  chmod +x "$HOME/.opencode/bin/opencode"
+  echo '{}' >"$DOTFILES_DIR/opencode/opencode.json.symlink"
+  echo '{"other": true}' >"$BATS_TEST_TMPDIR/other.json"
+  local dst="$CONFIG_DIR/opencode/opencode.json"
+  ln -s "$BATS_TEST_TMPDIR/other.json" "$dst"
+
+  run install_opencode
+
+  [ "$status" -eq 0 ]
+  assert_single_timestamped_backup "$dst"
+  [ "$(readlink "$BACKUP")" = "$BATS_TEST_TMPDIR/other.json" ]
+  [ "$(readlink "$dst")" = "$DOTFILES_DIR/opencode/opencode.json.symlink" ]
+}

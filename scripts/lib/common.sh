@@ -174,13 +174,7 @@ symlink_dotfiles_symlink_pattern() {
   local git_core_src="$DOTFILES_DIR/git/git-core.symlink"
   local git_core_dst="$HOME/.git-core"
   if [ -d "$git_core_src" ]; then
-    if [ -e "$git_core_dst" ] && [ ! -L "$git_core_dst" ]; then
-      backup="${git_core_dst}.bak.$(date +%Y%m%d-%H%M%S)"
-      warn "Backing up existing $git_core_dst -> $backup"
-      mv "$git_core_dst" "$backup"
-    fi
-    ln -snf "$git_core_src" "$git_core_dst"
-    log "Linked $git_core_dst -> $git_core_src"
+    link_with_backup "$git_core_src" "$git_core_dst"
   fi
   shopt -u nullglob
 }
@@ -239,13 +233,7 @@ symlink_xdg_dirs() {
     local src="$DOTFILES_DIR/$d"
     local dst="$CONFIG_DIR/$d"
     if [ -d "$src" ]; then
-      if [ -e "$dst" ] && [ ! -L "$dst" ]; then
-        backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
-        warn "Backing up existing $dst -> $backup"
-        mv "$dst" "$backup"
-      fi
-      ln -snf "$src" "$dst"
-      log "Linked $dst -> $src"
+      link_with_backup "$src" "$dst"
     fi
   done
 
@@ -575,21 +563,7 @@ symlink_opencode_ai_dirs() {
       continue
     fi
 
-    mkdir -p "$opencode_dst"
-
-    if [[ -L "$dst" ]] && [[ "$(readlink "$dst")" == "$src" ]]; then
-      continue
-    fi
-
-    if [[ -e "$dst" ]] || [[ -L "$dst" ]]; then
-      local backup
-      backup="${dst}.bak-$(date +%Y%m%d-%H%M%S)"
-      warn "Backing up existing $dst -> $backup"
-      mv "$dst" "$backup"
-    fi
-
-    ln -snf "$src" "$dst"
-    log "Linked $dst -> $src"
+    link_with_backup "$src" "$dst"
   done
 }
 
@@ -1056,15 +1030,7 @@ install_opencode() {
   local dst="$CONFIG_DIR/opencode/opencode.json"
 
   if [[ -f "$src" ]]; then
-    mkdir -p "$CONFIG_DIR/opencode"
-    if [[ -e "$dst" && ! -L "$dst" ]]; then
-      local backup
-      backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
-      warn "Backing up existing $dst -> $backup"
-      mv "$dst" "$backup"
-    fi
-    ln -sf "$src" "$dst"
-    log "Linked $dst -> $src"
+    link_with_backup "$src" "$dst"
   fi
 }
 

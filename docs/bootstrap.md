@@ -72,6 +72,7 @@ scripts/
     common.sh               # Shared utilities + cross-platform installers
     platform-mac.sh         # macOS-specific: brew, xcode, cask, defaults
     platform-linux.sh       # Linux-specific: apt, appimage, manual binaries
+    audit.sh                # Audit helpers and sections shared by both audits
   audit-mac.sh              # macOS environment audit
   audit-linux.sh            # Linux environment audit
 work-wsl/
@@ -370,7 +371,7 @@ Git identity uses a layered include system to support multiple identities (perso
 4. **Add `*.symlink` files** — for files that need to live at `~/.<name>`
 5. **Optionally add `install.sh`** — if the tool needs a standalone installer
 6. **Update the bootstrap** — add the install function to `lib/common.sh` (if cross-platform) or the appropriate `lib/platform-*.sh` (if platform-specific), and call it from `main()` in `bootstrap.sh`. If it uses whole-dir XDG symlinking, add the topic name to `symlink_xdg_dirs` in `common.sh`.
-7. **Update the audit scripts** — add checks for the new tool's commands, symlinks, and config to both `audit-mac.sh` and `audit-linux.sh`, including any special-case local-state layout
+7. **Update the audit scripts** — add checks for the new tool's commands, symlinks, and config, including any special-case local-state layout. A check that applies to both platforms goes in `lib/audit.sh`, inside an `audit_section_*` function that both `audit-mac.sh` and `audit-linux.sh` call. A platform-only check goes in that platform's audit script.
 
 ## Auditing
 
@@ -381,6 +382,8 @@ Read-only script that checks for configuration drift. Run anytime to see what's 
 ```bash
 scripts/audit-mac.sh
 ```
+
+The pass/fail/warn helpers, the sections that are identical on both platforms, and the summary live in `scripts/lib/audit.sh`. Each audit script sources that library from its own directory and keeps only its platform-specific checks.
 
 It checks:
 - Platform and architecture
@@ -431,7 +434,7 @@ See [Work WSL Mirror](work-wsl.md) for the full workflow.
 
 ### `scripts/audit-linux.sh`
 
-Linux counterpart of the macOS audit. Same pass/fail/warn framework, same helper functions. Checks:
+Linux counterpart of the macOS audit. It sources the same `scripts/lib/audit.sh`, so it shares the pass/fail/warn framework, helper functions, cross-platform sections, and summary. Checks:
 - Platform and architecture
 - Base apt packages (git, tmux, rg, jq, zsh, etc.)
 - fd/bat wrapper symlinks in `~/.local/bin`

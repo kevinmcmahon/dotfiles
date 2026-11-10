@@ -76,15 +76,32 @@ class AiSyncTests(unittest.TestCase):
             self.assertIn("CONFLICT", result.stdout)
 
 
+def shell_function_body(text, name):
+    start = text.index(f"{name}() {{\n")
+    end = text.index("\n}\n", start)
+    return text[start:end]
+
+
 class AiAuditCoverageTests(unittest.TestCase):
     def test_platform_audits_check_generated_common_docs(self):
+        library = (ROOT / "scripts/lib/audit.sh").read_text()
+
+        self.assertIn("check_generated_common_ai_docs() {", library)
+        self.assertIn(
+            'check_generated_common_ai_docs "Claude" "$HOME/.claude/docs"',
+            shell_function_body(library, "audit_section_claude_config"),
+        )
+        self.assertIn(
+            'check_generated_common_ai_docs "OpenCode" "$HOME/.opencode/docs"',
+            shell_function_body(library, "audit_section_ai_clis"),
+        )
+
         for script in ("scripts/audit-mac.sh", "scripts/audit-linux.sh"):
             with self.subTest(script=script):
-                text = (ROOT / script).read_text()
+                lines = (ROOT / script).read_text().splitlines()
 
-                self.assertIn("check_generated_common_ai_docs", text)
-                self.assertIn("$HOME/.claude/docs", text)
-                self.assertIn("$HOME/.opencode/docs", text)
+                self.assertIn("audit_section_claude_config", lines)
+                self.assertIn("audit_section_ai_clis", lines)
 
 
 if __name__ == "__main__":

@@ -198,6 +198,8 @@ Do not introduce competing runtime managers casually.
   - `scripts/lib/common.sh`
   - `scripts/lib/platform-linux.sh`
   - `scripts/lib/platform-mac.sh`
+  - `scripts/lib/audit.sh` (sourced by `scripts/audit-mac.sh` and `scripts/audit-linux.sh`)
+- Audit checks that apply to both platforms belong in `scripts/lib/audit.sh`, inside an `audit_section_*` function both audit scripts call. Platform-only checks stay in the platform's audit script.
 - Avoid duplicating platform detection or shared helper logic across scripts.
 - Scripts should be idempotent where practical.
 - Scripts should fail clearly rather than silently.

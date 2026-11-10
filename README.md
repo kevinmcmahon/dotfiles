@@ -44,6 +44,7 @@ dotfiles/
 ├── scripts/
 │   ├── bootstrap.sh           # main entry point
 │   ├── lib/
+│   │   ├── audit.sh           # checks shared by both audit scripts
 │   │   ├── common.sh          # shared install functions
 │   │   ├── platform-mac.sh    # macOS-specific installs
 │   │   └── platform-linux.sh  # Linux-specific installs

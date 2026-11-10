@@ -45,7 +45,7 @@ profile_trace() {
       install_opencode ensure_claude_skills_dir ensure_opencode_skills_dir \
       sync_ai_resources ensure_pplx_search_bin symlink_claude_config \
       symlink_opencode_ai_dirs install_ai_skills symlink_codex_config \
-      verify_claude_setup verify_codex_setup apply_platform_config post_checks \
+      audit_ai_tool_config apply_platform_config post_checks \
       print_next_steps install_server_packages write_bootstrap_profile_marker \
       symlink_server_dotfiles ensure_server_git_identity post_checks_server \
       print_server_next_steps; do
@@ -81,6 +81,14 @@ profile_trace() {
 
   [ "$status" -eq 0 ]
   [[ "$output" == *$'ensure_dirs\nwrite_bootstrap_profile_marker\nensure_local_bin_in_path'* ]]
+}
+
+@test "workstation profile prepares skills dirs before syncing and audits AI config last in phase 7" {
+  run profile_trace workstation
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *$'ensure_claude_skills_dir\nensure_opencode_skills_dir\nsync_ai_resources'* ]]
+  [[ "$output" == *$'symlink_codex_config\naudit_ai_tool_config\napply_platform_config'* ]]
 }
 
 @test "server profile runs only its fixed phases" {

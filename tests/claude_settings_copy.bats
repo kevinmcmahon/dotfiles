@@ -21,9 +21,15 @@ run_bootstrap_claude_config() {
   run bash -c 'source "$REPO_ROOT/scripts/lib/common.sh" && symlink_claude_config'
 }
 
-# Runs the audit check and reports the counters it left behind.
+# Runs the Claude expected-state check and the settings drift check, keeping
+# only the settings.json lines.
 run_settings_audit() {
-  run bash -c 'source "$REPO_ROOT/scripts/lib/audit.sh" && check_claude_settings_copy && echo "FAIL=$FAIL WARN=$WARN"'
+  run bash -c 'source "$REPO_ROOT/scripts/lib/audit.sh" && { check_expected_state claude; check_claude_settings_copy; } | grep "settings.json"'
+}
+
+# Counts the audit lines in $output that carry the given marker.
+count_marked() {
+  printf '%s\n' "$output" | grep -c "$1" || true
 }
 
 @test "bootstrap copies the repo settings when none exist" {
@@ -63,8 +69,10 @@ run_settings_audit() {
 
   run_settings_audit
 
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"FAIL=0 WARN=0"* ]]
+  [ "$(count_marked '✗')" -eq 0 ]
+  [ "$(count_marked '⚠')" -eq 0 ]
+  [[ "$output" == *"~/.claude/settings.json exists"* ]]
+  [[ "$output" == *"~/.claude/settings.json matches the repo copy"* ]]
 }
 
 @test "audit warns when local settings differ from the repo copy" {
@@ -72,8 +80,9 @@ run_settings_audit() {
 
   run_settings_audit
 
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"FAIL=0 WARN=1"* ]]
+  [ "$(count_marked '✗')" -eq 0 ]
+  [ "$(count_marked '⚠')" -eq 1 ]
+  [[ "$output" == *"~/.claude/settings.json exists"* ]]
   [[ "$output" == *"differs from $REPO_SETTINGS"* ]]
 }
 
@@ -82,16 +91,17 @@ run_settings_audit() {
 
   run_settings_audit
 
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"FAIL=1 WARN=0"* ]]
-  [[ "$output" == *"is a symlink"* ]]
+  [ "$(count_marked '✗')" -eq 1 ]
+  [ "$(count_marked '⚠')" -eq 0 ]
+  [[ "$output" == *"~/.claude/settings.json is a symlink (expected local copy)"* ]]
 }
 
 @test "audit fails when settings are missing" {
   run_settings_audit
 
-  [ "$status" -eq 0 ]
-  [[ "$output" == *"FAIL=1 WARN=0"* ]]
+  [ "$(count_marked '✗')" -eq 1 ]
+  [ "$(count_marked '⚠')" -eq 0 ]
+  [[ "$output" == *"~/.claude/settings.json missing"* ]]
 }
 
 @test "platform audits no longer expect a settings symlink" {

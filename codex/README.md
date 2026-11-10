@@ -18,7 +18,7 @@ codex/
 
 ## Managed State
 
-Bootstrap links `codex/AGENTS.md` to `~/.codex/AGENTS.md` and `codex/hooks/ntfy-notify.sh` to `~/.codex/hooks/ntfy-notify.sh`. It copies `config.toml.template`, `hooks.json.template`, and `rules/default.rules.template` only when the live files are missing.
+Bootstrap links `codex/AGENTS.md` to `~/.codex/AGENTS.md` and `codex/hooks/ntfy-notify.sh` to `~/.codex/hooks/ntfy-notify.sh`. It copies `config.toml.template` (mode 600), `hooks.json.template`, and `rules/default.rules.template` only when the live files are missing, and turns a live file that is still a symlink into a local copy with the same content. These entries are listed in `scripts/lib/expected-state.sh`, which bootstrap applies and the audit checks; the audit also checks that the ntfy hook is executable.
 
 `codex/hooks/` is the Codex-facing hook install surface. Hook implementations that are shared by the AI tooling layout live under `ai/scripts/codex/`; `codex/hooks/ntfy-notify.sh` points there, matching the Claude Code `claude/hooks/` to `ai/scripts/claude/` pattern.
 

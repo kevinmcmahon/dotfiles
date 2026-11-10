@@ -129,8 +129,7 @@ run_workstation_profile() {
   install_ai_skills
   ensure_pplx_search_bin
   symlink_codex_config
-  verify_claude_setup
-  verify_codex_setup
+  audit_ai_tool_config
 
   # Phase 8 — Platform Configuration
   apply_platform_config

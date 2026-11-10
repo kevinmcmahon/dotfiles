@@ -6,6 +6,12 @@
 # It expects these globals from the sourcing script:
 #   DOTFILES_DIR, LOCAL_BIN, CONFIG_DIR, INSTALL_NODE, PLATFORM, ARCH
 
+# Directory holding this library; sibling libraries are sourced from here so
+# the code that runs matches the checkout this file came from.
+COMMON_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=SCRIPTDIR/expected-state.sh
+source "$COMMON_LIB_DIR/expected-state.sh"
+
 # ==============================================================================
 # Utilities
 # ==============================================================================
@@ -67,6 +73,97 @@ link_with_backup() {
 
   ln -snf "$src" "$dst"
   log "Linked $dst -> $src"
+}
+
+# Applies the rows of one expected-state group (see expected-state.sh). An
+# optional kind limits it to the rows of that kind.
+apply_expected_state() {
+  local group="$1"
+  local only_kind="${2:-}"
+  local rows kind src dst mode
+
+  rows="$(expected_state_rows "$group")" || die "Unknown expected-state group: $group"
+
+  while IFS=$'\t' read -r kind src dst mode; do
+    [[ -n "$kind" ]] || continue
+    [[ -z "$only_kind" || "$kind" == "$only_kind" ]] || continue
+    case "$kind" in
+      link) apply_expected_link "$src" "$dst" ;;
+      real-dir) apply_expected_real_dir "$dst" ;;
+      copy-once) apply_expected_copy_once "$src" "$dst" "$mode" ;;
+      *) die "Unknown expected-state kind for $dst: $kind" ;;
+    esac
+  done <<<"$rows"
+}
+
+apply_expected_link() {
+  local src="$1"
+  local dst="$2"
+
+  if [[ ! -e "$src" && ! -L "$src" ]]; then
+    warn "Not linking $dst: source missing: $src"
+    return 0
+  fi
+
+  link_with_backup "$src" "$dst"
+}
+
+# A symlink where a real local directory belongs is moved to
+# dst.bak.<timestamp>, then the real directory is created.
+apply_expected_real_dir() {
+  local dst="$1"
+
+  if [[ -L "$dst" ]]; then
+    local backup
+    backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
+    warn "Backing up symlink $dst -> $backup (expected a real local directory)"
+    mv "$dst" "$backup"
+    mkdir -p "$dst"
+    log "Created real local directory: $dst"
+  else
+    mkdir -p "$dst"
+  fi
+}
+
+# Machine-local configs: copy repo defaults as starting templates.
+# If dst is a symlink (leftover from older bootstrap), replace it with
+# a real copy so local edits stay local. If dst is already a regular
+# file, leave it alone — never overwrite local customizations.
+# mode, when given, is applied to any file this function creates.
+apply_expected_copy_once() {
+  local src="$1"
+  local dst="$2"
+  local mode="${3:-}"
+
+  if [[ -L "$dst" ]]; then
+    # Migrate: dereference the symlink into a regular file
+    local content
+    content="$(cat "$dst" 2>/dev/null)" || content=""
+    rm "$dst"
+    if [[ -n "$content" ]]; then
+      printf '%s\n' "$content" > "$dst"
+      log "Converted $dst symlink to local file (preserved content)"
+    elif [[ -f "$src" ]]; then
+      cp "$src" "$dst"
+      log "Replaced dangling $dst symlink with default template"
+    else
+      warn "$dst: removed an empty or dangling symlink and found no repo template to copy ($src missing); it is machine-local, so create it by hand if this machine needs it"
+      return 0
+    fi
+  elif [[ -e "$dst" ]]; then
+    return 0
+  elif [[ -f "$src" ]]; then
+    mkdir -p "$(dirname "$dst")"
+    cp "$src" "$dst"
+    log "Copied default $src to $dst (edit for this machine)"
+  else
+    warn "$dst: no repo template to copy ($src missing); it is machine-local, so create it by hand if this machine needs it"
+    return 0
+  fi
+
+  if [[ -n "$mode" ]]; then
+    chmod "$mode" "$dst"
+  fi
 }
 
 link_server_file() {
@@ -227,306 +324,60 @@ symlink_xdg_dirs() {
 
   mkdir -p "$CONFIG_DIR"
 
-  local topics="nvim yazi starship git ghostty"
-
-  for d in $topics; do
-    local src="$DOTFILES_DIR/$d"
-    local dst="$CONFIG_DIR/$d"
-    if [ -d "$src" ]; then
-      link_with_backup "$src" "$dst"
-    fi
-  done
-
+  apply_expected_state xdg
 }
 
 symlink_claude_config() {
   log "Symlinking Claude Code configs into ~/.claude"
 
-  local claude_src="$DOTFILES_DIR/claude"
-  local claude_dst="$HOME/.claude"
-
-  mkdir -p "$claude_dst"
-  ensure_claude_skills_dir
-
-  # Symlink individual items — NOT the whole directory, because ~/.claude
-  # also contains machine-local state (settings.local.json, credentials,
-  # cache, history, etc.). Machine-local configs (mcp.json,
-  # claude_desktop_config.json) are copied as templates, not symlinked.
-  # settings.json is copied too: Claude Code saves it by replacing the file,
-  # which would turn a symlink into a regular file on the first save.
-  local items="CLAUDE.md commands docs hooks scripts"
-
-  for item in $items; do
-    local src="$claude_src/$item"
-    local dst="$claude_dst/$item"
-    if [ -e "$src" ] || [ -d "$src" ]; then
-      link_with_backup "$src" "$dst"
-    fi
-  done
-
-  # Machine-local configs: copy repo defaults as starting templates.
-  # If dst is a symlink (leftover from older bootstrap), replace it with
-  # a real copy so local edits stay local. If dst is already a regular
-  # file, leave it alone — never overwrite local customizations.
-  for tmpl in mcp.json claude_desktop_config.json settings.json; do
-    local src="$claude_src/$tmpl"
-    local dst="$claude_dst/$tmpl"
-    if [[ -L "$dst" ]]; then
-      # Migrate: dereference the symlink into a regular file
-      local content
-      content="$(cat "$dst" 2>/dev/null)" || content=""
-      rm "$dst"
-      if [[ -n "$content" ]]; then
-        printf '%s\n' "$content" > "$dst"
-        log "Converted $tmpl symlink to local file (preserved content)"
-      elif [[ -f "$src" ]]; then
-        cp "$src" "$dst"
-        log "Replaced dangling $tmpl symlink with default template"
-      fi
-    elif [[ ! -e "$dst" ]] && [[ -f "$src" ]]; then
-      cp "$src" "$dst"
-      log "Copied default $tmpl to $dst (edit for this machine)"
-    fi
-  done
+  apply_expected_state claude
 }
 
 ensure_claude_skills_dir() {
-  local claude_dst="$HOME/.claude"
-  mkdir -p "$claude_dst"
-
   # Skills are local mutable install state. Dotfiles-owned skills are injected
   # into this real directory by ai-sync.sh; third-party skills may also live
   # here when installed by the skills CLI.
-  local skills_dst="$claude_dst/skills"
-  if [[ -L "$skills_dst" ]]; then
-    local backup
-    backup="${skills_dst}.bak.$(date +%Y%m%d-%H%M%S)"
-    warn "Backing up old Claude skills symlink $skills_dst -> $backup"
-    mv "$skills_dst" "$backup"
-    mkdir -p "$skills_dst"
-    log "Created real local Claude skills directory: $skills_dst"
-  else
-    mkdir -p "$skills_dst"
-  fi
+  apply_expected_state claude real-dir
 }
 
 ensure_opencode_skills_dir() {
-  local opencode_dst="$HOME/.opencode"
-  mkdir -p "$opencode_dst"
-
-  local skills_dst="$opencode_dst/skills"
-  if [[ -L "$skills_dst" ]]; then
-    local backup
-    backup="${skills_dst}.bak.$(date +%Y%m%d-%H%M%S)"
-    warn "Backing up old OpenCode skills symlink $skills_dst -> $backup"
-    mv "$skills_dst" "$backup"
-    mkdir -p "$skills_dst"
-    log "Created real local OpenCode skills directory: $skills_dst"
-  else
-    mkdir -p "$skills_dst"
-  fi
-}
-
-verify_claude_setup() {
-  log "Verifying Claude Code setup"
-  local claude_dst="$HOME/.claude"
-  local errors=0
-
-  # Check symlinks resolve
-  for item in CLAUDE.md commands docs hooks scripts; do
-    local path="$claude_dst/$item"
-    if [[ -L "$path" && ! -e "$path" ]]; then
-      warn "Broken symlink: $path -> $(readlink "$path")"
-      errors=$((errors + 1))
-    fi
-  done
-
-  if [[ -L "$claude_dst/skills" ]]; then
-    warn "Claude skills should be a real local directory, not a symlink: $claude_dst/skills -> $(readlink "$claude_dst/skills")"
-    errors=$((errors + 1))
-  elif [[ ! -d "$claude_dst/skills" ]]; then
-    warn "Claude skills directory missing: $claude_dst/skills"
-    errors=$((errors + 1))
-  fi
-
-  # Check generated common AI skills that should always be present.
-  local common_skills="book-refactoring-pass book-legacy-change book-reliability-review book-domain-modeling book-data-systems create-adr"
-  for skill in $common_skills; do
-    local skill_path="$claude_dst/skills/$skill"
-    if [[ ! -L "$skill_path" ]]; then
-      warn "Claude skill is not symlinked: $skill_path"
-      errors=$((errors + 1))
-    elif [[ ! -f "$skill_path/SKILL.md" ]]; then
-      warn "Broken Claude skill symlink: $skill_path -> $(readlink "$skill_path")"
-      errors=$((errors + 1))
-    fi
-  done
-
-  # Check hooks are executable (including through symlink chains)
-  for hook in "$claude_dst"/hooks/*.sh; do
-    [[ -e "$hook" || -L "$hook" ]] || continue
-    if [[ -L "$hook" && ! -e "$hook" ]]; then
-      warn "Broken hook symlink: $hook -> $(readlink "$hook")"
-      errors=$((errors + 1))
-    elif [[ ! -x "$hook" ]]; then
-      warn "Hook not executable: $hook"
-      errors=$((errors + 1))
-    fi
-  done
-
-  # Check tools required by hooks/statusline
-  for cmd in jq curl; do
-    need_cmd "$cmd" || { warn "$cmd not found (needed by Claude hooks)"; errors=$((errors + 1)); }
-  done
-
-  # Check mcp.json exists (as a regular file, not a symlink)
-  if [[ ! -f "$claude_dst/mcp.json" ]]; then
-    warn "mcp.json missing -- copy from $DOTFILES_DIR/claude/mcp.json or claude/mcp.json.example"
-    errors=$((errors + 1))
-  fi
-
-  # Check settings.json exists (as a regular file, not a symlink)
-  if [[ -L "$claude_dst/settings.json" ]]; then
-    warn "settings.json should be a local copy, not a symlink: $claude_dst/settings.json -> $(readlink "$claude_dst/settings.json")"
-    errors=$((errors + 1))
-  elif [[ ! -f "$claude_dst/settings.json" ]]; then
-    warn "settings.json missing -- copy from $DOTFILES_DIR/claude/settings.json"
-    errors=$((errors + 1))
-  fi
-
-  if (( errors > 0 )); then
-    warn "Claude setup: $errors issue(s) above"
-  else
-    log "Claude Code setup OK"
-  fi
+  apply_expected_state opencode_ai_dirs real-dir
 }
 
 symlink_codex_config() {
   log "Configuring Codex"
 
-  local codex_src="$DOTFILES_DIR/codex"
   local codex_dst="$HOME/.codex"
-  local agents_src="$codex_src/AGENTS.md"
-  local agents_dst="$codex_dst/AGENTS.md"
-  local config_template="$codex_src/config.toml.template"
-  local config_dst="$codex_dst/config.toml"
-  local hooks_template="$codex_src/hooks.json.template"
-  local hooks_dst="$codex_dst/hooks.json"
-  local rules_template="$codex_src/rules/default.rules.template"
-  local rules_dst="$codex_dst/rules/default.rules"
-  local ntfy_hook_src="$codex_src/hooks/ntfy-notify.sh"
-  local ntfy_hook_dst="$codex_dst/hooks/ntfy-notify.sh"
 
   mkdir -p "$codex_dst"
   mkdir -p "$codex_dst/skills"
 
-  if [[ ! -f "$agents_src" ]]; then
-    warn "Codex instructions missing: $agents_src"
-  else
-    link_with_backup "$agents_src" "$agents_dst"
-  fi
-
-  if [[ -f "$config_template" && ! -e "$config_dst" ]]; then
-    cp "$config_template" "$config_dst"
-    chmod 600 "$config_dst"
-    log "Created $config_dst from $config_template"
-  elif [[ ! -f "$config_template" ]]; then
-    warn "Codex config template missing: $config_template"
-  else
-    :
-  fi
-
-  if [[ -f "$hooks_template" && ! -e "$hooks_dst" ]]; then
-    cp "$hooks_template" "$hooks_dst"
-    log "Created $hooks_dst from $hooks_template"
-  elif [[ ! -f "$hooks_template" ]]; then
-    warn "Codex hooks template missing: $hooks_template"
-  else
-    :
-  fi
-
-  if [[ -f "$rules_template" && ! -e "$rules_dst" ]]; then
-    mkdir -p "$(dirname "$rules_dst")"
-    cp "$rules_template" "$rules_dst"
-    log "Created $rules_dst from $rules_template"
-  elif [[ ! -f "$rules_template" ]]; then
-    warn "Codex rules template missing: $rules_template"
-  else
-    :
-  fi
-
-  if [[ ! -f "$ntfy_hook_src" ]]; then
-    warn "Codex ntfy hook missing: $ntfy_hook_src"
-  else
-    link_with_backup "$ntfy_hook_src" "$ntfy_hook_dst"
-  fi
+  apply_expected_state codex
 }
 
-verify_codex_setup() {
-  log "Verifying Codex setup"
+# Runs the audit library's Claude Code and Codex sections as a bootstrap
+# report. audit.sh defines its own warn/pass/fail, so it is sourced in a
+# subshell to keep this library's helpers intact. Failures are reported but
+# never fatal: bootstrap carries on and the platform audit gives the full
+# picture.
+audit_ai_tool_config() {
+  log "Auditing Claude Code and Codex config"
 
-  local codex_dst="$HOME/.codex"
-  local agents="$codex_dst/AGENTS.md"
-  local expected="$DOTFILES_DIR/codex/AGENTS.md"
-  local codex_skills_dst="$codex_dst/skills"
-  local ntfy_hook="$codex_dst/hooks/ntfy-notify.sh"
-  local expected_ntfy_hook="$DOTFILES_DIR/codex/hooks/ntfy-notify.sh"
-  local errors=0
-
-  if [[ ! -L "$agents" ]]; then
-    warn "Codex AGENTS.md is not symlinked: $agents"
-    errors=$((errors + 1))
-  elif [[ "$(readlink "$agents")" != "$expected" ]]; then
-    warn "Codex AGENTS.md points to unexpected target: $(readlink "$agents")"
-    errors=$((errors + 1))
-  elif [[ ! -e "$agents" ]]; then
-    warn "Broken Codex AGENTS.md symlink: $agents -> $(readlink "$agents")"
-    errors=$((errors + 1))
-  fi
-
-  # Check generated common AI skills that should always be present.
-  local common_skills="book-refactoring-pass book-legacy-change book-reliability-review book-domain-modeling book-data-systems create-adr"
-  for skill in $common_skills; do
-    local skill_path="$codex_skills_dst/$skill"
-    if [[ ! -L "$skill_path" ]]; then
-      warn "Codex skill is not symlinked: $skill_path"
-      errors=$((errors + 1))
-    elif [[ ! -f "$skill_path/SKILL.md" ]]; then
-      warn "Broken Codex skill symlink: $skill_path -> $(readlink "$skill_path")"
-      errors=$((errors + 1))
-    fi
-  done
-
-  if [[ ! -f "$codex_dst/config.toml" ]]; then
-    warn "Codex config missing: $codex_dst/config.toml"
-    errors=$((errors + 1))
-  fi
-
-  if [[ ! -f "$codex_dst/hooks.json" ]]; then
-    warn "Codex hooks config missing: $codex_dst/hooks.json"
-    errors=$((errors + 1))
-  fi
-
-  if [[ ! -f "$codex_dst/rules/default.rules" ]]; then
-    warn "Codex default rules missing: $codex_dst/rules/default.rules"
-    errors=$((errors + 1))
-  fi
-
-  if [[ ! -L "$ntfy_hook" ]]; then
-    warn "Codex ntfy hook is not symlinked: $ntfy_hook"
-    errors=$((errors + 1))
-  elif [[ "$(readlink "$ntfy_hook")" != "$expected_ntfy_hook" ]]; then
-    warn "Codex ntfy hook points to unexpected target: $(readlink "$ntfy_hook")"
-    errors=$((errors + 1))
-  elif [[ ! -x "$ntfy_hook" ]]; then
-    warn "Codex ntfy hook is not executable: $ntfy_hook"
-    errors=$((errors + 1))
-  fi
-
-  if (( errors > 0 )); then
-    warn "Codex setup: $errors issue(s) above"
+  if (
+    set +e
+    # Not followed: audit.sh re-assigns DOTFILES_DIR, CONFIG_DIR and LOCAL_BIN
+    # with defaults, which only matters inside this subshell. shellcheck checks
+    # audit.sh on its own.
+    # shellcheck source=/dev/null
+    source "$COMMON_LIB_DIR/audit.sh"
+    audit_section_claude_config
+    audit_section_codex_config
+    printf '\n  %d passed, %d failed, %d warnings\n' "$PASS" "$FAIL" "$WARN"
+    [[ $FAIL -eq 0 ]]
+  ); then
+    log "Claude Code and Codex config OK"
   else
-    log "Codex setup OK"
+    warn "Claude Code and Codex config audit reported failures above; fix them and rerun scripts/audit-mac.sh or scripts/audit-linux.sh"
   fi
 }
 
@@ -562,20 +413,7 @@ install_ai_skills() {
 symlink_opencode_ai_dirs() {
   log "Symlinking OpenCode AI directories into ~/.opencode"
 
-  local opencode_dst="$HOME/.opencode"
-
-  ensure_opencode_skills_dir
-
-  for resource in commands docs; do
-    local src="$DOTFILES_DIR/opencode/$resource"
-    local dst="$opencode_dst/$resource"
-
-    if [[ ! -d "$src" ]]; then
-      continue
-    fi
-
-    link_with_backup "$src" "$dst"
-  done
+  apply_expected_state opencode_ai_dirs
 }
 
 # ==============================================================================
@@ -658,16 +496,12 @@ install_tmux_plugins() {
   log "Setting up tmux (XDG layout)"
 
   local tmux_config_dir="$CONFIG_DIR/tmux"
-  local tmux_conf_src="$DOTFILES_DIR/tmux/tmux.conf"
-  local tmux_conf_dst="$tmux_config_dir/tmux.conf"
   local tpm_dir="$tmux_config_dir/plugins/tpm"
 
-  mkdir -p "$tmux_config_dir/plugins"
-
   # Symlink tmux.conf
-  if [ -f "$tmux_conf_src" ]; then
-    link_with_backup "$tmux_conf_src" "$tmux_conf_dst"
-  fi
+  apply_expected_state tmux
+
+  mkdir -p "$tmux_config_dir/plugins"
 
   # Clone TPM if missing
   if [ ! -d "$tpm_dir/.git" ]; then
@@ -1037,12 +871,7 @@ install_opencode() {
   fi
 
   # Symlink config
-  local src="$DOTFILES_DIR/opencode/opencode.json.symlink"
-  local dst="$CONFIG_DIR/opencode/opencode.json"
-
-  if [[ -f "$src" ]]; then
-    link_with_backup "$src" "$dst"
-  fi
+  apply_expected_state opencode_config
 }
 
 # ==============================================================================

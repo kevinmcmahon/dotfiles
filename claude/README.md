@@ -36,6 +36,8 @@ claude/
 
 Most files are symlinks into `~/dotfiles/ai/` — the shared source for AI tool configs across editors (Claude Code, Cursor, etc.). Files owned exclusively by Claude Code live here directly.
 
+Bootstrap links `CLAUDE.md`, `commands/`, `docs/`, `hooks/` and `scripts/` into `~/.claude`, and copies `mcp.json`, `claude_desktop_config.json` and `settings.json` there only when missing. `mcp.json` and `claude_desktop_config.json` are gitignored machine-local files, so a fresh clone has nothing to copy; bootstrap and the audit warn until they exist. These entries are listed in `scripts/lib/expected-state.sh`, which bootstrap applies and the audit checks; the audit also checks that every `~/.claude/hooks/*.sh` is executable.
+
 `~/.claude/skills` is a real local directory. `scripts/ai-sync.sh` injects dotfiles-owned skills from `ai/skills/{common,claude}` into it as symlinks. Third-party skills for Claude Code, Codex, and OpenCode are declared in `ai/skills-manifest.toml` and installed by `scripts/install-ai-skills.sh` via `npx skills`; bootstrap runs that install only when `INSTALL_AI_SKILLS=1` is set. See `ai/skills-manifest.md` for the manifest contract, entry types, and audit workflow. `~/.agents/.skill-lock.json` is local package-manager state. OpenCode uses the same real local skills directory model at `~/.opencode/skills`.
 
 Home-grown skills are inventoried in `ai/homegrown-skills.md`. Packageable candidates should move to a separate skills repository in a follow-up so they can be installed with `npx skills add`.

@@ -96,6 +96,7 @@ exec zsh
 | `zsh/*.symlink` | `~/.zshrc`, `~/.zshenv`, `~/.zprofile` |
 | `llm/templates.symlink` | `~/.config/io.datasette.llm/templates` |
 | `claude/CLAUDE.md`, `commands/`, `docs/`, `hooks/`, `scripts/` | `~/.claude/<name>` |
+| `claude/mcp.json`, `claude/claude_desktop_config.json` | `~/.claude/<name>` when missing (machine-local, gitignored sources) |
 | `claude/settings.json` | `~/.claude/settings.json` when missing |
 | `codex/AGENTS.md` | `~/.codex/AGENTS.md` |
 | `codex/config.toml.template` | `~/.codex/config.toml` when missing |
@@ -103,6 +104,10 @@ exec zsh
 | `codex/hooks/ntfy-notify.sh` | `~/.codex/hooks/ntfy-notify.sh` |
 | `codex/rules/default.rules.template` | `~/.codex/rules/default.rules` when missing |
 | `ai/skills/{common,codex}` | `~/.codex/skills/` |
+| `opencode/commands/`, `opencode/docs/` | `~/.opencode/<name>` |
+| `opencode/opencode.json.symlink` | `~/.config/opencode/opencode.json` |
+
+The XDG, tmux, Claude Code, Codex and OpenCode rows are listed once in `scripts/lib/expected-state.sh`; bootstrap applies that list and the audit checks it. See [Expected links, copies and real directories](bootstrap.md#expected-links-copies-and-real-directories).
 
 `ghostty` is treated as pure repo-owned XDG config, so the whole topic symlinks into `~/.config/ghostty`. `tmux` is the main exception: bootstrap keeps a real `~/.config/tmux/` directory so TPM plugins can stay local, and only symlinks `tmux/tmux.conf` into that directory.
 

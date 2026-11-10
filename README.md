@@ -46,6 +46,7 @@ dotfiles/
 │   ├── lib/
 │   │   ├── audit.sh           # checks shared by both audit scripts
 │   │   ├── common.sh          # shared install functions
+│   │   ├── expected-state.sh  # expected links, copies and real dirs
 │   │   ├── platform-mac.sh    # macOS-specific installs
 │   │   └── platform-linux.sh  # Linux-specific installs
 │   ├── audit-mac.sh           # verify macOS install state
@@ -109,7 +110,9 @@ limits, handling of large staged changes, and tests.
 
 ## Auditing
 
-Verify your install matches the expected state:
+Verify your install matches the expected state. The links, copied configs and
+real directories that bootstrap creates are listed once in
+`scripts/lib/expected-state.sh`, and both audits check that same list:
 
 ```bash
 scripts/audit-mac.sh     # macOS

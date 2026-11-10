@@ -14,6 +14,10 @@ LOCAL_BIN="${LOCAL_BIN:-$HOME/.local/bin}"
 # Antigravity read it directly; Claude Code reads symlinks into ~/.claude/skills.
 AGENT_SKILLS="${AGENT_SKILLS:-$HOME/.agents/skills}"
 
+# The expected links, copies and real directories bootstrap applies.
+# shellcheck source=SCRIPTDIR/expected-state.sh
+source "$(dirname "${BASH_SOURCE[0]}")/expected-state.sh"
+
 # --- Counters ---
 PASS=0
 FAIL=0
@@ -76,6 +80,89 @@ check_dir_exists() {
   else
     fail "$label missing"
   fi
+}
+
+# A path that must be a real local directory, never a symlink.
+check_real_dir() {
+  local path="$1"
+  local label="${2:-$path}"
+  if [[ -L "$path" ]]; then
+    fail "$label is a symlink (expected real local directory)"
+  else
+    check_dir_exists "$path" "$label"
+  fi
+}
+
+# A copy-once file is a regular local file that bootstrap copied from the repo
+# once and never overwrites. Some templates are gitignored machine-local files
+# (claude/mcp.json, for example); without one, bootstrap has nothing to copy,
+# so a missing file is a warning rather than a failure.
+check_copy_once() {
+  local src="$1"
+  local path="$2"
+  local label="${3:-$path}"
+  if [[ -L "$path" ]]; then
+    fail "$label is a symlink (expected local copy)"
+  elif [[ -f "$path" ]]; then
+    pass "$label exists"
+  elif [[ -e "$path" ]]; then
+    fail "$label exists but is not a regular file (expected local copy)"
+  elif [[ -f "$src" ]]; then
+    fail "$label missing"
+  else
+    warn "$label missing; no repo template to copy ($src), so it is machine-local: create it by hand if this machine needs it"
+  fi
+}
+
+# Checks the rows of one expected-state group (see expected-state.sh). Labels
+# show the destination with $HOME written as ~.
+check_expected_state() {
+  local group="$1"
+  local rows kind src dst label
+
+  if ! rows="$(expected_state_rows "$group" 2>&1)"; then
+    fail "$rows"
+    return
+  fi
+
+  while IFS=$'\t' read -r kind src dst _; do
+    [[ -n "$kind" ]] || continue
+    label="$dst"
+    if [[ "$dst" == "$HOME"/* ]]; then
+      label="~${dst#"$HOME"}"
+    fi
+    case "$kind" in
+      link) check_symlink "$dst" "$src" "$label" ;;
+      real-dir) check_real_dir "$dst" "$label" ;;
+      copy-once) check_copy_once "$src" "$dst" "$label" ;;
+      *) fail "$label: unknown expected-state kind: $kind" ;;
+    esac
+  done <<<"$rows"
+}
+
+# Passes an executable path, fails one that is not executable or is a broken
+# symlink. An absent path is skipped: the link check for it reports that.
+check_executable() {
+  local path="$1"
+  local label="${2:-$path}"
+  if [[ -L "$path" && ! -e "$path" ]]; then
+    fail "$label is a broken symlink -> $(readlink "$path")"
+  elif [[ ! -e "$path" ]]; then
+    return 0
+  elif [[ -x "$path" ]]; then
+    pass "$label is executable"
+  else
+    fail "$label is not executable"
+  fi
+}
+
+# Check hooks are executable (including through symlink chains)
+check_claude_hooks_executable() {
+  local hook
+  for hook in "$HOME"/.claude/hooks/*.sh; do
+    [[ -e "$hook" || -L "$hook" ]] || continue
+    check_executable "$hook" "~/.claude/hooks/$(basename "$hook")"
+  done
 }
 
 check_generated_common_ai_docs() {
@@ -184,16 +271,17 @@ check_claude_settings_copy() {
   local live="$HOME/.claude/settings.json"
   local repo="$DOTFILES_DIR/claude/settings.json"
 
-  if [[ -L "$live" ]]; then
-    fail "~/.claude/settings.json is a symlink (expected local copy)"
-  elif [[ ! -f "$live" ]]; then
-    fail "~/.claude/settings.json missing"
-  elif [[ ! -f "$repo" ]]; then
+  # The claude expected-state check reports a symlinked or missing local copy;
+  # this check covers drift only.
+  if [[ -L "$live" || ! -f "$live" ]]; then
+    return 0
+  fi
+
+  if [[ ! -f "$repo" ]]; then
     fail "Claude settings missing: $repo"
   elif cmp -s "$live" "$repo"; then
     pass "~/.claude/settings.json matches the repo copy"
   else
-    pass "~/.claude/settings.json exists"
     warn "~/.claude/settings.json differs from $repo (copy changes worth keeping back to the repo)"
   fi
 }
@@ -307,17 +395,14 @@ audit_section_git_core() {
 # --- XDG config directories ---
 audit_section_xdg_config() {
   section "XDG Config Directories (~/.config)"
-  for d in nvim yazi starship git ghostty; do
-    check_symlink "$CONFIG_DIR/$d" "$DOTFILES_DIR/$d" "~/.config/$d"
-  done
+  check_expected_state xdg
   check_file_exists "$CONFIG_DIR/ghostty/appearance.conf" "~/.config/ghostty/appearance.conf"
 }
 
 # --- tmux XDG layout ---
 audit_section_tmux_xdg_layout() {
   section "tmux XDG Layout"
-  check_dir_exists "$CONFIG_DIR/tmux" "~/.config/tmux"
-  check_symlink "$CONFIG_DIR/tmux/tmux.conf" "$DOTFILES_DIR/tmux/tmux.conf" "~/.config/tmux/tmux.conf"
+  check_expected_state tmux
   check_dir_exists "$CONFIG_DIR/tmux/plugins" "~/.config/tmux/plugins"
   check_dir_exists "$CONFIG_DIR/tmux/plugins/tpm" "~/.config/tmux/plugins/tpm"
 }
@@ -396,29 +481,14 @@ audit_section_python_tooling() {
 # --- Claude Code config ---
 audit_section_claude_config() {
   section "Claude Code Config"
-  for item in CLAUDE.md commands docs hooks scripts; do
-    check_symlink "$HOME/.claude/$item" "$DOTFILES_DIR/claude/$item" "~/.claude/$item"
-  done
+  check_expected_state claude
   check_claude_settings_copy
+  check_claude_hooks_executable
   check_generated_common_ai_docs "Claude" "$HOME/.claude/docs"
-  if [[ -L "$HOME/.claude/skills" ]]; then
-    fail "~/.claude/skills is a symlink (expected real local directory)"
-  else
-    check_dir_exists "$HOME/.claude/skills" "~/.claude/skills"
-  fi
 
   # Generated common skills
-  common_ai_skills=(
-    book-refactoring-pass
-    book-legacy-change
-    book-reliability-review
-    book-domain-modeling
-    book-data-systems
-    create-adr
-    writing-tropes
-    docker-uv
-  )
-  for skill in "${common_ai_skills[@]}"; do
+  local skill
+  for skill in $(expected_common_ai_skills); do
     check_symlink "$HOME/.claude/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.claude/skills/$skill"
   done
 
@@ -426,18 +496,16 @@ audit_section_claude_config() {
 }
 
 # --- Codex config ---
-# Reads common_ai_skills, which audit_section_claude_config sets.
 audit_section_codex_config() {
   section "Codex Config"
-  check_symlink "$HOME/.codex/AGENTS.md" "$DOTFILES_DIR/codex/AGENTS.md" "~/.codex/AGENTS.md"
+  check_expected_state codex
+  check_executable "$HOME/.codex/hooks/ntfy-notify.sh" "~/.codex/hooks/ntfy-notify.sh"
   check_claude_mem_not_watching_codex
   check_codex_has_no_claude_mem
-  check_file_exists "$HOME/.codex/config.toml" "~/.codex/config.toml"
   check_codex_sentry_mcp
   check_codex_hooks_json
-  check_file_exists "$HOME/.codex/rules/default.rules" "~/.codex/rules/default.rules"
-  check_symlink "$HOME/.codex/hooks/ntfy-notify.sh" "$DOTFILES_DIR/codex/hooks/ntfy-notify.sh" "~/.codex/hooks/ntfy-notify.sh"
-  for skill in "${common_ai_skills[@]}"; do
+  local skill
+  for skill in $(expected_common_ai_skills); do
     check_symlink "$HOME/.codex/skills/$skill" "$DOTFILES_DIR/ai/skills/common/$skill" "~/.codex/skills/$skill"
   done
 }
@@ -455,17 +523,8 @@ audit_section_ai_clis() {
   fi
 
   # OpenCode config
-  if [[ -f "$DOTFILES_DIR/opencode/opencode.json.symlink" ]]; then
-    check_symlink "$CONFIG_DIR/opencode/opencode.json" "$DOTFILES_DIR/opencode/opencode.json.symlink" "opencode config"
-  fi
-  check_symlink "$HOME/.opencode/commands" "$DOTFILES_DIR/opencode/commands" "~/.opencode/commands"
-  check_symlink "$HOME/.opencode/docs" "$DOTFILES_DIR/opencode/docs" "~/.opencode/docs"
+  check_expected_state opencode
   check_generated_common_ai_docs "OpenCode" "$HOME/.opencode/docs"
-  if [[ -L "$HOME/.opencode/skills" ]]; then
-    fail "~/.opencode/skills is a symlink (expected real local directory)"
-  else
-    check_dir_exists "$HOME/.opencode/skills" "~/.opencode/skills"
-  fi
 
   check_perplexity_skill
 }

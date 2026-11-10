@@ -8,7 +8,7 @@
 #   DOTFILES_DIR, LOCAL_BIN, CONFIG_DIR, INSTALL_NODE, PLATFORM, ARCH
 #
 # It uses these functions from common.sh:
-#   log, warn, die, need_cmd, install_rustup
+#   log, warn, die, need_cmd, install_rustup, link_with_backup
 
 SKIP_DEFAULTS="${SKIP_DEFAULTS:-0}"
 SKIP_NAS_MOUNT="${SKIP_NAS_MOUNT:-0}"
@@ -308,20 +308,12 @@ install_cmux_app() {
     die "cmux CLI not found at $app_cli"
   fi
 
-  mkdir -p "$(dirname "$cli_link")"
   if [[ -L "$cli_link" ]] && [[ "$(readlink "$cli_link")" == "$app_cli" ]]; then
     log "cmux CLI symlink already correct: $cli_link -> $app_cli"
     return 0
   fi
 
-  if [[ -e "$cli_link" ]] || [[ -L "$cli_link" ]]; then
-    local backup="${cli_link}.bak.$(date +%Y%m%d-%H%M%S)"
-    warn "Backing up existing $cli_link -> $backup"
-    mv "$cli_link" "$backup"
-  fi
-
-  ln -sf "$app_cli" "$cli_link"
-  log "Linked $cli_link -> $app_cli"
+  link_with_backup "$app_cli" "$cli_link"
 }
 
 # ==============================================================================

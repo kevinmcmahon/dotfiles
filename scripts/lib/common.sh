@@ -26,15 +26,6 @@ ensure_dirs() {
   mkdir -p "$LOCAL_BIN" "$CONFIG_DIR"
 }
 
-ensure_local_bin_in_path() {
-  log "Ensuring ~/.local/bin is in PATH"
-  if ! echo "$PATH" | tr ':' '\n' | grep -qx "$LOCAL_BIN"; then
-    warn "$HOME/.local/bin not currently on PATH for this shell session."
-    warn "Adding it for bootstrap; make sure your zsh config exports it permanently."
-    export PATH="$LOCAL_BIN:$PATH"
-  fi
-}
-
 write_bootstrap_profile_marker() {
   local profile="${1:-${PROFILE:-workstation}}"
   local profile_dir="$CONFIG_DIR/dotfiles"
@@ -54,11 +45,13 @@ write_bootstrap_profile_marker() {
   log "Recorded Bootstrap profile: $profile"
 }
 
-link_server_file() {
+# Links dst -> src. A dst that is already that symlink is left alone; anything
+# else at dst (file, directory, or other symlink) is moved to
+# dst.bak.<timestamp> first. Creates dst's parent directory if needed.
+link_with_backup() {
   local src="$1"
   local dst="$2"
 
-  [[ -e "$src" || -L "$src" ]] || die "Server profile source is missing: $src"
   mkdir -p "$(dirname "$dst")"
 
   if [[ -L "$dst" && "$(readlink "$dst")" == "$src" ]]; then
@@ -74,6 +67,14 @@ link_server_file() {
 
   ln -snf "$src" "$dst"
   log "Linked $dst -> $src"
+}
+
+link_server_file() {
+  local src="$1"
+  local dst="$2"
+
+  [[ -e "$src" || -L "$src" ]] || die "Server profile source is missing: $src"
+  link_with_backup "$src" "$dst"
 }
 
 symlink_server_dotfiles() {
@@ -150,32 +151,14 @@ symlink_dotfiles_symlink_pattern() {
   for f in "$DOTFILES_DIR"/*.symlink; do
     base="$(basename "$f" .symlink)"
     target="$HOME/.${base}"
-    if [ -L "$target" ] || [ -e "$target" ]; then
-      if [ -L "$target" ] && [ "$(readlink "$target")" = "$f" ]; then
-        continue
-      fi
-      backup="${target}.bak.$(date +%Y%m%d-%H%M%S)"
-      warn "Backing up existing $target -> $backup"
-      mv "$target" "$backup"
-    fi
-    ln -sf "$f" "$target"
-    log "Linked $target -> $f"
+    link_with_backup "$f" "$target"
   done
 
   # Symlink git/*.symlink files (gitconfig, gitignore_global, etc.)
   for f in "$DOTFILES_DIR"/git/*.symlink; do
     base="$(basename "$f" .symlink)"
     target="$HOME/.${base}"
-    if [ -L "$target" ] || [ -e "$target" ]; then
-      if [ -L "$target" ] && [ "$(readlink "$target")" = "$f" ]; then
-        continue
-      fi
-      backup="${target}.bak.$(date +%Y%m%d-%H%M%S)"
-      warn "Backing up existing $target -> $backup"
-      mv "$target" "$backup"
-    fi
-    ln -sf "$f" "$target"
-    log "Linked $target -> $f"
+    link_with_backup "$f" "$target"
   done
 
   # Symlink homebrew/*.symlink files (Brewfile, BootstrapBrewfile, etc.) — macOS only
@@ -183,16 +166,7 @@ symlink_dotfiles_symlink_pattern() {
     for f in "$DOTFILES_DIR"/homebrew/*.symlink; do
       base="$(basename "$f" .symlink)"
       target="$HOME/.${base}"
-      if [ -L "$target" ] || [ -e "$target" ]; then
-        if [ -L "$target" ] && [ "$(readlink "$target")" = "$f" ]; then
-          continue
-        fi
-        backup="${target}.bak.$(date +%Y%m%d-%H%M%S)"
-        warn "Backing up existing $target -> $backup"
-        mv "$target" "$backup"
-      fi
-      ln -sf "$f" "$target"
-      log "Linked $target -> $f"
+      link_with_backup "$f" "$target"
     done
   fi
 
@@ -296,17 +270,7 @@ symlink_claude_config() {
     local src="$claude_src/$item"
     local dst="$claude_dst/$item"
     if [ -e "$src" ] || [ -d "$src" ]; then
-      if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
-        continue
-      fi
-      if [ -e "$dst" ] || [ -L "$dst" ]; then
-        local backup
-        backup="${dst}.bak.$(date +%Y%m%d-%H%M%S)"
-        warn "Backing up existing $dst -> $backup"
-        mv "$dst" "$backup"
-      fi
-      ln -snf "$src" "$dst"
-      log "Linked $dst -> $src"
+      link_with_backup "$src" "$dst"
     fi
   done
 
@@ -459,18 +423,8 @@ symlink_codex_config() {
 
   if [[ ! -f "$agents_src" ]]; then
     warn "Codex instructions missing: $agents_src"
-  elif [[ -L "$agents_dst" && "$(readlink "$agents_dst")" == "$agents_src" ]]; then
-    :
   else
-    if [[ -e "$agents_dst" ]] || [[ -L "$agents_dst" ]]; then
-      local backup
-      backup="${agents_dst}.bak.$(date +%Y%m%d-%H%M%S)"
-      warn "Backing up existing $agents_dst -> $backup"
-      mv "$agents_dst" "$backup"
-    fi
-
-    ln -snf "$agents_src" "$agents_dst"
-    log "Linked $agents_dst -> $agents_src"
+    link_with_backup "$agents_src" "$agents_dst"
   fi
 
   if [[ -f "$config_template" && ! -e "$config_dst" ]]; then
@@ -504,19 +458,8 @@ symlink_codex_config() {
 
   if [[ ! -f "$ntfy_hook_src" ]]; then
     warn "Codex ntfy hook missing: $ntfy_hook_src"
-  elif [[ -L "$ntfy_hook_dst" && "$(readlink "$ntfy_hook_dst")" == "$ntfy_hook_src" ]]; then
-    :
   else
-    mkdir -p "$(dirname "$ntfy_hook_dst")"
-    if [[ -e "$ntfy_hook_dst" ]] || [[ -L "$ntfy_hook_dst" ]]; then
-      local backup
-      backup="${ntfy_hook_dst}.bak.$(date +%Y%m%d-%H%M%S)"
-      warn "Backing up existing $ntfy_hook_dst -> $backup"
-      mv "$ntfy_hook_dst" "$backup"
-    fi
-
-    ln -snf "$ntfy_hook_src" "$ntfy_hook_dst"
-    log "Linked $ntfy_hook_dst -> $ntfy_hook_src"
+    link_with_backup "$ntfy_hook_src" "$ntfy_hook_dst"
   fi
 }
 
@@ -738,18 +681,7 @@ install_tmux_plugins() {
 
   # Symlink tmux.conf
   if [ -f "$tmux_conf_src" ]; then
-    if [ -L "$tmux_conf_dst" ] && [ "$(readlink "$tmux_conf_dst")" = "$tmux_conf_src" ]; then
-      : # already correct
-    else
-      if [ -e "$tmux_conf_dst" ] || [ -L "$tmux_conf_dst" ]; then
-        local backup
-        backup="${tmux_conf_dst}.bak.$(date +%Y%m%d-%H%M%S)"
-        warn "Backing up existing $tmux_conf_dst -> $backup"
-        mv "$tmux_conf_dst" "$backup"
-      fi
-      ln -sf "$tmux_conf_src" "$tmux_conf_dst"
-      log "Linked $tmux_conf_dst -> $tmux_conf_src"
-    fi
+    link_with_backup "$tmux_conf_src" "$tmux_conf_dst"
   fi
 
   # Clone TPM if missing
@@ -1090,12 +1022,7 @@ symlink_llm_templates() {
 
   mkdir -p "$llm_data_dir"
 
-  if [[ -e "$dst" && ! -L "$dst" ]]; then
-    warn "Removing existing templates path (not a symlink): $dst"
-    rm -rf "$dst"
-  fi
-
-  ln -snf "$src" "$dst"
+  link_with_backup "$src" "$dst"
 }
 
 install_opencode() {

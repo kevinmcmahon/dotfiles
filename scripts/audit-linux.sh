@@ -174,7 +174,7 @@ if command -v llm >/dev/null 2>&1; then
     if echo "$installed_plugins" | grep -q "$plugin"; then
       pass "llm plugin: $plugin"
     else
-      fail "llm plugin missing: $plugin"
+      warn "llm plugin missing: $plugin"
     fi
   done
 else

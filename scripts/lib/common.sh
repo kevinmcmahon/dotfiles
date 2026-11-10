@@ -252,7 +252,9 @@ symlink_claude_config() {
   # also contains machine-local state (settings.local.json, credentials,
   # cache, history, etc.). Machine-local configs (mcp.json,
   # claude_desktop_config.json) are copied as templates, not symlinked.
-  local items="CLAUDE.md settings.json commands docs hooks scripts"
+  # settings.json is copied too: Claude Code saves it by replacing the file,
+  # which would turn a symlink into a regular file on the first save.
+  local items="CLAUDE.md commands docs hooks scripts"
 
   for item in $items; do
     local src="$claude_src/$item"
@@ -266,7 +268,7 @@ symlink_claude_config() {
   # If dst is a symlink (leftover from older bootstrap), replace it with
   # a real copy so local edits stay local. If dst is already a regular
   # file, leave it alone — never overwrite local customizations.
-  for tmpl in mcp.json claude_desktop_config.json; do
+  for tmpl in mcp.json claude_desktop_config.json settings.json; do
     local src="$claude_src/$tmpl"
     local dst="$claude_dst/$tmpl"
     if [[ -L "$dst" ]]; then
@@ -331,7 +333,7 @@ verify_claude_setup() {
   local errors=0
 
   # Check symlinks resolve
-  for item in CLAUDE.md settings.json commands docs hooks scripts; do
+  for item in CLAUDE.md commands docs hooks scripts; do
     local path="$claude_dst/$item"
     if [[ -L "$path" && ! -e "$path" ]]; then
       warn "Broken symlink: $path -> $(readlink "$path")"
@@ -380,6 +382,15 @@ verify_claude_setup() {
   # Check mcp.json exists (as a regular file, not a symlink)
   if [[ ! -f "$claude_dst/mcp.json" ]]; then
     warn "mcp.json missing -- copy from $DOTFILES_DIR/claude/mcp.json or claude/mcp.json.example"
+    errors=$((errors + 1))
+  fi
+
+  # Check settings.json exists (as a regular file, not a symlink)
+  if [[ -L "$claude_dst/settings.json" ]]; then
+    warn "settings.json should be a local copy, not a symlink: $claude_dst/settings.json -> $(readlink "$claude_dst/settings.json")"
+    errors=$((errors + 1))
+  elif [[ ! -f "$claude_dst/settings.json" ]]; then
+    warn "settings.json missing -- copy from $DOTFILES_DIR/claude/settings.json"
     errors=$((errors + 1))
   fi
 

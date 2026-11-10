@@ -177,6 +177,27 @@ check_codex_hooks_json() {
 # Claude Code plugins are installed from remote marketplaces, not symlinked out
 # of this repo. claude/settings.json is the declaration; Claude Code records what
 # it actually installed under ~/.claude/plugins/. This compares the two.
+# ~/.claude/settings.json is a local copy of the repo file, not a symlink:
+# Claude Code saves it by replacing the file. Drift from the repo copy is a
+# warning so changes worth keeping get synced back by hand.
+check_claude_settings_copy() {
+  local live="$HOME/.claude/settings.json"
+  local repo="$DOTFILES_DIR/claude/settings.json"
+
+  if [[ -L "$live" ]]; then
+    fail "~/.claude/settings.json is a symlink (expected local copy)"
+  elif [[ ! -f "$live" ]]; then
+    fail "~/.claude/settings.json missing"
+  elif [[ ! -f "$repo" ]]; then
+    fail "Claude settings missing: $repo"
+  elif cmp -s "$live" "$repo"; then
+    pass "~/.claude/settings.json matches the repo copy"
+  else
+    pass "~/.claude/settings.json exists"
+    warn "~/.claude/settings.json differs from $repo (copy changes worth keeping back to the repo)"
+  fi
+}
+
 check_claude_plugins() {
   local settings="$DOTFILES_DIR/claude/settings.json"
   local installed="$HOME/.claude/plugins/installed_plugins.json"
@@ -375,9 +396,10 @@ audit_section_python_tooling() {
 # --- Claude Code config ---
 audit_section_claude_config() {
   section "Claude Code Config"
-  for item in CLAUDE.md commands docs hooks settings.json scripts; do
+  for item in CLAUDE.md commands docs hooks scripts; do
     check_symlink "$HOME/.claude/$item" "$DOTFILES_DIR/claude/$item" "~/.claude/$item"
   done
+  check_claude_settings_copy
   check_generated_common_ai_docs "Claude" "$HOME/.claude/docs"
   if [[ -L "$HOME/.claude/skills" ]]; then
     fail "~/.claude/skills is a symlink (expected real local directory)"

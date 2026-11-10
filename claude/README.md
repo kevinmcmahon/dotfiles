@@ -9,7 +9,7 @@ Global Claude Code settings, hooks, commands, skills, and context docs.
 ```
 claude/
 ├── CLAUDE.md                  # Global instructions → ~/.claude/CLAUDE.md
-├── settings.json              # Global settings → ~/.claude/settings.json
+├── settings.json              # Global settings, copied to ~/.claude/settings.json when missing
 ├── mcp.json.example           # MCP server config template
 ├── hooks/
 │   ├── ntfy-notify.sh         # Push notifications via ntfy.sh (symlink → ai/)

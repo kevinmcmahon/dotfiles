@@ -95,7 +95,8 @@ exec zsh
 | `/Applications/cmux.app/Contents/Resources/bin/cmux` | `~/.local/bin/cmux` |
 | `zsh/*.symlink` | `~/.zshrc`, `~/.zshenv`, `~/.zprofile` |
 | `llm/templates.symlink` | `~/.config/io.datasette.llm/templates` |
-| `claude/CLAUDE.md`, `commands/`, `docs/`, `hooks/`, `skills/`, `settings.json` | `~/.claude/<name>` |
+| `claude/CLAUDE.md`, `commands/`, `docs/`, `hooks/`, `scripts/` | `~/.claude/<name>` |
+| `claude/settings.json` | `~/.claude/settings.json` when missing |
 | `codex/AGENTS.md` | `~/.codex/AGENTS.md` |
 | `codex/config.toml.template` | `~/.codex/config.toml` when missing |
 | `codex/hooks.json.template` | `~/.codex/hooks.json` when missing |

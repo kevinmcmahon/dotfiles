@@ -157,7 +157,7 @@ Each `lib/platform-*.sh` must define these 8 functions:
 | `ai/docs/{common,claude}` | `claude/docs/` | Generated Claude Code docs symlink farm |
 | `claude/hooks/` | `~/.claude/hooks/` | Claude Code hook scripts |
 | `ai/skills/{common,claude}` | `~/.claude/skills/` | Dotfiles-owned Claude Code skills injected by `scripts/ai-sync.sh` into a real local skills directory |
-| `claude/settings.json` | `~/.claude/settings.json` | Claude Code settings (hooks, plugins) |
+| `claude/settings.json` | `~/.claude/settings.json` | Claude Code settings (hooks, plugins) copied only when missing. Claude Code saves this file by replacing it, so a symlink would not survive; the audit warns when the local copy differs from the repo copy |
 | `codex/AGENTS.md` | `~/.codex/AGENTS.md` | Codex global instructions |
 | `codex/config.toml.template` | `~/.codex/config.toml` | Codex safe defaults copied only when missing |
 | `codex/hooks.json.template` | `~/.codex/hooks.json` | Codex hook defaults copied only when missing |
@@ -199,7 +199,8 @@ available in the current session. Check `/plugin` → **Installed** inside Claud
 Code for that. See the [plugin commands reference](https://code.claude.com/docs/en/plugins/cli-reference#plugin-details).
 
 Adding a plugin therefore means editing `claude/settings.json`, not adding a
-symlink. `perplexity@pplx-search` (from `kevinmcmahon/pplx-search`) is the
+symlink. Bootstrap never overwrites an existing `~/.claude/settings.json`, so
+on a machine that already has one, make the same change there too. `perplexity@pplx-search` (from `kevinmcmahon/pplx-search`) is the
 current example: the skill and its `pplx-search` CLI ship from that repo rather
 than living under `ai/skills/`.
 

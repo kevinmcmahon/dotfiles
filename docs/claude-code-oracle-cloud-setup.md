@@ -354,7 +354,7 @@ ssh -T git@github.com
 
 ## Part 7: Set Up Ntfy Push Notifications
 
-The dotfiles repo includes a pre-configured ntfy hook script and Claude Code settings. If you ran the bootstrap, both `~/.claude/hooks/ntfy-notify.sh` and `~/.claude/settings.json` are already symlinked from the repo. All you need to do is set the env var and install the phone app.
+The dotfiles repo includes a pre-configured ntfy hook script and Claude Code settings. If you ran the bootstrap, both are already in place: `~/.claude/hooks/ntfy-notify.sh` is symlinked from the repo and `~/.claude/settings.json` is copied from it. All you need to do is set the env var and install the phone app.
 
 ### 7.1 Install ntfy App on Phone
 
@@ -393,13 +393,13 @@ If you ran the bootstrap, these should already be in place:
 
 ```bash
 ls -la ~/.claude/hooks/ntfy-notify.sh  # → dotfiles/claude/hooks/ntfy-notify.sh
-ls -la ~/.claude/settings.json         # → dotfiles/claude/settings.json
+ls -la ~/.claude/settings.json         # regular file copied from dotfiles/claude/settings.json
 ```
 
-If not, run `symlink_claude_config` from the bootstrap or manually symlink:
+If not, run `symlink_claude_config` from the bootstrap, or symlink the hooks and copy the settings by hand:
 ```bash
 ln -snf ~/dotfiles/claude/hooks ~/.claude/hooks
-ln -snf ~/dotfiles/claude/settings.json ~/.claude/settings.json
+cp -n ~/dotfiles/claude/settings.json ~/.claude/settings.json
 ```
 
 ### 7.5 Test the Notification
@@ -547,7 +547,7 @@ Now run separate Claude agents in separate tmux windows, each in their own workt
 - Test ntfy directly: `curl -d "test" ntfy.sh/your-topic`
 - Check the topic name matches in the app and your `NTFY_TOPIC` env var: `echo $NTFY_TOPIC`
 - Verify the script is executable and symlinked: `ls -la ~/.claude/hooks/ntfy-notify.sh`
-- Check the symlink is correct: `readlink ~/.claude/settings.json`
+- Check the settings include the ntfy hooks: `grep ntfy ~/.claude/settings.json`
 
 ### Unexpected charges on PAYG account
 - Check **Billing & Cost Management** → **Cost Analysis** to see what's incurring charges

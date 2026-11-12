@@ -1,0 +1,8 @@
+# Bun user config, linked to ~/.bunfig.toml by bootstrap. Bun reads that path
+# only while XDG_CONFIG_HOME is unset.
+
+[install]
+# Install only versions published at least this many seconds ago (7 days).
+# A compromised release is usually reported and removed within days. A
+# project's own bunfig.toml overrides this.
+minimumReleaseAge = 604800

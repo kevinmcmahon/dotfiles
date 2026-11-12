@@ -20,7 +20,7 @@
 # CONFIG_DIR and HOME when called, not when this file is sourced.
 
 expected_state_groups() {
-  printf '%s\n' xdg tmux claude codex opencode
+  printf '%s\n' xdg tmux uv bun claude codex opencode
 }
 
 # Prints the rows of one group; fails on an unknown group name.
@@ -28,6 +28,8 @@ expected_state_rows() {
   case "$1" in
     xdg) expected_state_xdg ;;
     tmux) expected_state_tmux ;;
+    uv) expected_state_uv ;;
+    bun) expected_state_bun ;;
     claude) expected_state_claude ;;
     codex) expected_state_codex ;;
     opencode) expected_state_opencode ;;
@@ -61,6 +63,33 @@ expected_state_xdg() {
 expected_state_tmux() {
   expected_state_row real-dir - "$CONFIG_DIR/tmux"
   expected_state_row link "$DOTFILES_DIR/tmux/tmux.conf" "$CONFIG_DIR/tmux/tmux.conf"
+}
+
+# uv writes its own files (uv-receipt.json) into its config directory, so the
+# directory stays real and only uv.toml is linked into it.
+expected_state_uv() {
+  expected_state_row real-dir - "$CONFIG_DIR/uv"
+  expected_state_row link "$DOTFILES_DIR/uv/uv.toml" "$CONFIG_DIR/uv/uv.toml"
+}
+
+# Bun reads its user config from the home directory.
+expected_state_bun() {
+  expected_state_row link "$DOTFILES_DIR/bun/bunfig.toml" "$HOME/.bunfig.toml"
+}
+
+# npm user config keys bootstrap sets and the audits check, one
+# key<TAB>value row each. npm writes credentials and local settings to
+# ~/.npmrc, so the file stays local and only these keys are managed.
+#
+#   min-release-age       install only versions published at least this many
+#                         days ago
+#   strict-allow-scripts  fail the install when a dependency has an install
+#                         script that has not been approved, instead of
+#                         running it
+expected_npm_config() {
+  printf '%s\t%s\n' \
+    min-release-age 7 \
+    strict-allow-scripts true
 }
 
 expected_state_claude() {

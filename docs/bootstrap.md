@@ -150,6 +150,8 @@ Each `lib/platform-*.sh` must define these 8 functions:
 | `zsh/zprofile.symlink` | `~/.zprofile` | Handled by `zsh/install.sh` |
 | `nvim/`, `yazi/`, `starship/`, `git/`, `ghostty/` | `~/.config/nvim/`, `~/.config/yazi/`, `~/.config/starship/`, `~/.config/git/`, `~/.config/ghostty/` | Whole-directory XDG symlinks |
 | `tmux/tmux.conf` | `~/.config/tmux/tmux.conf` | tmux uses a real XDG dir so plugins can live beside the symlinked config |
+| `uv/uv.toml` | `~/.config/uv/uv.toml` | uv user config (release-age cooldown). uv writes its own files into `~/.config/uv/`, so the directory stays real and only `uv.toml` is linked |
+| `bun/bunfig.toml` | `~/.bunfig.toml` | Bun user config (release-age cooldown) |
 | `zsh/env/` | `~/.zsh/env/` | Layered zsh environment |
 | `llm/templates.symlink/` | `<llm-data>/templates/` | llm template directory |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Claude Code global instructions |
@@ -175,8 +177,8 @@ Each `lib/platform-*.sh` must define these 8 functions:
 
 ### Expected links, copies and real directories
 
-`scripts/lib/expected-state.sh` lists the fixed XDG, tmux, Claude Code, Codex
-and OpenCode entries from the table above, one row per destination, each with
+`scripts/lib/expected-state.sh` lists the fixed XDG, tmux, uv, Bun, Claude Code,
+Codex and OpenCode entries from the table above, one row per destination, each with
 one of three kinds:
 
 | Kind | Bootstrap | Audit |
@@ -187,7 +189,8 @@ one of three kinds:
 
 `common.sh` applies these rows and `audit.sh` checks the same rows, so adding a
 destination to the list covers both. The list also names the generated common
-AI skills that each tool's audit section checks. The `*.symlink` loops, Git
+AI skills that each tool's audit section checks, and the npm config keys of the
+[package install policy](#package-install-policy). The `*.symlink` loops, Git
 identity templates, platform-only links, llm templates and the server profile
 keep their own code. `tests/expected_state.bats` fails when a destination in the
 list is missing from this document.
@@ -209,6 +212,79 @@ OpenCode commands and docs remain generated repo-side symlink farms.
 Home-grown skills are inventoried in `ai/homegrown-skills.md`; packageable
 candidates should move to a separate skills repository before becoming
 `npx skills` installs.
+
+### Package install policy
+
+A compromised package release is usually reported and removed within days, and
+its usual payload is an install script. Bootstrap therefore makes uv, Bun and npm
+wait before they will install a new release, and makes npm refuse install
+scripts nobody has approved. pnpm, yarn, Deno and cargo are not covered; they
+do not read these settings.
+
+| Tool | Setting | Where | Effect |
+|------|---------|-------|--------|
+| uv | `exclude-newer = "7 days"` | `uv/uv.toml`, linked to `~/.config/uv/uv.toml` | Resolves only to files uploaded at least 7 days ago |
+| Bun | `minimumReleaseAge = 604800` | `bun/bunfig.toml`, linked to `~/.bunfig.toml` | Installs only versions published at least 7 days ago |
+| npm | `min-release-age=7` | `~/.npmrc`, set by `setup_node` | Installs only versions published at least 7 days ago |
+| npm | `strict-allow-scripts=true` | `~/.npmrc`, set by `setup_node` | Fails the install when a dependency has an install script that is not approved, naming the package |
+
+npm writes credentials and local settings to `~/.npmrc`, so that file stays
+local and bootstrap sets the two keys with `npm config set`. The keys and
+values are listed once, in `expected_npm_config` in
+`scripts/lib/expected-state.sh`; `setup_node`, `node/install.sh` and the audits
+all read that list. Both keys exist in npm 11.19. An npm that does not know a
+key rejects `npm config set` for it, so bootstrap skips that key with a
+warning and the audit fails until Node is upgraded (`fnm install --lts`, then
+rerun `node/install.sh`). Bun gets no script setting: it runs a dependency's
+install script only when the package is on its built-in list
+(`bun pm default-trusted`) or the project lists it under
+`trustedDependencies`.
+
+Bun reads `~/.bunfig.toml` only while `XDG_CONFIG_HOME` is unset, which is how
+this repo leaves it. With the variable set, Bun looks for
+`$XDG_CONFIG_HOME/.bunfig.toml` instead and the cooldown stops applying.
+
+Without `strict-allow-scripts`, npm runs an unapproved install script and only
+prints a warning afterwards. With it, the install stops before anything is
+written:
+
+```
+npm error code ESTRICTALLOWSCRIPTS
+npm error --strict-allow-scripts: 1 package(s) have install scripts not covered by allowScripts:
+npm error   esbuild@0.28.2 (postinstall: node install.js)
+```
+
+npm's hint to run `npm install-scripts approve` fails at this point with
+`ENOMATCH`, because approval only matches packages that are already installed.
+Install without scripts first, then approve and run the script:
+
+```bash
+npm install --ignore-scripts          # or: npm ci --ignore-scripts
+npm install-scripts ls                # the packages waiting for review
+npm install-scripts approve <pkg>     # after reading what the script does
+npm rebuild <pkg>                     # runs the approved script
+```
+
+Approval records the package and version under `allowScripts` in the project's
+`package.json`, so it is a one-time step per project and per version once that
+file is committed. `npm install -g` and `npx` have no `package.json`; pass
+`--allow-scripts=<pkg>` to them instead. Bootstrap does this for Gemini CLI,
+whose optional native modules (`@github/keytar`, `node-pty`) have install
+scripts.
+
+What else this changes in daily use:
+
+- A project's own scripts and hooks (`prepare`, `pre*`, `post*`) still run.
+  The policy covers the install scripts of dependencies only.
+- A release newer than 7 days is invisible to all three tools. To take one
+  deliberately, override for that command: `npm install --min-release-age=0`,
+  `uv ... --exclude-newer <date>`, or a project-level `bunfig.toml`.
+- `uv lock` records the cooldown in the project's `uv.lock` under `[options]`,
+  so a lockfile written on this machine carries it to anyone else who uses
+  that lockfile.
+
+The audits check the two links and the npm keys in their "Package Install
+Policy" section.
 
 ### Claude Code plugins
 
@@ -341,14 +417,14 @@ A topic directory can contain any combination of:
 
 If a tool writes mutable state inside its config directory, keep the local directory real and symlink only the repo-owned files into it. `tmux` is the current example of this exception.
 
-Current topics: `ai`, `bash`, `claude`, `codex`, `gemini`, `ghostty`, `git`, `helix`, `iterm2`, `kitty`, `linux`, `lldb`, `llm`, `node`, `nvim`, `opencode`, `osx`, `rvm`, `starship`, `tmux`, `tools`, `vale`, `vscode`, `yazi`, `zsh`
+Current topics: `ai`, `bash`, `bun`, `claude`, `codex`, `gemini`, `ghostty`, `git`, `helix`, `iterm2`, `kitty`, `linux`, `lldb`, `llm`, `node`, `nvim`, `opencode`, `osx`, `rvm`, `starship`, `tmux`, `tools`, `uv`, `vale`, `vscode`, `yazi`, `zsh`
 
 ## Standalone Installers
 
 Some topics have `install.sh` scripts that work independently of the main bootstrap:
 
 ### `node/install.sh`
-Installs Node.js LTS via fnm + corepack. Prerequisites: fnm on PATH. Handles fnm env setup, LTS install, setting the default, setting npm's global prefix to `~/.local`, and enabling corepack (provides yarn and pnpm).
+Installs Node.js LTS via fnm + corepack. Prerequisites: fnm on PATH. Handles fnm env setup, LTS install, setting the default, setting npm's global prefix to `~/.local`, setting the npm keys of the [package install policy](#package-install-policy), and enabling corepack (provides yarn and pnpm).
 
 ### `zsh/install.sh`
 Full zsh environment setup:
@@ -426,6 +502,7 @@ It checks:
 - Zsh environment (oh-my-zsh, plugins, shell symlinks)
 - Git identity files (existence + whether name/email are set)
 - Language runtimes (rust, go, uv, deno, bun, fnm, chruby, node)
+- Package install policy (uv and Bun config symlinks, npm `min-release-age` and `strict-allow-scripts`)
 - Cargo/brew tools (viu)
 - Python tooling (ruff, neovim python venv)
 - LLM tool + plugins + template symlinks
@@ -474,6 +551,7 @@ Linux counterpart of the macOS audit. It sources the same `scripts/lib/audit.sh`
 - Zsh environment (oh-my-zsh, plugins, shell symlinks)
 - Git identity files (existence + whether name/email are set)
 - Language runtimes (rust, go, uv, deno, bun, fnm, chruby, ruby-install)
+- Package install policy (uv and Bun config symlinks, npm `min-release-age` and `strict-allow-scripts`)
 - Binary installs in `~/.local/bin` (nvim AppImage, lazygit)
 - Starship and fzf (from non-brew sources)
 - Cargo tools (tree-sitter, delta/git-delta, viu, jless, yazi)

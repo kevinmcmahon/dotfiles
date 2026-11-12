@@ -92,6 +92,8 @@ exec zsh
 | `git/git-core.symlink/` | `~/.git-core` |
 | `nvim/`, `yazi/`, `starship/`, `git/`, `ghostty/` | `~/.config/<name>` |
 | `tmux/tmux.conf` | `~/.config/tmux/tmux.conf` |
+| `uv/uv.toml` | `~/.config/uv/uv.toml` |
+| `bun/bunfig.toml` | `~/.bunfig.toml` |
 | `/Applications/cmux.app/Contents/Resources/bin/cmux` | `~/.local/bin/cmux` |
 | `zsh/*.symlink` | `~/.zshrc`, `~/.zshenv`, `~/.zprofile` |
 | `llm/templates.symlink` | `~/.config/io.datasette.llm/templates` |
@@ -107,7 +109,7 @@ exec zsh
 | `opencode/commands/`, `opencode/docs/` | `~/.opencode/<name>` |
 | `opencode/opencode.json.symlink` | `~/.config/opencode/opencode.json` |
 
-The XDG, tmux, Claude Code, Codex and OpenCode rows are listed once in `scripts/lib/expected-state.sh`; bootstrap applies that list and the audit checks it. See [Expected links, copies and real directories](bootstrap.md#expected-links-copies-and-real-directories).
+The XDG, tmux, uv, Bun, Claude Code, Codex and OpenCode rows are listed once in `scripts/lib/expected-state.sh`; bootstrap applies that list and the audit checks it. See [Expected links, copies and real directories](bootstrap.md#expected-links-copies-and-real-directories).
 
 `ghostty` is treated as pure repo-owned XDG config, so the whole topic symlinks into `~/.config/ghostty`. `tmux` is the main exception: bootstrap keeps a real `~/.config/tmux/` directory so TPM plugins can stay local, and only symlinks `tmux/tmux.conf` into that directory.
 
@@ -144,10 +146,12 @@ fnm install --lts
 fnm use lts-latest
 fnm default lts-latest
 npm config set prefix "$HOME/.local"
+npm config set min-release-age 7
+npm config set strict-allow-scripts true
 corepack enable
 ```
 
-The npm prefix keeps global packages and binaries stable across fnm-managed Node version changes. `~/.local/bin` is already part of the managed shell `PATH`.
+The npm prefix keeps global packages and binaries stable across fnm-managed Node version changes. `~/.local/bin` is already part of the managed shell `PATH`. The other two keys are the npm half of the package install policy described in [bootstrap.md](bootstrap.md#package-install-policy): npm installs only versions published at least 7 days ago, and fails on a dependency install script that has not been approved.
 
 ### Python via uv
 

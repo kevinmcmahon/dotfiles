@@ -5,6 +5,11 @@
 # This file is SOURCED by bootstrap.sh — do not add a shebang or set -euo pipefail.
 # It expects these globals from the sourcing script:
 #   DOTFILES_DIR, LOCAL_BIN, CONFIG_DIR, INSTALL_NODE, PLATFORM, ARCH
+#
+# node/install.sh also sources it, for log, warn, die and
+# set_npm_install_policy, and sets none of those globals. Sourcing must
+# therefore only define functions: read the globals inside the functions that
+# need them, never at the top level.
 
 # Directory holding this library; sibling libraries are sourced from here so
 # the code that runs matches the checkout this file came from.
@@ -528,6 +533,11 @@ install_tmux_plugins() {
 
 install_uv() {
   log "Installing uv (Python package manager)"
+
+  # Link the user config before anything runs uv, so the release-age cooldown
+  # applies to this bootstrap's own installs too.
+  apply_expected_state uv
+
   if need_cmd uv; then
     log "uv already installed: $(uv --version | head -n 1)"
     return 0
@@ -557,6 +567,10 @@ install_deno() {
 
 install_bun() {
   log "Installing Bun"
+
+  # Link the user config (release-age cooldown) before anything runs bun.
+  apply_expected_state bun
+
   if need_cmd bun || [[ -x "$HOME/.bun/bin/bun" ]]; then
     export PATH="$HOME/.bun/bin:$PATH"
     log "bun already installed: $(bun --version)"
@@ -609,7 +623,13 @@ install_gemini_cli() {
   log "Installing Gemini CLI to: $expected"
   log "Using per-install npm prefix (no global npm config changes)."
 
-  npm install -g --prefix "$prefix" @google/gemini-cli
+  # Gemini CLI's optional native modules build with install scripts. The npm
+  # install policy (see expected_npm_config) fails an install on any script
+  # that is not approved, so these two are approved by name. A new scripted
+  # dependency stops this install with its name until it is added here.
+  npm install -g --prefix "$prefix" \
+    --allow-scripts=@github/keytar,node-pty \
+    @google/gemini-cli
 
   if ! echo "$PATH" | tr ':' '\n' | grep -qx "$bin_dir"; then
     export PATH="$bin_dir:$PATH"
@@ -685,6 +705,28 @@ install_codex() {
   fi
 }
 
+# Sets the npm user config keys listed by expected_npm_config (see
+# expected-state.sh): a release-age cooldown, and a failed install rather than
+# an unapproved dependency install script.
+#
+# `npm config set` rejects a key the running npm does not know, and
+# `npm config get` prints "undefined" for one. Such a key is skipped with a
+# warning so an older Node does not stop the caller; the audit fails on it.
+set_npm_install_policy() {
+  local key value
+
+  log "Setting npm install policy..."
+  while IFS=$'\t' read -r key value; do
+    [[ -n "$key" ]] || continue
+    if [[ "$(npm config get "$key" 2>/dev/null)" == "undefined" ]]; then
+      warn "npm $(npm --version) does not support $key; upgrade Node (fnm install --lts) and rerun"
+      continue
+    fi
+    npm config set "$key" "$value"
+    printf '  npm %s: %s\n' "$key" "$(npm config get "$key")"
+  done < <(expected_npm_config)
+}
+
 setup_node() {
   if [[ "$INSTALL_NODE" != "1" ]]; then
     log "Skipping Node.js setup (INSTALL_NODE=0)"
@@ -718,6 +760,8 @@ setup_node() {
   mkdir -p "$HOME/.local/bin"
   npm config set prefix "$HOME/.local"
   log "npm global prefix: $(npm config get prefix)"
+
+  set_npm_install_policy
 
   log "Enabling corepack..."
   corepack enable

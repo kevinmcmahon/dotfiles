@@ -239,6 +239,8 @@ else
   warn "node not installed (run: fnm install --lts)"
 fi
 
+audit_section_package_install_policy
+
 # --- Cargo tools ---
 section "Cargo / Brew-installed Tools"
 check_cmd tree-sitter "tree-sitter"

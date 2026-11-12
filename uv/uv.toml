@@ -1,0 +1,7 @@
+# uv user config, linked to ~/.config/uv/uv.toml by bootstrap.
+#
+# Resolve only to files uploaded at least this long ago. A compromised release
+# is usually reported and removed within days, so the wait keeps it out of
+# every install and lock on this machine. Override per command with
+# --exclude-newer, or per project in its pyproject.toml.
+exclude-newer = "7 days"

@@ -194,6 +194,28 @@ check_npm_global_prefix() {
   fi
 }
 
+# Checks the npm user config keys listed by expected_npm_config. Without npm
+# there is nothing to check: the platform audit reports a missing node. npm
+# prints "undefined" for a key it does not know, which no `npm config set`
+# can fix.
+check_npm_install_policy() {
+  local key expected actual
+
+  command -v npm >/dev/null 2>&1 || return 0
+
+  while IFS=$'\t' read -r key expected; do
+    [[ -n "$key" ]] || continue
+    actual="$(npm config get "$key" 2>/dev/null)"
+    if [[ "$actual" == "$expected" ]]; then
+      pass "npm $key: $actual"
+    elif [[ "$actual" == "undefined" ]]; then
+      fail "npm $key: not supported by npm $(npm --version 2>/dev/null) (upgrade Node: fnm install --lts, then rerun node/install.sh)"
+    else
+      fail "npm $key: $actual (expected $expected; run: npm config set $key $expected)"
+    fi
+  done < <(expected_npm_config)
+}
+
 check_claude_mem_not_watching_codex() {
   local watch_config="$HOME/.claude-mem/transcript-watch.json"
 
@@ -397,6 +419,16 @@ audit_section_xdg_config() {
   section "XDG Config Directories (~/.config)"
   check_expected_state xdg
   check_file_exists "$CONFIG_DIR/ghostty/appearance.conf" "~/.config/ghostty/appearance.conf"
+}
+
+# --- Package install policy ---
+# The release-age cooldown for uv, bun and npm, and npm's refusal to run
+# unapproved dependency install scripts.
+audit_section_package_install_policy() {
+  section "Package Install Policy"
+  check_expected_state uv
+  check_expected_state bun
+  check_npm_install_policy
 }
 
 # --- tmux XDG layout ---

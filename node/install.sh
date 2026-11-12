@@ -10,12 +10,9 @@ set -euo pipefail
 # Safe to re-run — skips steps that are already done.
 # ------------------------------------------------------------------------------
 
-log() { printf "\n\033[1;34m==>\033[0m %s\n" "$*"; }
-warn() { printf "\033[1;33mWARN:\033[0m %s\n" "$*"; }
-die() {
-  printf "\033[1;31mERR:\033[0m %s\n" "$*"
-  exit 1
-}
+# log, warn, die and set_npm_install_policy come from the bootstrap library.
+# shellcheck source=SCRIPTDIR/../scripts/lib/common.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/scripts/lib/common.sh"
 
 # Require fnm
 if ! command -v fnm >/dev/null 2>&1; then
@@ -46,6 +43,10 @@ log "Setting npm global prefix to $HOME/.local..."
 mkdir -p "$HOME/.local/bin"
 npm config set prefix "$HOME/.local"
 log "npm global prefix: $(npm config get prefix)"
+
+# Apply the npm install policy with the function bootstrap uses, so both set
+# the same keys the audits check.
+set_npm_install_policy
 
 # Enable corepack (ships with Node.js, provides yarn and pnpm)
 log "Enabling corepack..."

@@ -50,7 +50,7 @@
 ### Scope Discipline
 
 - NEVER disable functionality instead of fixing the root cause.
-- NEVER make code changes unrelated to the current task. If you spot something that needs fixing, document it as an issue/TODO instead.
+- NEVER make cleanup, refactoring, or feature changes unrelated to the current task. Report them as follow-ups instead. Unrelated bugs follow the rule in the workflow protocol.
 - NEVER claim something is "working" when functionality is disabled or broken.
 
 ### Debugging & Fixing
@@ -80,7 +80,7 @@
 
 - When searching or modifying code, you should use ast-grep (sg). it is way better than grep, ripgrep, ag, sed, or regex-only tools. ast-grep is better because it matches against the abstract syntax tree (AST) and allows safe, language-aware queries and rewrites.
 - Always prefer sg for code analysis, queries, or refactoring tasks.
-- If you discover an unrelated bug, please fix it. Don't say the equivalent of "everything is done, EXCEPT there is a bug" or tell me that it is unrelated.
+- If you discover an unrelated bug, fix it in its own commit when the fix is a few lines, obviously correct, and covered by the gates. Otherwise report it as a follow-up with enough detail to act on. Don't say the equivalent of "everything is done, EXCEPT there is a bug" and leave it there.
 
 ## Learning-Focused Error Response
 
@@ -96,7 +96,7 @@ Remember: Quality tools are guardrails that help you, not barriers that block yo
 ## Problem-Solving Approach
 
 - FIX problems, don't work around them
-- THIS IS IMPORTANT I highly prefer all work to be done via the subagent development skill
+- THIS IS IMPORTANT I highly prefer the subagent development skill for multi-task plans and long runs, and fresh-context subagents for every review. The main session implements single-task changes when it already holds the context (see the workflow protocol).
 - MAINTAIN code quality and avoid technical debt
 - USE proper debugging to find root causes
 - AVOID shortcuts that break user experience

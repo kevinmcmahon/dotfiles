@@ -25,6 +25,7 @@ preflight_checks() {
     die "Do not run this bootstrap with sudo. Run as your user; the script uses sudo internally."
   fi
 
+  # shellcheck disable=SC2153  # ARCH is a global set by bootstrap.sh
   case "$ARCH" in
     aarch64|arm64) log "Detected ARM64 (aarch64)" ;;
     x86_64|amd64)  log "Detected x86_64 (amd64)" ;;

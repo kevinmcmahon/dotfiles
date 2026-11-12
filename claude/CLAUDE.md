@@ -12,7 +12,7 @@
 - Fix failing tests, lint errors, type errors
 - Implement single functions with clear specs
 - Fix typos, formatting, documentation
-- Add missing imports or dependencies
+- Add missing imports, or declare a dependency the repo already locks
 - Refactor within a single file for readability
 
 ### 🟡 Propose First (tell me what you plan to do, then proceed)
@@ -21,6 +21,7 @@
 - API or interface changes
 - Database schema changes
 - Third-party integrations
+- New direct dependencies, after they pass the vetting checks in the workflow protocol
 
 ### 🔴 Always Ask Permission
 - Rewriting existing working code from scratch

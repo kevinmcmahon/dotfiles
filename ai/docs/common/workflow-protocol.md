@@ -55,6 +55,11 @@ the branch for the change and leave the issue id out of the commit message.
 
 ## Isolation and history
 
+- Run `git status` before touching anything. Uncommitted or untracked changes
+  that predate the session are Kevin's work: never stash, reset, check out,
+  clean, or commit them. If a file the task must change already carries
+  uncommitted edits, tell Kevin and ask whether they belong in the commit.
+- Stage files by path. Never use `git add -A` or `git commit -a`.
 - Create an isolated branch or git worktree before changing code, unless the
   workspace is already isolated for that issue. Use the tracker's
   `gitBranchName` when available.
@@ -80,13 +85,58 @@ the branch for the change and leave the issue id out of the commit message.
 - Verify the gates on the branch tip, after the final amend or squash and with
   a clean working tree, then fast-forward main to it. A fast-forward makes main
   the exact commit you verified, so don't re-run the gates on main. If main has
-  moved, rebase the branch and re-verify before the fast-forward.
+  moved, rebase the branch and re-verify before the fast-forward. If
+  uncommitted changes in main's working tree block the fast-forward, stop and
+  ask.
 - After the merge is confirmed on main, remove the worktree and delete the
   branch with `git branch -d`. A refusal means the branch is not merged; find
   out why instead of forcing the delete.
 - Commit messages: gitmoji conventional commits including the issue id, e.g.
   `refactor: ♻️ extract collector config module from cli (CWPT-142)`.
 - Push only when Kevin asks.
+- A commit that exists on a remote is permanent: never amend, rebase, squash,
+  or force-push it. Fix a pushed mistake with a new commit. Reverting a pushed
+  commit needs Kevin's approval.
+- After a push, check the remote CI run when the repo has one. A red run is a
+  failed check and follows the failure rule under Verification and reporting,
+  with the fix going in as a new commit. If the issue was already Done, move
+  it back to In Progress and comment with the failing job.
+
+## Dependencies
+
+- Prefer the standard library and dependencies the repo already has.
+- A new direct dependency does not need Kevin's approval. It needs to pass
+  every vetting check below, with the evidence recorded. Run the checks; do
+  not answer them from memory.
+  1. Identity: the exact name and publisher match the project's official
+     documentation or source repository. A plausible name is not evidence the
+     package exists or is the one intended.
+  2. Standing: the package was first published more than 90 days ago, has a
+     public source repository, and shows recent maintenance.
+  3. Release age: the version was published at least 7 days ago. Take the
+     newest version that meets this, not the newest version.
+  4. Advisories: no known unpatched advisory applies to that version,
+     according to the registry's audit command or the OSV database.
+  5. License: compatible with the repo.
+  6. Install scripts: install with lifecycle scripts disabled where the
+     package manager supports it. A package that cannot work without its
+     install script fails this check unless the script has been read and does
+     only what the package documents; enable scripts for that package alone.
+  7. Transitive packages: read the lockfile diff. Checks 3 and 4 apply to
+     every package the dependency brings in.
+- A repo's AGENTS.md may tighten or loosen these thresholds.
+- When a candidate fails a check, do not wait for Kevin. Choose an
+  alternative that passes, or implement the piece without a dependency. If
+  neither works, finish everything that does not depend on it, leave the
+  issue In Progress, and report the failed check.
+- The final report lists each new dependency: name, version, publish date,
+  what it is for, and the result of each check. Kevin reads this before
+  pushing.
+- Add and upgrade through the repo's package manager, never by hand-editing a
+  lockfile. Commit the manifest and the lockfile together with the code that
+  uses them, and follow the repo's pinning convention.
+- Upgrade a dependency only when the issue calls for it. Report other
+  outdated or vulnerable dependencies as follow-ups.
 
 ## Execution
 
@@ -182,6 +232,8 @@ When bootstrapping a new repo, its AGENTS.md should supply the specifics this
 protocol depends on: purpose; core rules; repo-specific Ask First items; a
 verification matrix mapping files/areas to exact commands; a single command
 that runs every required gate, enforced by a git hook where practical; a
-worktree setup command; a repository map; architecture constraints; a doc
-update map; and a pointer to `docs/agents/issue-tracker.md` carrying the
-tracker's fixed context. The repo's CLAUDE.md should just point at AGENTS.md.
+worktree setup command; the package manager and pinning convention; how to
+check remote CI, if the repo has any; a repository map; architecture
+constraints; a doc update map; and a pointer to `docs/agents/issue-tracker.md`
+carrying the tracker's fixed context. The repo's CLAUDE.md should just point at
+AGENTS.md.

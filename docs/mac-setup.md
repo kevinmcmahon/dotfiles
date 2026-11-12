@@ -287,7 +287,6 @@ Both platforms use the same `scripts/bootstrap.sh` entry point. The differences 
 | Neovim | `brew install neovim` | AppImage |
 | lazygit, starship, fzf | `brew install` | Binary downloads |
 | yazi | `brew install yazi` | `cargo install --locked` |
-
 | Default shell | zsh (already default) | `chsh -s` required |
 | pbcopy/pbpaste | Native | xclip wrappers |
 | Go | `brew install go` | Official tarball |

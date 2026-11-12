@@ -55,12 +55,16 @@ install_rust_and_cargo_tools() {
 
   install_rustup
 
+  # Every cargo install below passes --locked: the tool builds against the
+  # dependency versions in its published Cargo.lock, not the newest releases
+  # on the day of the install.
+
   # --- tree-sitter CLI ---
   if need_cmd tree-sitter; then
     log "tree-sitter already installed: $(tree-sitter --version | head -n 1)"
   else
     log "Installing tree-sitter CLI..."
-    cargo install tree-sitter-cli
+    cargo install --locked tree-sitter-cli
     log "tree-sitter installed: $(tree-sitter --version | head -n 1)"
   fi
 
@@ -69,7 +73,7 @@ install_rust_and_cargo_tools() {
     log "viu already installed: $(viu --version | head -n 1)"
   else
     log "Installing viu..."
-    cargo install viu
+    cargo install --locked viu
     log "viu installed: $(viu --version | head -n 1)"
   fi
 }

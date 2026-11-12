@@ -123,9 +123,9 @@ Each `lib/platform-*.sh` must define these 8 functions:
 | lazygit | Homebrew | GitHub release tarball |
 | starship | Homebrew | `starship.rs` installer |
 | fzf | Homebrew | Git clone + install script |
-| yazi | Homebrew | `cargo install` |
-| jless | Homebrew | `cargo install` |
-| delta | N/A | `cargo install git-delta` |
+| yazi | Homebrew | `cargo install --locked` |
+| jless | Homebrew | `cargo install --locked` |
+| delta | N/A | `cargo install --locked git-delta` |
 | Go | Homebrew | Official tarball to `/usr/local/go` |
 | Ruby | `brew install chruby ruby-install` | Manual install from source |
 | Terminal app | Official cmux DMG -> `/Applications/cmux.app` + `~/.local/bin/cmux` symlink | N/A |
@@ -218,8 +218,8 @@ candidates should move to a separate skills repository before becoming
 A compromised package release is usually reported and removed within days, and
 its usual payload is an install script. Bootstrap therefore makes uv, Bun and npm
 wait before they will install a new release, and makes npm refuse install
-scripts nobody has approved. pnpm, yarn, Deno and cargo are not covered; they
-do not read these settings.
+scripts nobody has approved. pnpm, yarn and Deno are not covered; they do not
+read these settings. cargo is handled separately, below the table.
 
 | Tool | Setting | Where | Effect |
 |------|---------|-------|--------|
@@ -227,6 +227,14 @@ do not read these settings.
 | Bun | `minimumReleaseAge = 604800` | `bun/bunfig.toml`, linked to `~/.bunfig.toml` | Installs only versions published at least 7 days ago |
 | npm | `min-release-age=7` | `~/.npmrc`, set by `setup_node` | Installs only versions published at least 7 days ago |
 | npm | `strict-allow-scripts=true` | `~/.npmrc`, set by `setup_node` | Fails the install when a dependency has an install script that is not approved, naming the package |
+
+Bootstrap runs every `cargo install` with `--locked`, so a tool is built
+against the dependency versions in its published `Cargo.lock` and not against
+whatever is newest on the day of the install. yazi gets less from the flag:
+`yazi-build` is an installer whose build script clones Yazi's `shipped` ref
+from GitHub and builds that checkout with its own `--locked`, so the flag pins
+only the installer's dependencies and the Yazi source is whatever that ref
+points to at install time.
 
 npm writes credentials and local settings to `~/.npmrc`, so that file stays
 local and bootstrap sets the two keys with `npm config set`. The keys and

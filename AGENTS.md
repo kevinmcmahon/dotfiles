@@ -202,7 +202,7 @@ Do not introduce competing runtime managers casually.
   - `scripts/lib/expected-state.sh` (sourced by `common.sh` and `audit.sh`)
 - Audit checks that apply to both platforms belong in `scripts/lib/audit.sh`, inside an `audit_section_*` function both audit scripts call. Platform-only checks stay in the platform's audit script.
 - Fixed links, copy-once templates and real directories for XDG, tmux, uv, Bun, Claude Code, Codex and OpenCode, and the npm config keys bootstrap sets, are listed once in `scripts/lib/expected-state.sh`. Bootstrap applies that list and the audits check it; add a destination there rather than to install or audit code, and add its row to `docs/bootstrap.md` (`tests/expected_state.bats` enforces this).
-- Tests: `python3 -m unittest discover -s tests -p 'test_*.py'` and `bats tests` (covers `tests/*.bats`, including `tests/expected_state.bats` and `tests/package_install_policy.bats`); run `shellcheck -x <file>` on each shell script you touch.
+- Tests: `python3 -m unittest discover -s tests -p 'test_*.py'` and `bats tests` (covers `tests/*.bats`, including `tests/expected_state.bats`, `tests/package_install_policy.bats` and `tests/cargo_install_locked.bats`); run `shellcheck -x <file>` on each shell script you touch.
 - Avoid duplicating platform detection or shared helper logic across scripts.
 - Scripts should be idempotent where practical.
 - Scripts should fail clearly rather than silently.

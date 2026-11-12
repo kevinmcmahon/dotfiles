@@ -81,12 +81,16 @@ install_rust_and_cargo_tools() {
 
   install_rustup
 
+  # Every cargo install below passes --locked: the tool builds against the
+  # dependency versions in its published Cargo.lock, not the newest releases
+  # on the day of the install.
+
   # --- tree-sitter CLI ---
   if need_cmd tree-sitter; then
     log "tree-sitter already installed: $(tree-sitter --version | head -n 1)"
   else
     log "Installing tree-sitter CLI..."
-    cargo install tree-sitter-cli
+    cargo install --locked tree-sitter-cli
     log "tree-sitter installed: $(tree-sitter --version | head -n 1)"
   fi
 
@@ -95,7 +99,10 @@ install_rust_and_cargo_tools() {
     log "yazi already installed: $(yazi --version | head -n 1)"
   else
     log "Installing yazi..."
-    cargo install --force yazi-build
+    # yazi-build's build script clones Yazi's `shipped` ref from GitHub and
+    # builds it with its own --locked. The flag here pins only the installer
+    # crate's dependencies; the Yazi source is whatever that ref points to.
+    cargo install --locked --force yazi-build
     yazi-build
     log "yazi installed: $(yazi --version | head -n 1)"
   fi
@@ -106,7 +113,7 @@ install_rust_and_cargo_tools() {
     log "ast-grep already installed: $(sg --version | head -n 1)"
   else
     log "Installing ast-grep..."
-    cargo install ast-grep --locked
+    cargo install --locked ast-grep
     log "ast-grep installed: $(sg --version | head -n 1)"
   fi
 
@@ -115,7 +122,7 @@ install_rust_and_cargo_tools() {
     log "jless already installed: $(jless --version | head -n 1)"
   else
     log "Installing jless..."
-    cargo install jless
+    cargo install --locked jless
     log "jless installed: $(jless --version | head -n 1)"
   fi
 
@@ -124,7 +131,7 @@ install_rust_and_cargo_tools() {
     log "delta already installed: $(delta --version | head -n 1)"
   else
     log "Installing delta..."
-    cargo install git-delta
+    cargo install --locked git-delta
     log "delta installed: $(delta --version | head -n 1)"
   fi
 
@@ -133,7 +140,7 @@ install_rust_and_cargo_tools() {
     log "viu already installed: $(viu --version | head -n 1)"
   else
     log "Installing viu..."
-    cargo install viu
+    cargo install --locked viu
     log "viu installed: $(viu --version | head -n 1)"
   fi
 

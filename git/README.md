@@ -106,7 +106,7 @@ ln -sf ~/dotfiles/git/git-core.symlink ~/.git-core
 Linux bootstrap installs delta for enhanced diffs. To install it manually:
 
 ```bash
-cargo install git-delta
+cargo install --locked git-delta
 ```
 
 ### Verify Setup

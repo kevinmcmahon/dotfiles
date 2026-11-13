@@ -1,20 +1,27 @@
 # Workflow Protocol
 
 How agents run a unit of work for Kevin, from issue to merged commit. This file
-is the cross-project default. A repo's `AGENTS.md` (and its `docs/agents/*.md`)
-is the source of truth for repo specifics — commands, verification matrix,
-constraints, tracker context — and overrides this file where they conflict.
-Read the repo's `AGENTS.md` before planning or changing code.
+defines the cross-project workflow. A repo's `AGENTS.md` (and its
+`docs/agents/*.md`) supplies its commands, verification matrix, safety
+constraints, acceptance criteria, and tracker context. Those repo-specific
+requirements remain binding. Read the repo's `AGENTS.md` before planning or
+changing code.
 
-Skills (TDD, worktrees, review, branch finishing) supply technique. Where a
-skill's procedure conflicts with this file, this file wins: no PRs, no merge
-commits, no push without being asked.
+Skills (TDD, worktrees, review, branch finishing) supply technique. This file
+controls implementer ownership, delegation, review scope, mutation checks, and
+final verification. It overrides conflicting procedures in skills, templates,
+and older issue briefs, including fresh implementers and two reviews per task.
+Only Kevin's explicit instructions for the current task can change that
+workflow. Repository safety rules, acceptance criteria, and required checks
+remain binding. No PRs, merge commits, or push without being asked.
 
 ## The shape of a unit of work
 
-Issue -> isolated worktree -> baseline gates -> red/green TDD -> two-stage
-review -> verify -> fast-forward merge -> tracker closeout. One issue per
-session. One logical commit per issue when feasible.
+Issue -> isolated worktree -> baseline gates -> plan and risk checks ->
+red/green TDD -> integrate current main -> whole-issue spec review ->
+whole-issue quality review -> final verification -> fast-forward merge ->
+tracker closeout. One primary implementer retains ownership across coupled
+tasks. One issue per session. One logical commit per issue when feasible.
 
 ## Sizing the work
 
@@ -34,7 +41,10 @@ the branch for the change and leave the issue id out of the commit message.
 ## Issue tracker
 
 - "work on ABC-123" means: fetch that exact issue before planning or changing
-  code. The issue (and its agent brief, if present) is the contract.
+  code. The issue (and its agent brief, if present) supplies the scope and
+  acceptance criteria. Apply this protocol's workflow when an older brief
+  prescribes per-task implementers, per-task review pairs, or mutation checks
+  for every new test.
 - If the issue lacks verifiable acceptance criteria, derive them, state them in
   the plan, and proceed. Ask Kevin only when two readings of the issue would
   produce different behavior.
@@ -79,6 +89,10 @@ the branch for the change and leave the issue id out of the commit message.
 - Run the gates in the fresh worktree before changing anything and record the
   result. A failure here is pre-existing: report it to Kevin before building on
   top of it.
+- Use the approved command forms in the user's global instructions and command
+  rules. Check required worktree and tool-cache access during setup. When an
+  exception is needed, propose a reusable operation-level prefix rather than
+  an approval tied to a filename, branch, or temporary path.
 - Linear history only: fast-forward merges, no merge commits, no PRs. While the
   branch is unpushed, amend or squash review fixes into the logical commit they
   belong to.
@@ -141,33 +155,54 @@ the branch for the change and leave the issue id out of the commit message.
 ## Execution
 
 - State the implementation plan, then proceed unless the work is in the Risky
-  tier.
-- The main session implements when it already holds the context and the change
-  is a single task. Delegate to a fresh implementer subagent when the plan has
-  several independent tasks or the run is long enough to exhaust the main
-  session's context. The implementer receives the full task text and curated
-  context (not a pointer to go find it), implements with TDD, self-reviews,
-  commits, and reports status with actual command results. An implementer that
-  lacks context reports what is missing instead of guessing.
-- Two-stage review after implementation, each by a fresh-context reviewer, in
-  order:
-  1. Spec compliance — did it build exactly what was asked, nothing more,
-     nothing less. The reviewer verifies against the code and the diff, never
-     against the implementer's report. Behavior-preservation claims get
-     re-derived (run the old expression, diff the outputs).
-  2. Code quality — only after spec review passes.
+  tier. Name the primary implementer and the concrete risks that need early
+  checks in the plan.
+- Keep one primary implementer across tasks that share interfaces, files, or
+  mutable state. The main session may implement, or it may retain one worker
+  across those tasks. Task count alone does not justify fresh implementers or
+  additional review stages.
+- Delegate bounded independent research or isolated implementation when it
+  helps. Give each worker its task, shared interfaces, constraints, and a short
+  report contract. Do not dispatch helpers just because agents are available.
+  Never parallelize edits that touch the same files or share mutable state.
+- Before building around an external API or changing stored data, check the
+  risky contract against current primary sources or literal compatibility
+  fixtures. Verify expected request fields, schema limits, error signatures,
+  and legacy behavior independently of the proposed implementation. A fixture
+  that agrees with the implementation can still encode the wrong contract.
+- Use an early specialist review for a named risk such as credential handling,
+  a provider request contract, or an on-disk format change. Keep it scoped to
+  that risk. It does not start a pair of reviews for every task or replace the
+  final issue reviews.
+- If a context limit requires an implementer handoff, leave a compact record
+  of the commit, working-tree state, interfaces, completed work, open findings,
+  and check results. Resume from that record; do not repeat completed tasks.
+- After implementation and integration with current main, run two reviews of
+  the complete issue diff, in order, with separate fresh-context reviewers who
+  did not implement the change:
+  1. Spec compliance — verify the code, tests, docs, and integrated behavior
+     against the issue and approved decisions. Re-derive preservation claims
+     and verify external contracts against their sources.
+  2. Code quality — only after spec review passes; review the complete branch
+     for correctness, security, reliability, and maintainability.
+- These are the two formal issue reviews. The quality review is the
+  whole-branch review; do not add another generic final review or require
+  implementer/spec/quality cycles for each internal task. Reviewers judge the
+  code themselves. They may use recorded check results and run focused probes
+  for specific gaps; they do not repeat already-recorded suites on unchanged
+  code without a concrete reason.
 - Reviewers mark each finding blocking (wrong behavior, spec miss, broken
   gate, violated repo constraint) or non-blocking (style, naming, optional
-  cleanup). Blocking findings go back to whoever implemented; re-review after
-  fixes. Non-blocking findings are fixed when cheap and otherwise listed in the
-  final report.
+  cleanup). Batch each review's blocking findings into one fix wave for the
+  primary implementer. Re-review the fixes and new breakage within the changed
+  code; do not restart the whole review. Non-blocking findings are fixed when
+  cheap and otherwise listed in the final report.
 - The implementer may rebut a finding with evidence from the code or a command
   result. The reviewer then withdraws it or answers the evidence.
-- After three review rounds with blocking findings still open, stop and bring
-  the disagreement to Kevin. Do not merge with open blocking findings.
-- Parallelize independent discovery, review, test analysis, and documentation
-  reads. Never parallelize edits that touch the same files or share mutable
-  state.
+- After three fix/re-review rounds in either review stage with blocking
+  findings still open, stop and bring the disagreement to Kevin. Do not merge
+  with open blocking findings. If a quality fix changes an acceptance rule or
+  interface, have the spec reviewer recheck that affected scope.
 - An unrelated bug found along the way: if the fix is a few lines, obviously
   correct, and covered by the gates, fix it in its own commit on the branch.
   Otherwise leave the code alone and report it as a follow-up.
@@ -177,6 +212,9 @@ the branch for the change and leave the issue id out of the commit message.
 - Red/green for behavior changes: write or update a focused failing test, watch
   it fail for the right reason, implement the smallest correct fix, then
   refactor with tests green.
+- Install network and paid-call guards before the first red run that could
+  reach an external service. Use offline fixtures and temporary data. Live
+  calls and collected-data changes still require the repo's authorization.
 - For deletions, invert the discipline: prove the suite green before and after,
   and show that only the dead path's coverage disappeared.
 - For behavior-preserving refactors, prove preservation: capture baseline
@@ -186,6 +224,13 @@ the branch for the change and leave the issue id out of the commit message.
   injectable seams over broad mocking.
 - Test output must be pristine to pass. Expected errors are captured and
   asserted, not left in logs.
+- Use mutation checks for the high-risk invariants named in the plan, such as
+  cache preservation, credential redaction, retry limits, validation before
+  writes, or keeping completed work after failure. Do not require a mutation
+  for every new test. Keep red/green coverage for every behavior change.
+- For each selected mutation, record the behavior broken, the focused test
+  command and its observed failure, then restore the source before continuing.
+  Run covering checks after restoration; do not run the full suite per mutant.
 
 ## Verification and reporting
 
@@ -196,8 +241,22 @@ the branch for the change and leave the issue id out of the commit message.
   entrypoint (the CLI command, the endpoint, the script) and report what
   happened.
 - Never claim success without running the checks and reporting actual command
-  results. Subagent reports are claims, not evidence: re-run the gates in the
-  main session before merging.
+  results. The controller owns one independent final verification pass on the
+  clean branch tip after all fixes, integration, and the final amend or squash.
+  It runs every repo-required gate itself; a worker's report does not replace
+  that pass. Focused implementation checks and early risk probes remain
+  required. Do not repeat a successful final pass on unchanged code or after a
+  fast-forward merge of that exact commit.
+- Save a compact verification receipt outside tracked source and collected
+  data. Record the commit, worktree, clean status, and each command's exit
+  code, result summary, and raw-log path. For advisory checks, record the
+  baseline and final diagnostic counts. Keep credentials out of the receipt
+  and logs.
+- After compaction or a handoff, confirm the receipt's commit and clean state
+  still match and read the saved results. If a result is missing, rerun that
+  check. If the code changed or the branch was rebased, rerun the required
+  final gates and replace the receipt. Never turn a missing result into a
+  passing claim.
 - If a check fails, read the output and find the cause. Fix it when the cause
   is inside the issue's scope. Stop and report the output plainly when the
   failure is pre-existing, lies outside the issue's scope, or survives three
@@ -205,6 +264,9 @@ the branch for the change and leave the issue id out of the commit message.
 - Keep credentials and local data out of everything: never read, print, or
   commit real tokens; tests use fake values; local config and collected outputs
   are data, not source.
+- Status updates distinguish active implementation, review, verification, and
+  blocked tool or approval waits. Name the remaining gates and the cause of a
+  delay; do not describe a blocked command as ongoing implementation.
 
 ## Documentation is required work
 
@@ -220,6 +282,8 @@ the branch for the change and leave the issue id out of the commit message.
 Before finishing, confirm:
 
 - [ ] Changes are scoped to the issue and architecture-aligned.
+- [ ] Whole-issue spec and quality reviews passed, with no open blocking
+      findings.
 - [ ] Tests and checks were run, with results captured in the report.
 - [ ] Relevant docs were updated.
 - [ ] Tracker updated: final comment posted, state set, only after verification.

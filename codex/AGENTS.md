@@ -10,6 +10,14 @@
 
 ## Decision Framework
 
+For issue work, read `/Users/kevin/.claude/docs/workflow-protocol.md` before
+planning. It controls implementer ownership, delegation, review scope, mutation
+checks, and final verification. Use one primary implementer across coupled
+tasks and separate whole-issue spec and quality reviews. It overrides
+conflicting procedures in skills, templates, and older issue briefs; only
+Kevin's explicit instructions for the current task change that workflow.
+Repository safety rules, acceptance criteria, and required checks still apply.
+
 ### Do It
 
 - Fix failing tests, lint errors, type errors, and broken imports.
@@ -83,8 +91,13 @@ Apply Orwell's six rules to all prose you write — replies to me, code comments
 
 - Do not commit unless explicitly asked.
 - When creating commits, do not use `git commit -m`.
-- Stage changes and run `GIT_EDITOR=true git commit` so the global `prepare-commit-msg` LLM hook generates the commit message.
+- Stage changes and run `env GIT_EDITOR=true git commit` so the global `prepare-commit-msg` LLM hook generates the commit message.
 - If the hook fails or generates an unsuitable message, stop and report it instead of inventing a commit message manually.
+- Use the approved command forms in `/Users/kevin/.codex/rules/default.rules`: plain `git add`, `git rebase`, `git reset --soft`, `git merge --ff-only`, `git worktree add`, `git worktree remove`, and `git branch -d`. Use the tool's working-directory argument instead of adding `git -C`.
+- Use `git reset --soft <base>` for routine squashes of authorized local work. Hard resets, pushes, and forced branch deletion require explicit approval; do not use another spelling or wrapper to bypass that requirement.
+- Use `env GIT_EDITOR=true git commit` for commits and `env GIT_EDITOR=true git rebase --continue` when continuing a rebase needs an editor. Avoid shell assignment prefixes and shell wrappers around these commands.
+- Use `git -c core.fsmonitor=false <operation>` only when the filesystem monitor fails; the rules also cover that fixed argument order. For commits in that case, use `env GIT_EDITOR=true git -c core.fsmonitor=false commit`.
+- If a command needs a new approval rule, propose a reusable operation-level prefix. Do not include filenames, branch names, or temporary paths unless the permission must be limited to that target. An allow rule does not replace task authorization or the Ask First rules.
 
 ## Web And Current Information
 

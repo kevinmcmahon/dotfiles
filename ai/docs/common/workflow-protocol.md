@@ -73,6 +73,9 @@ the branch for the change and leave the issue id out of the commit message.
 - Create an isolated branch or git worktree before changing code, unless the
   workspace is already isolated for that issue. Use the tracker's
   `gitBranchName` when available.
+- A branch the harness assigns (such as a cloud session's auto-named branch)
+  does not replace the `gitBranchName`: create the `gitBranchName` branch from
+  it and commit there. Push only what the task's instructions authorize.
 - Before creating anything, check for an existing `.worktrees/<issue-id>` or an
   issue already In Progress. If either exists, inspect the branch state and
   resume from it instead of starting over.

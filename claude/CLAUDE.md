@@ -61,6 +61,28 @@
 - Treat every failure as a learning opportunity. Read the error, understand it, and then fix it.
 - NEVER ignore test output or logs — they often contain critical information.
 
+## Engineering principles
+
+Distilled from the `book-*` skills. Repo rules and the workflow protocol win where they differ.
+
+- Judge a design by how much a reader must hold in mind to change it safely. Split or merge code by that measure rather than line count, so one deep module with a small interface beats a chain of pass-through functions, wrappers, and layers (Ousterhout over Clean Code's tiny functions; `book-a-philosophy-of-software-design`).
+- Pull complexity down into the module that owns it. Accept a harder implementation when it spares callers setup steps, ordering rules, mode flags, or knowledge of storage and formats.
+- Give each fact one owner: a rule, mapping, status meaning, schema, or default. When one change needs edits in many places, move that knowledge to its owner before adding more.
+- Let code that merely looks alike wait for a third copy, and keep code that changes for different reasons apart even when it matches. Add an abstraction, pattern, or layer only for a need you can name today.
+- Make invalid states hard to represent. Use enums for closed sets, small value types for primitives that carry rules, and separate functions instead of boolean mode flags; a function answers a question or changes state, never both.
+- Keep each decision in the module that owns the concept. CLI handlers, scripts, SQL, serializers, and vendor adapters translate and route, and core logic never imports them (`book-clean-architecture`).
+- Use the project's domain vocabulary with one term per concept, and rename code when understanding improves. Translate foreign payloads, rows, and vendor types at the boundary so they never become the model (`book-domain-modeling`).
+- Match model weight to the problem. Simple flows stay plain functions; richer types and boundaries go where invariants, lifecycle, or integration risk demand them (`book-patterns-of-enterprise-application-architecture`).
+- Make the change easy, then make the easy change. Refactor only what blocks the current task, as a behavior-preserving step before the behavior change; scope discipline beats the boy-scout rule (`book-refactoring-pass`).
+- When current behavior looks wrong but something may depend on it, pin it with a characterization test and report it instead of fixing it in passing (`book-legacy-change`).
+- Give every derived copy (cache, index, projection, export) a named source of truth and a rebuild path. Treat stored formats and schemas as contracts with old readers, old writers, and old data (`book-data-systems`).
+- Assume crashes, duplicate runs, and unknown success. Make writes and jobs safe to rerun, retry only idempotent operations with a bounded count and backoff, and put an explicit limit on every outbound call, wait, and queue (`book-reliability-review`).
+- Validate input at trust boundaries and assert programmer assumptions. Report expected failures plainly and let bugs fail loudly with their context.
+- Write comments for what code cannot say: interface contracts, invariants, units, and reasons. If a comment would explain how the code works, improve the names or structure first.
+- Measure before optimizing, and hide the optimization behind the interface. When a design is uncertain, get a thin end-to-end slice running before filling in the pieces (`book-the-pragmatic-programmer`).
+
+Each book is a `book-*` skill; load the matching one at the workflow protocol's checkpoints, or whenever a decision above is contested, for the full rules.
+
 ## Testing
 
 - Tests MUST cover the functionality being implemented.

@@ -85,7 +85,10 @@ the branch for the change and leave the issue id out of the commit message.
   before starting, or the baseline silently misses prior work.
 - A fresh worktree has no ignored files (local env files, virtualenvs,
   installed dependencies). Run the repo's worktree setup command from AGENTS.md
-  before the baseline.
+  before the baseline. When AGENTS.md names none, run the package manager's
+  locked install (`uv sync --locked`, `npm ci`, or the stack's equivalent),
+  copy no ignored credential file such as `.env`, and report the missing
+  command as a follow-up.
 - Run the gates in the fresh worktree before changing anything and record the
   result. A failure here is pre-existing: report it to Kevin before building on
   top of it.

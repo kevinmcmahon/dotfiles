@@ -13,7 +13,8 @@ final verification. It overrides conflicting procedures in skills, templates,
 and older issue briefs, including fresh implementers and two reviews per task.
 Only Kevin's explicit instructions for the current task can change that
 workflow. Repository safety rules, acceptance criteria, and required checks
-remain binding. No PRs, merge commits, or push without being asked.
+remain binding. No PRs, no merge commits, and never a force-push; commits and
+pushes follow the history rules under Isolation and history.
 
 ## The shape of a unit of work
 
@@ -30,7 +31,7 @@ Pick the tier before starting and say which one applies.
 - Trivial: anything on the "Do It" list in global CLAUDE.md (typos,
   formatting, lint or type fixes, a missing import) with no behavior change.
   Edit in place, run the relevant gates, and report. No worktree, subagent,
-  review, or tracker steps. Commit only when Kevin asks.
+  review, or tracker steps. Commit and push it under the history rules.
 - Standard: any behavior change or tracked issue. The full shape above applies.
 - Risky: anything under the Ask First rules in global CLAUDE.md or the repo's
   AGENTS.md. Standard, plus Kevin approves the plan before any code changes.
@@ -75,7 +76,7 @@ the branch for the change and leave the issue id out of the commit message.
   `gitBranchName` when available.
 - A branch the harness assigns (such as a cloud session's auto-named branch)
   does not replace the `gitBranchName`: create the `gitBranchName` branch from
-  it and commit there. Push only what the task's instructions authorize.
+  it and commit there. Never push the harness-assigned branch.
 - Before creating anything, check for an existing `.worktrees/<issue-id>` or an
   issue already In Progress. If either exists, inspect the branch state and
   resume from it instead of starting over.
@@ -99,23 +100,40 @@ the branch for the change and leave the issue id out of the commit message.
   rules. Check required worktree and tool-cache access during setup. When an
   exception is needed, propose a reusable operation-level prefix rather than
   an approval tied to a filename, branch, or temporary path.
-- Linear history only: fast-forward merges, no merge commits, no PRs. While the
-  branch is unpushed, amend or squash review fixes into the logical commit they
-  belong to.
-- Verify the gates on the branch tip, after the final amend or squash and with
-  a clean working tree, then fast-forward main to it. A fast-forward makes main
+- Linear history only: fast-forward merges, no merge commits, no PRs, and never
+  a force-push of any branch.
+- Commit on the issue branch whenever the work calls for it, without asking.
+- Back up the issue branch: push it to origin after the first commit and after
+  each batch of review fixes. Never rewrite a pushed commit on the remote, so
+  every backup push is a fast-forward. Make review fixes `git commit
+  --fixup=<logical commit>` commits on top of the branch rather than amending a
+  pushed commit.
+- Before verification, squash locally with `git rebase --autosquash` onto main,
+  so main gets one logical commit per issue. The squashed commit holds the same
+  files as the backup branch's tip, so it needs no backup push of its own.
+- Verify the gates on the squashed tip with a clean working tree, then
+  fast-forward main to it. A fast-forward makes main
   the exact commit you verified, so don't re-run the gates on main. If main has
-  moved, rebase the branch and re-verify before the fast-forward. If
+  moved, rebase the branch locally and re-verify before the fast-forward. If
   uncommitted changes in main's working tree block the fast-forward, stop and
   ask.
-- After the merge is confirmed on main, remove the worktree and delete the
+- Push the verified commit to main without asking (`git push origin
+  <sha>:main`), once the tier's required reviews have passed with no blocking
+  findings (Trivial has none) and the final gates pass on that exact commit. If
+  the push is refused as a non-fast-forward, main has moved: rebase locally,
+  re-verify, and push again. If it is refused for any other reason, do not
+  retry or work around it: leave the squashed commit local, report the refusal
+  (the backup branch holds the same files), and leave the issue In Progress.
+- After the merge is confirmed on main, remove the worktree, delete the remote
+  backup with `git push origin --delete <branch>`, and delete the local
   branch with `git branch -d`. A refusal means the branch is not merged; find
   out why instead of forcing the delete.
 - Commit messages: gitmoji conventional commits including the issue id, e.g.
   `refactor: ♻️ extract collector config module from cli (CWPT-142)`.
-- Push only when Kevin asks.
-- A commit that exists on a remote is permanent: never amend, rebase, squash,
-  or force-push it. Fix a pushed mistake with a new commit. Reverting a pushed
+- A commit on main is permanent: never amend, rebase, squash, or force-push
+  it. Fix a pushed mistake with a new commit. A pushed commit on an issue
+  branch is never rewritten on the remote, but it may be squashed locally into
+  the commit that goes to main. Reverting a pushed
   commit needs Kevin's approval.
 - After a push, check the remote CI run when the repo has one. A red run is a
   failed check and follows the failure rule under Verification and reporting,
@@ -150,8 +168,7 @@ the branch for the change and leave the issue id out of the commit message.
   neither works, finish everything that does not depend on it, leave the
   issue In Progress, and report the failed check.
 - The final report lists each new dependency: name, version, publish date,
-  what it is for, and the result of each check. Kevin reads this before
-  pushing.
+  what it is for, and the result of each check.
 - Add and upgrade through the repo's package manager, never by hand-editing a
   lockfile. Commit the manifest and the lockfile together with the code that
   uses them, and follow the repo's pinning convention.
@@ -290,7 +307,7 @@ the issue's settled decisions, and Kevin's instructions win over any book.
   happened.
 - Never claim success without running the checks and reporting actual command
   results. The controller owns one independent final verification pass on the
-  clean branch tip after all fixes, integration, and the final amend or squash.
+  clean branch tip after all fixes, integration, and the final squash.
   It runs every repo-required gate itself; a worker's report does not replace
   that pass. Focused implementation checks and early risk probes remain
   required. Do not repeat a successful final pass on unchanged code or after a

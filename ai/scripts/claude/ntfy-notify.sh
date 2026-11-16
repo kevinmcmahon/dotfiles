@@ -131,8 +131,11 @@ if [[ "$EVENT_TYPE" == "prompt" ]]; then
     # leave the original title intact.
     if [[ ! -f "$CACHE_FILE" ]]; then
       PROMPT_TEXT=$(echo "$EVENT_JSON" | jq -r '.prompt // empty' 2>/dev/null)
-      # First non-empty line, whitespace collapsed, trimmed
+      # Claude Code wraps pasted text in <pasted_content id="..."> tags; drop
+      # the tags so the title is the first real line, not the wrapper.
+      # Then: first non-empty line, whitespace collapsed, trimmed
       TITLE=$(printf '%s' "$PROMPT_TEXT" \
+        | sed -E 's#</?pasted_content[^>]*>##g' \
         | awk 'NF{print; exit}' \
         | tr -s '[:space:]' ' ' \
         | sed 's/^ //; s/ $//')
@@ -164,6 +167,31 @@ fi
 if [[ -z "${NTFY_TOPIC:-}" ]]; then
   exit 0
 fi
+
+# last_assistant_line — the first sentence of Claude's latest reply, as plain
+# text up to 200 characters, or nothing. Prefers the event's own
+# last_assistant_message field when the hook payload carries one, else reads
+# the tail of the session transcript (JSONL) named by transcript_path.
+last_assistant_line() {
+  local text transcript
+  text=$(echo "$EVENT_JSON" | jq -r '.last_assistant_message // empty' 2>/dev/null)
+  if [[ -z "$text" ]]; then
+    transcript=$(echo "$EVENT_JSON" | jq -r '.transcript_path // empty' 2>/dev/null)
+    [[ -n "$transcript" && -f "$transcript" ]] || return 0
+    # The last assistant entry that holds text; entries are one JSON per line.
+    text=$(tail -n 400 "$transcript" \
+      | jq -c 'select(.type=="assistant") | [.message.content[]? | select(.type=="text") | .text] | join("\n") | select(length > 0)' 2>/dev/null \
+      | tail -n 1 | jq -r '.' 2>/dev/null)
+  fi
+  [[ -n "$text" ]] || return 0
+  # First non-empty line, markdown marks removed, cut at the first sentence end.
+  printf '%s' "$text" \
+    | awk 'NF{print; exit}' \
+    | sed -E 's/^[#>*-]+ +//; s/\*\*//g; s/`//g' \
+    | tr -s '[:space:]' ' ' \
+    | sed -E 's/^ //; s/ $//; s/([.!?])( .*)?$/\1/' \
+    | cut -c1-200
+}
 
 # ============================================
 # BUILD MESSAGE PER EVENT TYPE
@@ -203,13 +231,15 @@ case "$EVENT_TYPE" in
   idle)
     PRIORITY="default"
     ICON="💤"
-    MESSAGE="Waiting for your input"
+    LAST=$(last_assistant_line)
+    MESSAGE="Waiting for your input${LAST:+: $LAST}"
     ;;
 
   complete)
     PRIORITY="default"
     ICON="✅"
-    MESSAGE="Task finished"
+    LAST=$(last_assistant_line)
+    MESSAGE="${LAST:-Task finished}"
     ;;
 
   *)

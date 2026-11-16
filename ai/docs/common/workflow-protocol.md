@@ -359,7 +359,9 @@ Before finishing, confirm:
 
 When bootstrapping a new repo, its AGENTS.md should supply the specifics this
 protocol depends on: purpose; core rules; repo-specific Ask First items; a
-verification matrix mapping files/areas to exact commands; a single command
+verification matrix mapping files/areas to their verification, with the exact
+commands either in the matrix or one hop away in the area doc each row names
+(each command written in one place only); a single command
 that runs every required gate, enforced by a git hook where practical; a
 worktree setup command; the package manager and pinning convention; how to
 check remote CI, if the repo has any; a repository map; architecture

@@ -26,7 +26,7 @@
 ### 🔴 Always Ask Permission
 - Rewriting existing working code from scratch
 - Changing core business logic
-- Security-related modifications
+- Security-related modifications: authentication, credentials, permissions, cryptography, or input validation at a trust boundary
 - Anything that could cause data loss
 - Architectural changes
 
@@ -45,21 +45,21 @@
 
 ### Comments
 
-- NEVER remove code comments unless you can prove they are factually incorrect.
+- Keep existing comments unless they are wrong or the code they describe is gone. Say which in the commit message.
 - Write evergreen comments. Don't reference "recent refactors" or temporal context — describe the code as it is.
 
 ### Scope Discipline
 
-- NEVER disable functionality instead of fixing the root cause.
-- NEVER make cleanup, refactoring, or feature changes unrelated to the current task. Report them as follow-ups instead. Unrelated bugs follow the rule in the workflow protocol.
-- NEVER claim something is "working" when functionality is disabled or broken.
+- Don't disable a feature, test, or check to make a failure go away. Fix the cause, or report the failure and leave it visible.
+- Keep each change to the current task so its commit stays reviewable. Report unrelated cleanup, refactoring, or feature ideas as follow-ups instead of making them. Unrelated bugs follow the rule in the workflow protocol.
+- Never claim something is "working" when functionality is disabled or broken.
 
 ### Debugging & Fixing
 
-- When fixing a bug, NEVER throw away the old implementation and rewrite from scratch without my explicit permission. Try to fix what's there first.
-- NEVER create duplicate files/templates to work around issues — fix the original.
-- Treat every failure as a learning opportunity. Read the error, understand it, and then fix it.
-- NEVER ignore test output or logs — they often contain critical information.
+- When fixing a bug, ask before discarding the existing implementation and rewriting it. Try to fix what's there first.
+- Don't copy a file or template to work around a problem in it. Fix the original, so there is one copy to maintain.
+- Read test output and logs; they often hold the cause. Research an error before attempting a fix.
+- When a tool fails (ruff, biome, pytest), fix what it reports rather than routing around the tool.
 
 ## Engineering principles
 
@@ -85,7 +85,7 @@ Each book is a `book-*` skill; load the matching one at the workflow protocol's 
 
 ## Testing
 
-- Tests MUST cover the functionality being implemented.
+- Tests must cover the functionality being implemented.
 - Test output must be clean to pass. If logs are supposed to contain errors, capture and assert on them.
 
 ## Writing Conventions
@@ -101,28 +101,11 @@ Each book is a `book-*` skill; load the matching one at the workflow protocol's 
 
 ## Other Important Considerations
 
-- When searching or modifying code, you should use ast-grep (sg). it is way better than grep, ripgrep, ag, sed, or regex-only tools. ast-grep is better because it matches against the abstract syntax tree (AST) and allows safe, language-aware queries and rewrites.
-- Always prefer sg for code analysis, queries, or refactoring tasks.
-- If you discover an unrelated bug, fix it in its own commit when the fix is a few lines, obviously correct, and covered by the gates. Otherwise report it as a follow-up with enough detail to act on. Don't say the equivalent of "everything is done, EXCEPT there is a bug" and leave it there.
-
-## Learning-Focused Error Response
-
-When encountering tool failures (biome, ruff, pytest, etc.):
-
-- Treat each failure as a learning opportunity, not an obstacle
-- Research the specific error before attempting fixes
-- Explain what you learned about the tool/codebase
-- Build competence with development tools rather than avoiding them
-
-Remember: Quality tools are guardrails that help you, not barriers that block you.
+- Use ast-grep (sg) for structural code queries and rewrites: it matches the syntax tree, so it won't hit strings, comments, or partial names the way a regex can. Plain text search is fine for prose, config, and literal strings.
+- An unrelated bug follows the workflow protocol's rule. Don't end a report with the equivalent of "everything is done, EXCEPT there is a bug" and leave it there.
 
 ## Problem-Solving Approach
 
-- FIX problems, don't work around them
-- THIS IS IMPORTANT I highly prefer the subagent development skill for multi-task plans and long runs, and fresh-context subagents for every review. The main session implements single-task changes when it already holds the context (see the workflow protocol).
-- MAINTAIN code quality and avoid technical debt
-- USE proper debugging to find root causes
-- AVOID shortcuts that break user experience
+- Use the subagent development skill for multi-task plans and long runs. Every review goes to a fresh-context subagent, because a reviewer who wrote the code anchors on it. The main session implements single-task changes when it already holds the context; the workflow protocol says when to delegate.
 - When choosing port numbers for new services, make them thematically related and memorable (leet-speak, pop culture, or project-relevant numbers). Keep infrastructure defaults boring (NATS, databases, etc.). The goal is to cleanly avoid all regularly used ports (8080, 8081, etc)
-- when referring to models from foundational model companies (openai, anthropic) and you think a model is fake, please google it and figure out if it is fake or not.
-- Your knowledge cut off is getting in the way of you making good decisions
+- Your training data trails current releases. Before calling a model name (OpenAI, Anthropic, and others), library version, or API fake or outdated, check it with a Perplexity search.

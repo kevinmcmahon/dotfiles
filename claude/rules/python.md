@@ -20,9 +20,6 @@ paths:
 - **Formatting**:
   - 4 spaces for indentation
   - `ruff format` for code formatting
-  - `isort` for import sorting
 - **Linting**:
-  - `ruff check` for linting
-  - `mypy` for type checking
-- Make sure that there is a pyproject.toml file in the root directory.
-- If there isn't a pyproject.toml file, create one using uv by running uv init.
+  - `ruff check` for linting, with ruff's `I` rule sorting imports
+- **Type checking**: `uvx ty check` (ty runs through uvx, not as a project dependency)

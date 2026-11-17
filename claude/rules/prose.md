@@ -32,21 +32,21 @@ When a quote is a standalone sentence or expression, closing punctuation goes in
 
 ### Rich punctuation
 
-Use punctuation generously to communicate parsing and rhythm. Modern minimalism sacrifices clarity.
+Use punctuation to communicate parsing and rhythm. Modern minimalism sacrifices clarity.
 
 **Embrace:**
 - Semicolons for closely related independent clauses
-- Em-dashes for parenthetical emphasis or abrupt shifts; put a space on either side of the em-dash for readability when read using monospaced fonts
 - En-dashes for ranges and compound adjectives
 - Parentheses for true asides and clarifications
 - Commas to establish natural reading rhythm
 
+**Avoid:** em dashes. Use a comma, colon, semicolon, or parentheses, or split the sentence.
+
 **Examples:**
 - "The cache was stale; we invalidated it immediately."
-- "The service — despite our optimizations — still exceeded latency budgets."
 - "The 2020–2024 data shows clear trends."
 - "We implemented the fix (after extensive testing) and deployed it."
 
 ### General principle
 
-Punctuation guides the reader through your intended meaning and emphasis. Use it deliberately, not sparingly.
+Punctuation guides the reader through your intended meaning and emphasis. Use it deliberately.

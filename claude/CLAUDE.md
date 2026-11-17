@@ -33,7 +33,7 @@
 ## Code Quality
 
 - Prefer correct, complete implementations over minimal ones.
-- Use appropriate data structures and algorithms — don't brute-force what has known better solution.
+- Use appropriate data structures and algorithms. Don't brute-force a problem that has a known better solution.
 - When fixing a bug, fix the root cause, not the symptom.
 - If something I asked for requires error handling or validation to work reliably, include it without asking.
 
@@ -46,7 +46,7 @@
 ### Comments
 
 - Keep existing comments unless they are wrong or the code they describe is gone. Say which in the commit message.
-- Write evergreen comments. Don't reference "recent refactors" or temporal context — describe the code as it is.
+- Write evergreen comments. Don't reference "recent refactors" or temporal context; describe the code as it is.
 
 ### Scope Discipline
 

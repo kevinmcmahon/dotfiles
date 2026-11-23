@@ -29,19 +29,25 @@ vim.opt.splitbelow = true
 
 vim.opt.undofile = true
 
--- Remote-only: copy yanks to local clipboard via OSC52-compatible pbcopy wrapper
-vim.g.clipboard = {
-  name = "osc52-pbcopy",
-  copy = {
-    ["+"] = "pbcopy",
-    ["*"] = "pbcopy",
-  },
-  paste = {
-    ["+"] = "pbpaste",
-    ["*"] = "pbpaste",
-  },
-  cache_enabled = 0,
-}
+-- Over SSH, use Neovim's built-in OSC 52 provider (Nvim 0.11+). The escape
+-- sequence travels through tmux (set-clipboard on) to the local terminal,
+-- which writes it to the Mac clipboard. Locally, keep pbcopy/pbpaste.
+if vim.env.SSH_CONNECTION then
+  vim.g.clipboard = "osc52"
+else
+  vim.g.clipboard = {
+    name = "osc52-pbcopy",
+    copy = {
+      ["+"] = "pbcopy",
+      ["*"] = "pbcopy",
+    },
+    paste = {
+      ["+"] = "pbpaste",
+      ["*"] = "pbpaste",
+    },
+    cache_enabled = 0,
+  }
+end
 
 -- Yank-to-local-clipboard (OSC52 via pbcopy) for SSH/tmux-only servers.
 -- This mimics the "Mac default" feel: yanks go to system clipboard too.

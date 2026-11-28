@@ -64,14 +64,8 @@ Repository safety rules, acceptance criteria, and required checks still apply.
 
 ## Writing prose
 
-Apply Orwell's six rules to all prose you write — replies to me, code comments, docs, commit messages (George Orwell, "Politics and the English Language," 1946; via Duke's scientific writing guide):
-
-1. Never use a metaphor, simile, or other figure of speech which you are used to seeing in print.
-2. Never use a long word where a short one will do.
-3. If it is possible to cut a word out, always cut it out.
-4. Never use the passive where you can use the active.
-5. Never use a foreign phrase, a scientific word, or a jargon word if you can think of an everyday English equivalent.
-6. Break any of these rules sooner than say anything outright barbarous.
+- Before writing any prose a person will read, including replies to me and code comments, use the `writing-tropes` skill. It holds Orwell's six rules, the tropes to avoid, and the structure rules.
+- Write technical prose in 80% ASD-STE100. Keep sentences to 25 words or fewer, in the active voice, with one idea each and no filler or semicolons. Use one meaning per word, and keep paragraphs to 6 sentences or fewer. Keep every fact, number, caveat, and statement of uncertainty. Technical prose includes replies, plans, status updates, reviews, docs, commit bodies, and issue text. UI copy, emails, blog posts, and other user-facing text keep their own voice. The `writing-tropes` skill holds the full rules, and strict mode for step-by-step procedures.
 
 ## Testing And Tool Failures
 

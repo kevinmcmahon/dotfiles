@@ -90,7 +90,8 @@ Each book is a `book-*` skill; load the matching one at the workflow protocol's 
 
 ## Writing Conventions
 
-- Before writing any prose humans will read, use the writing-tropes skill.
+- Before writing any prose a person will read, including replies to me and code comments, use the `writing-tropes` skill. It holds Orwell's six rules, the tropes to avoid, and the structure rules.
+- Write technical prose in 80% ASD-STE100. Keep sentences to 25 words or fewer, in the active voice, with one idea each and no filler or semicolons. Use one meaning per word, and keep paragraphs to 6 sentences or fewer. Keep every fact, number, caveat, and statement of uncertainty. Technical prose includes replies, plans, status updates, reviews, docs, commit bodies, and issue text. UI copy, emails, blog posts, and other user-facing text keep their own voice. The `writing-tropes` skill holds the full rules, and strict mode for step-by-step procedures.
 
 ## Tools & Conventions  
 
